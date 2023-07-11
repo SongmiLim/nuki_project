@@ -1,4 +1,4 @@
-# main/kiya
+# main/nuki
 
 
 
@@ -6,9 +6,9 @@
 
 Download links:
 
-SSH clone URL: ssh://git@git.jetbrains.space/pipeline/main/kiya.git
+SSH clone URL: ssh://git@git.jetbrains.space/pipeline/main/nuki.git
 
-HTTPS clone URL: https://git.jetbrains.space/pipeline/main/kiya.git
+HTTPS clone URL: https://git.jetbrains.space/pipeline/main/nuki.git
 
 
 
