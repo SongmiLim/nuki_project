@@ -4,9 +4,11 @@ import gazu
 # haji@netflixacademy.com
 # haji1127
 from PySide2.QtWidgets import QApplication, QMainWindow
-from nuki.login.login_view.LoginWidget import Ui_MainWindow
 
-class MyGazu(QMainWindow, Ui_MainWindow):
+from jiwoon.gazu_api.view.UI.login_view.LoginWidget import Ui_Login
+
+
+class Login(QMainWindow, Ui_Login):
   def __init__(self):
     gazu.client.set_host('http://192.168.3.117/api')
     super().__init__()
@@ -36,7 +38,7 @@ class MyGazu(QMainWindow, Ui_MainWindow):
     pass
 
 
-app = QApplication()
-window = MyGazu()
-window.show()
-app.exec_()
+# app = QApplication()
+# window = Login()
+# window.show()
+# app.exec_()
