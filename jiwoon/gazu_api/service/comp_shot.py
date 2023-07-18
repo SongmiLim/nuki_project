@@ -8,9 +8,9 @@ import gazu
 from datetime import datetime
 
 
-class CompTask:
+class CompShot:
 
-    def __init__(self, task_dict) -> None:
+    def __init__(self, shot_info) -> None:
         """
         입력된 task에 해당하는 shot으로부터 각종 정보를 추출
 
@@ -18,48 +18,138 @@ class CompTask:
             task_dict(dict{dict}):  객체로 만들고자 하는 shot task의 dict
             반드시 asset이 아닌, shot을 entity로 하는 task여야 함
         """
-        if task_dict.get('entity_type_name') != 'Shot':
-            raise Exception('shot을 위한 task가 아님')
+        # if shot_info.get('entity_type_name') != 'Shot':
+        #     raise Exception('shot을 위한 task가 아님')
 
-        self._task_dict = task_dict
-
-        self._task_status = gazu.task.get_task_status(self._task_dict.get('task_status_id')).get('name')
-        self._shot_dict = gazu.shot.get_shot(self._task_dict.get('entity_id'))
-        self._proj_dict = gazu.project.get_project(self.shot_dict.get('project_id'))
-
-        self._proj_name = self.proj_dict.get('name')
-        self._seq_name = self.shot_dict.get('sequence_name')
-        self._shot_name = self.shot_dict.get('name')
-
-        self._proj_id = self.proj_dict.get('id')
-        self._seq_id = self.shot_dict.get('sequence_id')
-        self._shot_id = self.shot_dict.get('id')
-
-        self._fps = self.proj_dict.get('fps')
-        self._ratio = self.proj_dict.get('ratio')
-        self._resolution = self.proj_dict.get('resolution')
-
-        self._frame_in = self.shot_dict.get('frame_in') or 0
-        self._frame_out = self.shot_dict.get('frame_out') or 0
-
-        self._revision = None
-
-        self.file_tree = self.proj_dict.get('file_tree')
-        self._filetree_pattern = None
-
-        self._comments = gazu.task.all_comments_for_task(self._task_dict)
-
-        # self.thumbnail_image = self.get_thumbnail_url()
-        # self.last_comptask_revision = gazu.files.get_last_working_file_revision(self.task_dict) or {}
-
+        self._project_name = shot_info.get('project_name')
+        self._sequence_name = shot_info.get('sequence_name')
+        self._shot_name = shot_info.get('name')
+        self._nb_frames = shot_info.get('nb_frames')
+        self._frame_in = shot_info.get('frame_in')
+        self._frame_out = shot_info.get('frame_out')
+        self._resolution = shot_info.get('resolution')
+        self._ext = shot_info.get('ext')
+        self._fps = shot_info.get('fps')
+        self._revision = shot_info.get('max_retakes')  # 이 데이터 맞는지 모르겠음
+        self._created_at = shot_info.get('created_at')
+        self._updated_at = shot_info.get('updated_at')
+        self._preview_file_id = shot_info.get('preview_file_id')
+        self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id)
 
     @property
-    def task_status(self):
+    def project_name(self):
         """
         Returns:
             dict: 선택한 task의 status 정보??????
         """
-        return self._task_status
+        return self._project_name
+
+    @property
+    def sequence_name(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._sequence_name
+
+    @property
+    def shot_name(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._shot_name
+
+    @property
+    def nb_frames(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._nb_frames
+
+    @property
+    def frame_in(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._frame_in
+
+    @property
+    def frame_out(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._frame_out
+
+    @property
+    def resolution(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._resolution
+
+    @property
+    def ext(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._ext
+
+    @property
+    def fps(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._fps
+
+    @property
+    def revision(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._revision
+
+    @property
+    def created_at(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._created_at
+
+
+    @property
+    def updated_at(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._updated_at
+
+    @property
+    def preview_file_id(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._preview_file_id
+
+    @property
+    def preview_file_url(self):
+        """
+        Returns:
+            dict: 선택한 task의 status 정보??????
+        """
+        return self._preview_file_url
+
+
 
     @property
     def is_ready(self) -> bool:
@@ -148,10 +238,11 @@ class CompTask:
         """
         Nuke file revision
         """
-        self._revision = self.last_comptask_revision.get("revision")
-        if not self._revision:
-            self._revision = "New!"
-        return self._revision
+        # self._revision = self.last_comptask_revision.get("revision")
+        # if not self._revision:
+        #     self._revision = "New!"
+        # return self._revision
+        pass
 
     @property
     def comments(self):

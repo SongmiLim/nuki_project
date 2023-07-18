@@ -1,6 +1,7 @@
 import gazu as gazu
 from PySide2 import QtWidgets
 
+from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.comp_task import CompTask
 from jiwoon.gazu_api.service.file_tree import FileTree
 from jiwoon.gazu_api.service.todo_shot import TodoShot
@@ -19,7 +20,6 @@ class TaskService:
     __temp = None
     __entity = None
     __ext = None
-
 
     def __init__(self, model, view):
         self.model = model
@@ -170,7 +170,7 @@ class TaskService:
             if task.get('task_type_id') == comp_task_id:
                 todo_shot = TodoShot(task)
                 self.model.todo_tasks.append(todo_shot.id)
-                print(f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
+                # print(f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
 
     def clicked_shot_detail_info(self):
         # clicked event 발생 시 선택된 객체로 setting
@@ -180,34 +180,20 @@ class TaskService:
         self.shot = "SH01"
 
         shot_info = self.shot.get('data')
+        comp_shot = CompShot(shot_info)
 
-        project_name = shot_info.get('project_name')
-        sequence_name = shot_info.get('sequence_name')
-        shot_name = shot_info.get('name')
-        nb_frames = self.shot.get('nb_frames')
-        frame_in = shot_info.get('frame_in')
-        frame_out = shot_info.get('frame_out')
-        resolution = shot_info.get('resolution')
-        self.ext = shot_info.get('ext')
-        fps = shot_info.get('fps')
-        revision = shot_info.get('max_retakes')  # 이 데이터 맞는지 모르겠음
-        created_at = shot_info.get('created_at')
-        updated_at = shot_info.get('updated_at')
-        preview_file_id = shot_info.get('preview_file_id')
-        preview_file_url = gazu.files.get_preview_file_url(preview_file_id)
-
-        # print(f'PROJECT {project_name}')
-        # print(f'SEQUNECE {sequence_name}')
-        # print(f'SHOT {shot_name}')
-        # print(f'NUMBER OF FRAMES {nb_frames}')
-        # print(f'FRAME RANGE {frame_in}     {frame_out}')
-        # print(f'RESOLUTION {resolution}')
-        # print(f'EXT {self.ext}')
-        # print(f'FPS {fps}')
-        # print(f'REVISION {revision}')
-        # print(f'CREATED AT {created_at}')
-        # print(f'UPDATED AT {updated_at}')
-        # print(f'{self.host}/{preview_file_url}')
+        # print(f'PROJECT {comp_shot.project_name}')
+        # print(f'SEQUENCE {comp_shot.sequence_name}')
+        # print(f'SHOT {comp_shot.shot_name}')
+        # print(f'NUMBER OF FRAMES {comp_shot.nb_frames}')
+        # print(f'FRAME RANGE {comp_shot.frame_in} {comp_shot.frame_out}')
+        # print(f'RESOLUTION {comp_shot.resolution}')
+        # print(f'EXT {comp_shot.ext}')
+        # print(f'FPS {comp_shot.fps}')
+        # print(f'REVISION {comp_shot.revision}')
+        # print(f'CREATED AT {comp_shot.created_at}')
+        # print(f'UPDATED AT {comp_shot.updated_at}')
+        # print(f'{self.host}/{comp_shot.preview_file_url}')
 
     def load_shot(self):
         # self.project = self.view.projectEdit.text().strip()
@@ -221,16 +207,16 @@ class TaskService:
         self.clicked_shot_detail_info()
 
         tasks = gazu.task.all_tasks_for_shot(self.__shot)
-        print('a',self.model.todo_tasks)
-        # for task in tasks:
-        #     if task.get('id') == self.todo_tasks[0]:
-        #         # temp_task = gazu.task.get_task(task.get('id'))
-        #         # temp_entity = temp_task.get('entity')
-        #         # temp_data = temp_entity.get('data')
-        #         print('a', self.ext)  # for ver, ext
+        for task in tasks:
+            print(task)
+            # if task.get('id') == self.todo_tasks[0]:
+                # temp_task = gazu.task.get_task(task.get('id'))
+                # temp_entity = temp_task.get('entity')
+                # temp_data = temp_entity.get('data')
+                # print('a', self.ext)  # for ver, ext
 
-            # if task.get('task_type_name') == "Compositing":
-            #     print(task.get('task_type_name'), task.get('task_status_name'), task.get('updated_at'))
+        # if task.get('task_type_name') == "Compositing":
+        #     print(task.get('task_type_name'), task.get('task_status_name'), task.get('updated_at'))
 
         # self.file_tree = self.proj_dict.get('file_tree')
 

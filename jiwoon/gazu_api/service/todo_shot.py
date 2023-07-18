@@ -10,9 +10,8 @@ class TodoShot:
         self._project_name = task.get('project_name')
         self._sequence_name = task.get('sequence_name')
         self._shot_name = task.get('entity_name')
-
         self.comp_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        self.refresh_comp_tasks()
+        # self.refresh_comp_tasks()
 
     @property
     def comp_tasks(self):
