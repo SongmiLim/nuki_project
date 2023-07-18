@@ -2,13 +2,15 @@ from PySide2 import QtCore
 from PySide2.QtCore import QAbstractListModel, Signal, Qt
 
 
-class TaskModel(QAbstractListModel):
+class Model(QAbstractListModel):
     # data_changed = Signal(str)
 
     def __init__(self):
         super().__init__()
         self.header_title = ["Task Type", "Status", "Ver", "Ext", "Updated At"]
         self.datas = []
+        self.todo_tasks = []
+
 
     def data(self, index, role):
         if role == Qt.DisplayRole:  # 메인 텍스트

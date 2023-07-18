@@ -1,8 +1,9 @@
-import gazu
+import gazu as gazu
 from PySide2 import QtWidgets
 
-from gazu_api.service.comp_task import CompTask
-from gazu_api.service.file_tree import FileTree
+from jiwoon.gazu_api.service.comp_task import CompTask
+from jiwoon.gazu_api.service.file_tree import FileTree
+from jiwoon.gazu_api.service.todo_shot import TodoShot
 
 
 class TaskService:
@@ -16,12 +17,15 @@ class TaskService:
     __asset_type_dict = None
     __new_values = None
     __temp = None
+    __entity = None
+    __ext = None
+
 
     def __init__(self, model, view):
         self.model = model
         self.view = view
 
-        gazu.client.set_host("http://192.168.3.117/api")
+        self.host = gazu.client.set_host("http://192.168.3.117/api")
         gazu.log_in("admin@netflixacademy.com", "netflixacademy")
 
     @property
@@ -33,13 +37,35 @@ class TaskService:
         self.__project = gazu.project.get_project_by_name(name)
 
     @property
+    def sequence(self):
+        return self.__sequence
+
+    @sequence.setter
+    def sequence(self, name):
+        self.__sequence = gazu.shot.get_sequence_by_name(self.project, name)
+
+    @property
     def shot(self):
         return self.__shot
 
     @shot.setter
-    def shot(self, id):
-        self.__shot = gazu.shot.get_shot(id)
-        # self.__shot = gazu.shot.get_shot_by_name(sequence_dict, "SH01")
+    def shot(self, name):
+        # self.__shot = gazu.shot.get_shot(id)
+        self.__shot = gazu.shot.get_shot_by_name(self.sequence, name)
+        self.__entity = self.__shot
+
+    # @shot.setter
+    # def shot(self, id):
+    #     self.__shot = gazu.shot.get_shot(id)
+
+    @property
+    def task(self):
+        return self.__task
+
+    @task.setter
+    def task(self, name):
+        self.task_type = name
+        self.__task = gazu.task.get_task_by_name(self.__entity, self.task_type)
 
     def reload_comptasks(self):
         """
@@ -78,7 +104,7 @@ class TaskService:
         self.sort_by_combobox()
         self.browser_view.scrollToTop()
 
-    def user_info_tree(self,comptasks):
+    def user_info_tree(self, comptasks):
         """
         list : 로그인 된 'user'를 기준으로 정렬된 프로젝트, 시퀀스, 테스크
 
@@ -135,22 +161,73 @@ class TaskService:
         """
         sorted_shot_data = sorted(shot_data, key=lambda ct: (ct.proj_name, ct.seq_name, ct.shot_name), reverse=False)
         return sorted_shot_data
+
+    def get_all_tasks_todo(self):
+        todo_task_list = gazu.user.all_tasks_to_do()
+        comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
+
+        for task in todo_task_list:
+            if task.get('task_type_id') == comp_task_id:
+                todo_shot = TodoShot(task)
+                self.model.todo_tasks.append(todo_shot.id)
+                print(f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
+
+    def clicked_shot_detail_info(self):
+        # clicked event 발생 시 선택된 객체로 setting
+        # 지금은 일단 임의로 설정해줌
+        self.project = "avengers"
+        self.sequence = "SEQ01"
+        self.shot = "SH01"
+
+        shot_info = self.shot.get('data')
+
+        project_name = shot_info.get('project_name')
+        sequence_name = shot_info.get('sequence_name')
+        shot_name = shot_info.get('name')
+        nb_frames = self.shot.get('nb_frames')
+        frame_in = shot_info.get('frame_in')
+        frame_out = shot_info.get('frame_out')
+        resolution = shot_info.get('resolution')
+        self.ext = shot_info.get('ext')
+        fps = shot_info.get('fps')
+        revision = shot_info.get('max_retakes')  # 이 데이터 맞는지 모르겠음
+        created_at = shot_info.get('created_at')
+        updated_at = shot_info.get('updated_at')
+        preview_file_id = shot_info.get('preview_file_id')
+        preview_file_url = gazu.files.get_preview_file_url(preview_file_id)
+
+        # print(f'PROJECT {project_name}')
+        # print(f'SEQUNECE {sequence_name}')
+        # print(f'SHOT {shot_name}')
+        # print(f'NUMBER OF FRAMES {nb_frames}')
+        # print(f'FRAME RANGE {frame_in}     {frame_out}')
+        # print(f'RESOLUTION {resolution}')
+        # print(f'EXT {self.ext}')
+        # print(f'FPS {fps}')
+        # print(f'REVISION {revision}')
+        # print(f'CREATED AT {created_at}')
+        # print(f'UPDATED AT {updated_at}')
+        # print(f'{self.host}/{preview_file_url}')
+
     def load_shot(self):
-        self.project = self.view.projectEdit.text().strip()
+        # self.project = self.view.projectEdit.text().strip()
         # self.asset = self.view.assetEdit.text().strip()
         # self.proj_dict = gazu.project.get_project(self.__shot.get('project_id'))
 
-        _todo_comp_tasks = gazu.user.all_tasks_to_do()
-        _done_comp_tasks = gazu.user.all_done_tasks()
-        _comp_tasks = _todo_comp_tasks + _done_comp_tasks
-        tasks = gazu.task.all_tasks_for_shot(self.__shot)
+        # _todo_comp_tasks = gazu.user.all_tasks_to_do()
+        # _done_comp_tasks = gazu.user.all_done_tasks()
+        # _comp_tasks = _todo_comp_tasks + _done_comp_tasks
+        self.get_all_tasks_todo()
+        self.clicked_shot_detail_info()
 
-        for task in tasks:
-            if task.get('id') == '109ecca1-1f8e-47fd-82d6-99750903416e':
-                temp_task = gazu.task.get_task(task.get('id'))
-                temp_entity = temp_task.get('entity')
-                temp_data = temp_entity.get('data')
-                print(temp_data) # for ver, ext
+        tasks = gazu.task.all_tasks_for_shot(self.__shot)
+        print('a',self.model.todo_tasks)
+        # for task in tasks:
+        #     if task.get('id') == self.todo_tasks[0]:
+        #         # temp_task = gazu.task.get_task(task.get('id'))
+        #         # temp_entity = temp_task.get('entity')
+        #         # temp_data = temp_entity.get('data')
+        #         print('a', self.ext)  # for ver, ext
 
             # if task.get('task_type_name') == "Compositing":
             #     print(task.get('task_type_name'), task.get('task_status_name'), task.get('updated_at'))
@@ -161,10 +238,6 @@ class TaskService:
         # file_tree.update_file_tree()
 
         # file_tree = FileTree(self.proj_dict)
-
-
-
-        # print(tree)
 
         # for task in tasks:
         #     # comp_task = CompTask(task)
@@ -189,16 +262,11 @@ class TaskService:
         # tree.update_file_tree()
 
         # for task in tasks:
-            # print(task)
-
+        # print(task)
 
         # print(tasks)
         # output_files_dict = gazu.files.get_last_output_files_for_entity(self.__shot)
         # print(output_files_dict)
 
-
         # self.model.datas.append(self.asset['name'], )
         # self.model.layoutChanged.emit()
-
-
-
