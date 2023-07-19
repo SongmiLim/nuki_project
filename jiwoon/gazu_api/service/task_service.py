@@ -162,7 +162,9 @@ class TaskService:
         return sorted_shot_data
 
     def load_shot(self):
-
+        self.project = "avengers"
+        self.sequence = "SEQ01"
+        self.shot = "SH01"
         tasks = gazu.task.all_tasks_for_shot(self.__shot)
         count = 0
         self.model.todo_datas.append([])
