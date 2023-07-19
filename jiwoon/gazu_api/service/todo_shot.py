@@ -11,6 +11,7 @@ class TodoShot:
         self._sequence_name = task.get('sequence_name')
         self._shot_name = task.get('entity_name')
         self.comp_id = gazu.task.get_task_type_by_name('Compositing')['id']
+        self.test = None
         # self.refresh_comp_tasks()
 
     @property
