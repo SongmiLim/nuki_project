@@ -27,7 +27,6 @@ class shotModel(QAbstractListModel):
     #     """
     #     header_title에 따른 column의 length
     #     """
-    #     return 2
 
 
     # def set_data(self, data):
