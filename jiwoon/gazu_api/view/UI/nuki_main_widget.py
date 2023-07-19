@@ -606,7 +606,7 @@ class Ui_Nuki(object):
         self.verticalLayout_3 = QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.task_table = QTableView(self.layoutWidget1)
+        self.task_table = QTableView(Nuki)
         self.task_table.setObjectName(u"task_table")
         palette19 = QPalette()
         brush10 = QBrush(QColor(136, 138, 133, 255))

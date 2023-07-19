@@ -161,29 +161,23 @@ class TaskService:
         sorted_shot_data = sorted(shot_data, key=lambda ct: (ct.proj_name, ct.seq_name, ct.shot_name), reverse=False)
         return sorted_shot_data
 
-
     def load_shot(self):
-        # self.project = self.view.projectEdit.text().strip()
-        # self.asset = self.view.assetEdit.text().strip()
-        # self.proj_dict = gazu.project.get_project(self.__shot.get('project_id'))
-
-        # _todo_comp_tasks = gazu.user.all_tasks_to_do()
-        # _done_comp_tasks = gazu.user.all_done_tasks()
-        # _comp_tasks = _todo_comp_tasks + _done_comp_tasks
-        self.get_all_tasks_todo()
-        self.clicked_shot_detail_info()
 
         tasks = gazu.task.all_tasks_for_shot(self.__shot)
-        for task in tasks:
-            print(task)
-            # if task.get('id') == self.todo_tasks[0]:
-                # temp_task = gazu.task.get_task(task.get('id'))
-                # temp_entity = temp_task.get('entity')
-                # temp_data = temp_entity.get('data')
-                # print('a', self.ext)  # for ver, ext
+        count = 0
+        self.model.todo_datas.append([])
 
-        # if task.get('task_type_name') == "Compositing":
-        #     print(task.get('task_type_name'), task.get('task_status_name'), task.get('updated_at'))
+        for task in tasks:
+            if task.get('task_type_name') != 'Compositing':
+                task_file = gazu.files.get_all_preview_files_for_task(task.get('id'))
+                self.model.todo_datas[count].append(task.get('task_type_name'))
+                self.model.todo_datas[count].append(task.get('task_status_name'))
+                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('revision')) if task_file else self.model.todo_datas[count].append('-')
+                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('extension')) if task_file else self.model.todo_datas[count].append('-')
+                self.model.todo_datas[count].append(task.get('updated_at'))
+                self.model.todo_datas.append([])
+                count += 1
+
 
         # self.file_tree = self.proj_dict.get('file_tree')
 
