@@ -1,7 +1,7 @@
 import gazu
 from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
-
+from jiwoon.gazu_api.model.shot_model import shotModel
 
 
 class ShotService:
@@ -14,58 +14,34 @@ class ShotService:
 
     def __init__(self, model, view):
         self.model = model
-        self.view = view
-
         self.host = gazu.client.set_host("http://192.168.3.117/api")
         gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-
 
     @property
     def project(self):
         return self.__project
 
-
     @project.setter
     def project(self, name):
         self.__project = gazu.project.get_project_by_name(name)
-
 
     @property
     def sequence(self):
         return self.__sequence
 
-
     @sequence.setter
     def sequence(self, name):
         self.__sequence = gazu.shot.get_sequence_by_name(self.project, name)
 
-
     @property
     def shot(self):
         return self.__shot
-
 
     @shot.setter
     def shot(self, name):
         # self.__shot = gazu.shot.get_shot(id)
         self.__shot = gazu.shot.get_shot_by_name(self.sequence, name)
         self.__entity = self.__shot
-
-
-    # @shot.setter
-    # def shot(self, id):
-    #     self.__shot = gazu.shot.get_shot(id)
-
-    @property
-    def task(self):
-        return self.__task
-
-
-    @task.setter
-    def task(self, name):
-        self.task_type = name
-        self.__task = gazu.task.get_task_by_name(self.__entity, self.task_type)
-
 
     def get_all_tasks_todo(self):
         todo_task_list = gazu.user.all_tasks_to_do()
@@ -74,9 +50,9 @@ class ShotService:
         for task in todo_task_list:
             if task.get('task_type_id') == comp_task_id:
                 todo_shot = TodoShot(task)
-                self.model.todo_tasks.append(todo_shot.id)
-                # print(f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
-
+                self.model.todo_shots.append(
+                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
+        print(self.model.todo_shots)
 
     def clicked_shot_detail_info(self):
         # clicked event 발생 시 선택된 객체로 setting
@@ -100,3 +76,9 @@ class ShotService:
         # print(f'CREATED AT {comp_shot.created_at}')
         # print(f'UPDATED AT {comp_shot.updated_at}')
         # print(f'{self.host}/{comp_shot.preview_file_url}')
+
+
+# if __name__ == "__main__":
+#     model = shotModel()
+#     s = ShotService(model)
+#     s.get_all_tasks_todo()
