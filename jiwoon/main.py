@@ -4,7 +4,6 @@ from PySide2 import QtWidgets
 from jiwoon.gazu_api.controller.shot_controller import ShotController
 from jiwoon.gazu_api.controller.task_controller import Controller
 from jiwoon.gazu_api.model.shot_model import shotModel
-from jiwoon.gazu_api.model.task_model import Model
 from jiwoon.gazu_api.view.login import Login
 from jiwoon.gazu_api.view.task_view import MainUI
 

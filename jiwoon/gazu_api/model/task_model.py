@@ -1,39 +1,51 @@
-from PySide2 import QtCore
-from PySide2.QtCore import QAbstractListModel, Signal, Qt
+from PySide2 import QtCore, QtGui
+from PySide2.QtCore import QAbstractListModel, Signal, Qt, QModelIndex
+from PySide2.QtGui import QColor
 
 
-class Model(QAbstractListModel):
-    # data_changed = Signal(str)
-
+class TaskModel(QtCore.QAbstractTableModel):
     def __init__(self):
         super().__init__()
+        self.todo_datas = []
         self.header_title = ["Task Type", "Status", "Ver", "Ext", "Updated At"]
-        self.datas = []
-        self.todo_tasks = []
+
+        self.color_dict = {
+            "Storyboard": QtGui.QColor(0, 255, 0),
+            "Layout": QtGui.QColor("cyan"),
+            "Animation": QtGui.QColor("red"),
+            "Lighting": QtGui.QColor(255, 255, 0),
+            "FX": QtGui.QColor(153, 153, 255),
+            "Rendering": QtGui.QColor("magenta"),
+            "Plate": QtGui.QColor(255, 102, 0),
+            "Matchmove": QtGui.QColor(159, 255, 158),
+            "Camera": QtGui.QColor(255, 153, 204),
+        }
+
+    def data(self, index, role):  # 해당 index에 data 가져오기
+        # print(self.todo_tasks)
+        # print(self.table)
+        if role == Qt.DisplayRole:
+            return self.todo_datas[index.row()][index.column()]
+
+        elif role == QtCore.Qt.BackgroundColorRole:
+            return QtGui.QColor(0, 0, 0, 100)
+
+        elif role == QtCore.Qt.TextColorRole and index.column() == 0:
+            task_type = self.todo_datas[index.row()][index.column()]
+            if task_type in self.color_dict:
+                return self.color_dict[task_type]
+
+    def rowCount(self, index: QModelIndex):
+        if not index.isValid():
+            return 6
+        return 0
+
+    def columnCount(self, index):
+        if not index.isValid():
+            return len(self.header_title)
 
 
-    def data(self, index, role):
-        if role == Qt.DisplayRole:  # 메인 텍스트
-            new_data = self.datas[index.row()]
-            return f'[{index.row() + 1}]' + ' name : ' + new_data
-
-        # if role == Qt.DecorationRole:
-        #     return index.row()
-
-    # def headerData(self, section, orientation, role=Qt.DisplayRole):
-    #     if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-    #         return COLUMN_HEADERS[section]
-    #     return super().headerData(section, orientation, role)
-
-    def rowCount(self, index):
-        return len(self.datas)
-
-    def columnCount(self, parent: QtCore.QModelIndex = QtCore.QModelIndex()):
-        """
-        header_title에 따른 column의 length
-        """
-        return len(self.header_title)
-
+    # Custom Header
     def headerData(self, column: int, orientation: QtCore.Qt.Orientation, role: int = QtCore.Qt.DisplayRole):
         """
         section is the index of the column/row
@@ -42,11 +54,4 @@ class Model(QAbstractListModel):
             if orientation == QtCore.Qt.Horizontal:
                 return self.header_title[column]
 
-            return ""
 
-    def set_data(self, data):
-        self.data = data
-        self.data_changed.emit(data)
-
-    def get_data(self):
-        return self.data
