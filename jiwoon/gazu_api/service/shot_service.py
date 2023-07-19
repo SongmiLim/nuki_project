@@ -4,7 +4,11 @@ from jiwoon.gazu_api.service.todo_shot import TodoShot
 from jiwoon.gazu_api.model.shot_model import shotModel
 from jiwoon.gazu_api.view.task_view import MainUI
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QPixmap, QPixmapCache
+import os
 
+basedir = os.path.dirname(__file__)
+print(basedir)
 
 class ShotService:
     __project = None
@@ -56,21 +60,26 @@ class ShotService:
                 self.model.todo_shots.append(
                     f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
 
+    def clear_shot_detail_info(self):
+        self.view.label_proj.setText("")
+        self.view.label_seq.setText("")
+        self.view.label_shot.setText("")
+        # self.view.label_proj.setText(comp_shot.nb_frames)
+        self.view.label_frame_in.setText("")
+        self.view.label_frame_out.setText("")
+        self.view.label_resolution.setText("")
+        self.view.label_fps.setText("")
+        self.view.label_revision.setText("")
+
     def shot_clicked(self, index):
         # shot_list에서 선택된 아이템의 인덱스 받기
         selected_item = self.view.shot_list.model().data(index, Qt.DisplayRole)
         # print("Selected index:", index.row())
         # print("Selected item text:", selected_item)
+        self.clear_shot_detail_info()
         self.clicked_shot_detail_info(selected_item)
 
     def clicked_shot_detail_info(self, str):
-        # clicked event 발생 시 선택된 객체로 setting
-        # 지금은 일단 임의로 설정해줌
-        # self.project = "avengers"
-        # self.sequence = "SEQ01"
-        # self.shot = "SH01"
-        # print(self.shot)
-
         # 선택한 샷 정보 받아오기
         shot_info_list = str.split('/')
         self.project = shot_info_list[0]
@@ -78,7 +87,6 @@ class ShotService:
         self.shot = shot_info_list[2]
         # 선택한 샷 CompShot 객체로 생성
         comp_shot = CompShot(self.shot)
-
 
         # UI에 data 뿌리기
         self.view.label_proj.setText(comp_shot.project_name)
@@ -90,6 +98,25 @@ class ShotService:
         self.view.label_resolution.setText(comp_shot.resolution)
         self.view.label_fps.setText(comp_shot.fps)
         self.view.label_revision.setText(comp_shot.revision)
+
+        if comp_shot.preview_file_url == "":
+            self.view.thumbnail_label.setText("No Image")
+            # self.view.thumbnail_label.setPixmap(QPixmap('close.png').scaled(500, 200, Qt.KeepAspectRatio))
+
+        else:
+            url_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
+            thumbnail = self.get_thumbnail(url_data, comp_shot.preview_file_url)
+
+            self.view.thumbnail_label.adjustSize()
+            self.view.thumbnail_label.setPixmap(thumbnail.scaled(500, 200, Qt.KeepAspectRatio))
+
+
+    def get_thumbnail(self, url_data, thumb_url):
+        # 이미지 url을 pixmap으로 변환하기
+        pixmap = QPixmap()
+        pixmap.loadFromData(url_data)
+        QPixmapCache.insert(thumb_url, pixmap)
+        return pixmap
 
 # if __name__ == "__main__":
 #     model = shotModel()

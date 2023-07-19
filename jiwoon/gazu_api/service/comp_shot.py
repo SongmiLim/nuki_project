@@ -39,11 +39,8 @@ class CompShot:
             self._created_at = shot_detail_data.get('created_at') if shot_detail_data.get('created_at') else ""
             self._updated_at = shot_detail_data.get('updated_at') if shot_detail_data.get('updated_at') else ""
             self._preview_file_id = shot_detail_data.get('preview_file_id') if shot_detail_data.get('preview_file_id') else ""
-            print(self._preview_file_id)
-            # self._preview_file_id가 None 타입 반환시 gazu api 접근할 때 에러 발생
-            if self._preview_file_id != "":
-                self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id)
-                print(self._preview_file_url)
+            self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id)if shot_detail_data.get('preview_file_id') else ""
+            print(self._preview_file_url)
 
 
         # shot에 datail data가 없을 경우
@@ -173,8 +170,6 @@ class CompShot:
             dict: 선택한 task의 status 정보??????
         """
         # file_url이 없을 때의 예외처리
-        if self._preview_file_url:
-            return ""
         return self._preview_file_url
 
 
