@@ -5,10 +5,7 @@ from jiwoon.gazu_api.model.shot_model import shotModel
 from jiwoon.gazu_api.view.task_view import MainUI
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QPixmapCache
-import os
 
-basedir = os.path.dirname(__file__)
-print(basedir)
 
 class ShotService:
     __project = None
@@ -60,6 +57,16 @@ class ShotService:
                 self.model.todo_shots.append(
                     f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
 
+        # 작업자에게 할당된 샷의 총 개수 구하기
+        assigned_shot_num = self.total_assigned_shot_num()
+        self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
+
+    def total_assigned_shot_num(self):
+        assigned_shot_num = len(self.model.todo_shots)
+        return assigned_shot_num
+
+
+    # shot detail 정보 초기화
     def clear_shot_detail_info(self):
         self.view.label_proj.setText("")
         self.view.label_seq.setText("")
@@ -100,7 +107,7 @@ class ShotService:
         self.view.label_revision.setText(comp_shot.revision)
 
         if comp_shot.preview_file_url == "":
-            self.view.thumbnail_label.setText("No Image")
+            self.view.thumbnail_label.setText("No Thumbnail")
             # self.view.thumbnail_label.setPixmap(QPixmap('close.png').scaled(500, 200, Qt.KeepAspectRatio))
 
         else:
@@ -108,7 +115,7 @@ class ShotService:
             thumbnail = self.get_thumbnail(url_data, comp_shot.preview_file_url)
 
             self.view.thumbnail_label.adjustSize()
-            self.view.thumbnail_label.setPixmap(thumbnail.scaled(500, 200, Qt.KeepAspectRatio))
+            self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
 
 
     def get_thumbnail(self, url_data, thumb_url):
