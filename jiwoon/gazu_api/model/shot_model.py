@@ -12,22 +12,18 @@ class shotModel(QAbstractListModel):
 
     def data(self, index, role):
         if role == Qt.DisplayRole:  # 메인 텍스트
-            return self.todo_shots[index.row()]
+            return self.todo_shots[index.row()][0]   # shot 관련 정보를 [text, thumbnail] 로 받아와서 text는 [][0]로 받아온다
 
-        # if role == Qt.DecorationRole:
-        #     return index.row()
+        if role == Qt.DecorationRole:  # 썸네일
+            thumbnail = self.todo_shots[index.row()][1]  # thumbnail은 [][1]로 받아온다
+            thumbnail_resized = thumbnail.scaled(200, 300, Qt.KeepAspectRatio)
+            return thumbnail_resized
 
-    # def headerData(self, section, orientation, role=Qt.DisplayRole):
-    #     if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-    #         return COLUMN_HEADERS[section]
-    #     return super().headerData(section, orientation, role)
-    #
     def rowCount(self, index):
         return len(self.todo_shots)
     #     """
     #     header_title에 따른 column의 length
     #     """
-
 
     # def set_data(self, data):
     #     self.data = data

@@ -23,8 +23,11 @@ class CompShot:
         self._project_name = shot.get('project_name')
         self._sequence_name = shot.get('sequence_name')
         self._shot_name = shot.get('name')
-        # print(shot.get('data'))
-
+        self._preview_file_id = shot.get('preview_file_id')
+        if self.preview_file_id:
+            self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id)
+        else:
+            self._preview_file_url = ""
 
         # shot에 datail data는 있는데 data에 none값이 있을 경우
         if shot.get('data'):
@@ -39,8 +42,6 @@ class CompShot:
             self._created_at = shot_detail_data.get('created_at') if shot_detail_data.get('created_at') else ""
             self._updated_at = shot_detail_data.get('updated_at') if shot_detail_data.get('updated_at') else ""
             self._preview_file_id = shot_detail_data.get('preview_file_id') if shot_detail_data.get('preview_file_id') else ""
-            self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id)if shot_detail_data.get('preview_file_id') else ""
-            print(self._preview_file_url)
 
 
         # shot에 datail data가 없을 경우
@@ -54,9 +55,6 @@ class CompShot:
             self._revision = ""
             self._created_at = ""
             self._updated_at = ""
-            self._preview_file_id = ""
-            self._preview_file_url = ""
-
 
     @property
     def project_name(self):
@@ -146,7 +144,6 @@ class CompShot:
         """
         return self._created_at
 
-
     @property
     def updated_at(self):
         """
@@ -171,8 +168,6 @@ class CompShot:
         """
         # file_url이 없을 때의 예외처리
         return self._preview_file_url
-
-
 
     # @property
     # def is_ready(self) -> bool:

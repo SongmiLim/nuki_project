@@ -4,7 +4,11 @@ from jiwoon.gazu_api.service.todo_shot import TodoShot
 from jiwoon.gazu_api.model.shot_model import shotModel
 from jiwoon.gazu_api.view.task_view import MainUI
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QPixmap, QPixmapCache
+from PySide2.QtGui import QPixmap, QPixmapCache, QImage
+import os
+
+basedir = os.path.dirname(__file__)
+default_img = QImage(os.path.join(basedir, 'default.jpg'))
 
 
 class ShotService:
@@ -54,17 +58,24 @@ class ShotService:
         for task in todo_task_list:
             if task.get('task_type_id') == comp_task_id:
                 todo_shot = TodoShot(task)
-                self.model.todo_shots.append(
-                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}')
 
-        # 작업자에게 할당된 샷의 총 개수 구하기
+                if todo_shot.preview_file_url != "":
+                    url = gazu.files.get_preview_file_url(todo_shot.preview_file_id)
+                    thumbnail = self.get_thumbnail(todo_shot, todo_shot.preview_file_url)
+                else:
+                    thumbnail = self.get_default_thumbnail()
+
+                # 모델에 데이터 추가
+                self.model.todo_shots.append([
+                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', thumbnail])
+
+        # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
     def total_assigned_shot_num(self):
         assigned_shot_num = len(self.model.todo_shots)
         return assigned_shot_num
-
 
     # shot detail 정보 초기화
     def clear_shot_detail_info(self):
@@ -92,6 +103,7 @@ class ShotService:
         self.project = shot_info_list[0]
         self.sequence = shot_info_list[1]
         self.shot = shot_info_list[2]
+
         # 선택한 샷 CompShot 객체로 생성
         comp_shot = CompShot(self.shot)
 
@@ -106,25 +118,30 @@ class ShotService:
         self.view.label_fps.setText(comp_shot.fps)
         self.view.label_revision.setText(comp_shot.revision)
 
+        # 썸네일 url이 없을 경우
         if comp_shot.preview_file_url == "":
-            self.view.thumbnail_label.setText("No Thumbnail")
-            # self.view.thumbnail_label.setPixmap(QPixmap('close.png').scaled(500, 200, Qt.KeepAspectRatio))
-
+            # self.view.thumbnail_label.setText("No Thumbnail")
+            thumbnail = self.get_default_thumbnail()
+            self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         else:
-            url_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
-            thumbnail = self.get_thumbnail(url_data, comp_shot.preview_file_url)
+            thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
 
             self.view.thumbnail_label.adjustSize()
             self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
 
-
-    def get_thumbnail(self, url_data, thumb_url):
+    def get_thumbnail(self, comp_shot, thumb_url) -> QPixmap:
+        # 썸네일 데이터를 url을 통해 받아오기
+        thumbnail_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
         # 이미지 url을 pixmap으로 변환하기
         pixmap = QPixmap()
-        pixmap.loadFromData(url_data)
+        pixmap.loadFromData(thumbnail_data)
         QPixmapCache.insert(thumb_url, pixmap)
         return pixmap
 
+    def get_default_thumbnail(self) -> QPixmap:
+        default_thumbnail = QPixmap.fromImage(default_img)
+        self.view.thumbnail_label.setPixmap(default_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
+        return default_thumbnail
 # if __name__ == "__main__":
 #     model = shotModel()
 #     view = MainUI()
