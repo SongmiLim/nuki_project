@@ -37,7 +37,7 @@ class TaskModel(QtCore.QAbstractTableModel):
 
     def rowCount(self, index: QModelIndex):
         if not index.isValid():
-            return 6
+            return len(self.todo_datas)-1
         return 0
 
     def columnCount(self, index):

@@ -1,7 +1,6 @@
 import gazu
 from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
-from jiwoon.gazu_api.model.shot_model import shotModel
 from jiwoon.gazu_api.view.task_view import MainUI
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
@@ -89,17 +88,23 @@ class ShotService:
         self.view.label_fps.setText("")
         self.view.label_revision.setText("")
 
-    def shot_clicked(self, index):
-        # shot_list에서 선택된 아이템의 인덱스 받기
-        selected_item = self.view.shot_list.model().data(index, Qt.DisplayRole)
-        # print("Selected index:", index.row())
-        # print("Selected item text:", selected_item)
-        self.clear_shot_detail_info()
-        self.clicked_shot_detail_info(selected_item)
+    def shot_clicked(self, task_service):
+        _index = self.view.shot_list.selectedIndexes()
+        if _index:
+            index = _index[0]
+            selected_item = self.model.todo_shots[index.row()]
+
+            self.clear_shot_detail_info()
+            self.clicked_shot_detail_info(selected_item, task_service)
+
+    def clicked_shot_detail_info(self, selected_item, task_service):
+        # 선택한 샷 정보 받아 오기
+        self.project, self.sequence, self.shot = selected_item.split('/')
 
         # 선택한 샷 CompShot 객체로 생성
         comp_shot = CompShot(self.shot)
-
+        # send selected_item to task_service
+        task_service.load_tasks(self.project, self.sequence, self.shot)
         # UI에 data 뿌리기
         self.view.label_proj.setText(comp_shot.project_name)
         self.view.label_seq.setText(comp_shot.sequence_name)

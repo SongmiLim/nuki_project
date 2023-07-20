@@ -1,7 +1,6 @@
 import gazu as gazu
 from PySide2 import QtWidgets
 
-
 from jiwoon.gazu_api.service.comp_task import CompTask
 from jiwoon.gazu_api.service.file_tree import FileTree
 
@@ -161,12 +160,14 @@ class TaskService:
         sorted_shot_data = sorted(shot_data, key=lambda ct: (ct.proj_name, ct.seq_name, ct.shot_name), reverse=False)
         return sorted_shot_data
 
-    def load_shot(self):
-        self.project = "avengers"
-        self.sequence = "SEQ01"
-        self.shot = "SH01"
+    def load_tasks(self, project, sequence, shot):
+        self.project = project.get('name')
+        self.sequence = sequence.get('name')
+        self.shot = shot.get('name')
+
         tasks = gazu.task.all_tasks_for_shot(self.__shot)
         count = 0
+        self.model.todo_datas = []
         self.model.todo_datas.append([])
 
         for task in tasks:
@@ -174,12 +175,14 @@ class TaskService:
                 task_file = gazu.files.get_all_preview_files_for_task(task.get('id'))
                 self.model.todo_datas[count].append(task.get('task_type_name'))
                 self.model.todo_datas[count].append(task.get('task_status_name'))
-                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('revision')) if task_file else self.model.todo_datas[count].append('-')
-                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('extension')) if task_file else self.model.todo_datas[count].append('-')
+                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('revision')) if task_file else \
+                self.model.todo_datas[count].append('-')
+                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('extension')) if task_file else \
+                self.model.todo_datas[count].append('-')
                 self.model.todo_datas[count].append(task.get('updated_at'))
                 self.model.todo_datas.append([])
                 count += 1
-
+        self.model.layoutChanged.emit()
 
         # self.file_tree = self.proj_dict.get('file_tree')
 
