@@ -88,6 +88,7 @@ class ShotService:
     def clicked_shot_detail_info(self, selected_item, task_service):
         # 선택한 샷 정보 받아 오기
         self.project, self.sequence, self.shot = selected_item.split('/')
+
         # 선택한 샷 CompShot 객체로 생성
         comp_shot = CompShot(self.shot)
         # send selected_item to task_service
@@ -114,10 +115,12 @@ class ShotService:
             self.view.thumbnail_label.adjustSize()
             self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
 
-    def get_thumbnail(self, url_data, thumb_url):
+    def get_thumbnail(self, comp_shot, thumb_url):
+        # 썸네일 데이터를 url을 통해 받아오기
+        thumbnail_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
         # 이미지 url을 pixmap으로 변환하기
         pixmap = QPixmap()
-        pixmap.loadFromData(url_data)
+        pixmap.loadFromData(thumbnail_data)
         QPixmapCache.insert(thumb_url, pixmap)
         return pixmap
 

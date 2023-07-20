@@ -12,6 +12,11 @@ class TodoShot:
         self._shot_name = task.get('entity_name')
         self.comp_id = gazu.task.get_task_type_by_name('Compositing')['id']
         self.test = None
+        self._preview_file_id = task.get('entity_preview_file_id')
+        if self.preview_file_id != "":
+            self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id)
+        else:
+            self._preview_file_url = ""
         # self.refresh_comp_tasks()
 
     @property
