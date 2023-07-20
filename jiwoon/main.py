@@ -14,4 +14,3 @@ if __name__ == "__main__":
     UI = MainUI()
     gz = Controller(UI)
     sys.exit(app.exec_())
-

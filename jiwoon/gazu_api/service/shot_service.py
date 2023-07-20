@@ -6,9 +6,9 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
 
-# basedir = os.path.dirname(__file__)
-# default_img = QImage(os.path.join(basedir, 'default.jpg'))
-default_img = QImage('../image/default.jpg')
+basedir = os.path.dirname(__file__)
+default_img = QImage(os.path.join(basedir, '../image/default.jpg'))
+# default_img = QImage('../image/default.jpg')
 
 
 class ShotService:
