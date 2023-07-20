@@ -6,8 +6,9 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
 
-basedir = os.path.dirname(__file__)
-default_img = QImage(os.path.join(basedir, 'default.jpg'))
+# basedir = os.path.dirname(__file__)
+# default_img = QImage(os.path.join(basedir, 'default.jpg'))
+default_img = QImage('../image/default.jpg')
 
 
 class ShotService:
@@ -99,6 +100,7 @@ class ShotService:
 
     def clicked_shot_detail_info(self, selected_item, task_service):
         # 선택한 샷 정보 받아 오기
+
         self.project, self.sequence, self.shot = selected_item.split('/')
 
         # 선택한 샷 CompShot 객체로 생성
@@ -140,6 +142,3 @@ class ShotService:
         default_thumbnail = QPixmap.fromImage(default_img)
         self.view.thumbnail_label.setPixmap(default_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         return default_thumbnail
-# if __name__ == "__main__":
-#     model = shotModel()
-#     view = MainUI()

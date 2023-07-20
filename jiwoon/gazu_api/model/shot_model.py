@@ -1,5 +1,6 @@
 from PySide2 import QtCore
 from PySide2.QtCore import QAbstractListModel, Signal, Qt
+from PySide2.QtGui import QColor
 
 
 class ShotModel(QAbstractListModel):
@@ -16,8 +17,12 @@ class ShotModel(QAbstractListModel):
 
         if role == Qt.DecorationRole:  # 썸네일
             thumbnail = self.todo_shots[index.row()][1]  # thumbnail은 [][1]로 받아온다
-            thumbnail_resized = thumbnail.scaled(200, 300, Qt.KeepAspectRatio)
+            thumbnail_resized = thumbnail.scaled(150, 300, Qt.KeepAspectRatio)
             return thumbnail_resized
+
+        if role == Qt.ForegroundRole:
+            return QColor('white')
+
 
     def rowCount(self, index):
         return len(self.todo_shots)

@@ -10,3 +10,6 @@ class MainUI(QMainWindow, Ui_Nuki):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+        # UI
+        self.shot_list.setStyleSheet('background-color: transparent')
