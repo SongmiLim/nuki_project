@@ -160,6 +160,13 @@ class TaskService:
         sorted_shot_data = sorted(shot_data, key=lambda ct: (ct.proj_name, ct.seq_name, ct.shot_name), reverse=False)
         return sorted_shot_data
 
+    def adjust_header_size(self):
+        header = self.view.task_table.horizontalHeader()
+        width = []
+        for column in range(header.count()):
+            header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+            width.append(header.sectionSize(column))
+
     def load_tasks(self, project, sequence, shot):
         self.project = project.get('name')
         self.sequence = sequence.get('name')
@@ -169,6 +176,7 @@ class TaskService:
         count = 0
         self.model.todo_datas = []
         self.model.todo_datas.append([])
+        self.adjust_header_size()
 
         for task in tasks:
             if task.get('task_type_name') != 'Compositing':

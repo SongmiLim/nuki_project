@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Nuki_MainWidget_1.ui'
+## Form generated from reading UI file 'nuki_main_widget_1.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -647,7 +647,9 @@ class Ui_Nuki(object):
         self.task_table.horizontalHeader().setMinimumSectionSize(10)
         self.task_table.horizontalHeader().setProperty("showSortIndicator", True)
         self.task_table.verticalHeader().setVisible(False)
-        self.task_table.verticalHeader().setCascadingSectionResizes(True)
+        self.task_table.verticalHeader().setCascadingSectionResizes(False)
+        self.task_table.verticalHeader().setMinimumSectionSize(24)
+        self.task_table.verticalHeader().setStretchLastSection(False)
 
         self.verticalLayout_3.addWidget(self.task_table)
 
