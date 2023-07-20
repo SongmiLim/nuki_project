@@ -710,6 +710,3 @@ class Ui_Nuki(object):
         self.opennuke_btn.setText(QCoreApplication.translate("Nuki", u"Project setting in Nuke", None))
     # retranslateUi
 
-Error: Nuki_MainWidget_1.ui: Warning: The name 'layoutWidget' (QWidget) is already in use, defaulting to 'layoutWidget1'.
-
-while executing '/usr/local/lib64/python3.6/site-packages/PySide2/uic -g python Nuki_MainWidget_1.ui'

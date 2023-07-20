@@ -2,7 +2,7 @@ from PySide2 import QtCore
 from PySide2.QtCore import QAbstractListModel, Signal, Qt
 
 
-class shotModel(QAbstractListModel):
+class ShotModel(QAbstractListModel):
     # data_changed = Signal(str)
 
     def __init__(self):
