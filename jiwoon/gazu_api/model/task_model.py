@@ -1,6 +1,7 @@
-from PySide2 import QtCore, QtGui
+from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import QAbstractListModel, Signal, Qt, QModelIndex
 from PySide2.QtGui import QColor
+from PySide2.QtWidgets import QHeaderView
 
 
 class TaskModel(QtCore.QAbstractTableModel):
@@ -10,27 +11,22 @@ class TaskModel(QtCore.QAbstractTableModel):
         self.header_title = ["Task Type", "Status", "Ver", "Ext", "Updated At"]
 
         self.color_dict = {
-            "Storyboard": QtGui.QColor(0, 255, 0),
-            "Layout": QtGui.QColor("cyan"),
-            "Animation": QtGui.QColor("red"),
-            "Lighting": QtGui.QColor(255, 255, 0),
-            "FX": QtGui.QColor(153, 153, 255),
-            "Rendering": QtGui.QColor("magenta"),
-            "Plate": QtGui.QColor(255, 102, 0),
-            "Matchmove": QtGui.QColor(159, 255, 158),
-            "Camera": QtGui.QColor(255, 153, 204),
+            "Done": QtGui.QColor("red"),
         }
 
     def data(self, index, role):  # 해당 index에 data 가져오기
-        # print(self.todo_tasks)
-        # print(self.table)
         if role == Qt.DisplayRole:
+            return self.todo_datas[index.row()][index.column()]
+
+        elif role == QtCore.Qt.TextAlignmentRole:
+            return QtCore.Qt.AlignCenter
+        elif role == QtCore.Qt.AccessibleTextRole:
             return self.todo_datas[index.row()][index.column()]
 
         elif role == QtCore.Qt.BackgroundColorRole:
             return QtGui.QColor(0, 0, 0, 100)
 
-        elif role == QtCore.Qt.TextColorRole and index.column() == 0:
+        elif role == QtCore.Qt.TextColorRole and index.column() == 1:
             task_type = self.todo_datas[index.row()][index.column()]
             if task_type in self.color_dict:
                 return self.color_dict[task_type]
@@ -53,5 +49,9 @@ class TaskModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             if orientation == QtCore.Qt.Horizontal:
                 return self.header_title[column]
+
+
+
+
 
 
