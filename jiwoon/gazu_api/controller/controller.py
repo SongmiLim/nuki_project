@@ -26,6 +26,7 @@ class Controller:
         self.filetree_model.production_tree()
         # set Model
         self.view.filetree.setModel(self.filetree_model)
+        self.view.filetree.expandAll()
         self.view.task_table.setModel(self.task_model)
         self.view.shot_list.setModel(self.shot_model)
 
@@ -42,3 +43,4 @@ class Controller:
         # self.view.deleteButton.clicked.connect(self.service.remove_asset)
         self.view.filetree.clicked[QModelIndex].connect(self.filetree_model.select_filetree)
         self.view.update_filetree_btn.clicked.connect(self.filetree_model.production_tree)
+        # self.view.update_filetree_btn.clicked.connect(self.view.filetree.expandAll()) # btn 누를 때도 전부다 확장

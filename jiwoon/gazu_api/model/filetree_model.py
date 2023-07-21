@@ -1,5 +1,5 @@
 from PySide2.QtGui import QStandardItemModel, QStandardItem
-from PySide2.QtCore import Qt, QModelIndex
+from PySide2.QtCore import Qt
 import gazu
 
 gazu.client.set_host("http://192.168.3.117/api")
@@ -21,7 +21,7 @@ class TreeModel(QStandardItemModel):
                 project_list.append(i['project_name'])
                 self.p_list.append(i['project_name'])
                 self.appendRow(self.projectItem)
-                print('gg', self.p_list)
+                # print('gg', self.p_list)
                 self.sequence_tree()
 
     def sequence_tree(self):
@@ -34,7 +34,7 @@ class TreeModel(QStandardItemModel):
                 self.seq_list.append(i['sequence_name'])
                 self.s_list.append(i['sequence_name'])
                 self.projectItem.appendRow(self.seqItem)
-                print('DD', self.seq_list)
+                # print('DD', self.seq_list)
                 self.shot_tree()
 
     def shot_tree(self):
@@ -46,7 +46,7 @@ class TreeModel(QStandardItemModel):
                 'entity_name'] not in self.shot_list:
                 self.shot_list.append(i['entity_name'])
                 self.seqItem.appendRow(self.shotItem)
-                print('hh', self.shot_list)
+                # print('hh', self.shot_list)
                 # self.shot_detail_filetree()
 
     def headerData(self, section, orientation, role):
