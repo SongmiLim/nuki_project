@@ -5,6 +5,9 @@ from PySide2.QtWidgets import QHeaderView
 
 
 class TaskModel(QtCore.QAbstractTableModel):
+    task_done = Signal(bool)
+    __task_status = None
+
     def __init__(self):
         super().__init__()
         self.todo_datas = []
@@ -13,6 +16,15 @@ class TaskModel(QtCore.QAbstractTableModel):
         self.color_dict = {
             "Done": QtGui.QColor("red"),
         }
+
+    @property
+    def task_status(self):
+        return self.__task_status
+
+    @task_status.setter
+    def task_status(self, value):
+        self.__task_status = value
+        self.task_done.emit(self.__task_status)
 
     def data(self, index, role):  # 해당 index에 data 가져오기
         if role == Qt.DisplayRole:
@@ -40,7 +52,6 @@ class TaskModel(QtCore.QAbstractTableModel):
         if not index.isValid():
             return len(self.header_title)
 
-
     # Custom Header
     def headerData(self, column: int, orientation: QtCore.Qt.Orientation, role: int = QtCore.Qt.DisplayRole):
         """
@@ -49,6 +60,7 @@ class TaskModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             if orientation == QtCore.Qt.Horizontal:
                 return self.header_title[column]
+
 
 
 

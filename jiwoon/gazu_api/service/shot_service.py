@@ -67,7 +67,7 @@ class ShotService:
                 # 모델에 데이터 추가
                 self.model.todo_shots.append([
                     f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', thumbnail])
-        print(self.model.todo_shots)
+
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
@@ -143,3 +143,9 @@ class ShotService:
         default_thumbnail = QPixmap.fromImage(default_img)
         self.view.thumbnail_label.setPixmap(default_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         return default_thumbnail
+
+    def get_all_task_done_status(self, status):
+        print(status)
+
+
+

@@ -35,6 +35,7 @@ class Controller:
         # events & slots
         # shot_list 에서 사용자 가 한 shot 을 클릭 했을 때 시그널 등록
         self.view.shot_list.clicked.connect(lambda: self.shot_service.shot_clicked(self.task_service))
+        self.task_model.task_done.connect(self.shot_service.get_all_task_done_status)
         # self.view.loadButton.clicked.connect(self.task_service.load_shot)
         # self.view.addButton.clicked.connect(self.service.create_asset)
         # self.view.modifyButton.clicked.connect(self.service.update_asset)
