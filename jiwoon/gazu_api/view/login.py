@@ -2,11 +2,11 @@ import gazu
 import sys
 import webbrowser
 
+
 from PySide2.QtWidgets import QApplication, QMainWindow
 from jiwoon.gazu_api.view.UI.LoginWidget import Ui_Login
-from jiwoon.gazu_api.view.UI.nuki_main_widget import Ui_Nuki
-
-
+from jiwoon.gazu_api.view.task_view import MainUI
+from jiwoon.gazu_api.service import exceptions
 
 class Login(QMainWindow, Ui_Login):
   def __init__(self):
@@ -14,7 +14,7 @@ class Login(QMainWindow, Ui_Login):
     super().__init__()
     super().setupUi(self)
     self.setWindowTitle('login')
-    self.ui = Ui_Nuki()
+    self.ui = MainUI()
 
     # UI
     self.ID_lineedit.setPlaceholderText('Email@address.com')
@@ -32,13 +32,11 @@ class Login(QMainWindow, Ui_Login):
     try_pw = self.pw_lineedit.text()
     if try_id and try_pw:
       try:
-          gazu.log_in(try_id, try_pw)
+          self.auth.log_in(try_id, try_pw)
           print(f'Logged in as {try_id}')
           self.close()
-          # self.Ui_Nuki()
-
-
-      except Exception:
+          # self.Ui()
+      except:
         print('Login failed.')
         self.error_label.setText("Couldn't find your Kitsu account")
 
