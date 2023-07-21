@@ -7,6 +7,7 @@ from jiwoon.gazu_api.service.task_service import TaskService
 class Controller:
 
     def __init__(self, view):
+
         # initializing
         self.view = view
         self.shot_model = ShotModel()

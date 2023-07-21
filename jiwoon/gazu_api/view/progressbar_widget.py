@@ -1,7 +1,7 @@
 import sys
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont)
 from PySide2.QtWidgets import QMainWindow, QApplication, QGraphicsDropShadowEffect
-from jiwoon.gazu_api.view.UI.nuki_main_widget import Ui_Nuki
+from nuki.jiwoon.gazu_api.view.UI.nuki_main_widget import Ui_Nuki
 
 '''
 GUI FILE

@@ -8,7 +8,6 @@ import os
 
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/default.jpg'))
-# default_img = QImage('../image/default.jpg')
 
 
 class ShotService:
@@ -68,7 +67,7 @@ class ShotService:
                 # 모델에 데이터 추가
                 self.model.todo_shots.append([
                     f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', thumbnail])
-
+        print(self.model.todo_shots)
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
@@ -99,8 +98,8 @@ class ShotService:
             self.clicked_shot_detail_info(selected_item[0], task_service)
 
     def clicked_shot_detail_info(self, selected_item, task_service):
-        # 선택한 샷 정보 받아 오기
 
+        # 선택한 샷 정보 받아 오기
         self.project, self.sequence, self.shot = selected_item.split('/')
 
         # 선택한 샷 CompShot 객체로 생성
