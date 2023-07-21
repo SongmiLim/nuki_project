@@ -1,10 +1,8 @@
 import gazu
-# gazu.client.set_host('http://192.168.3.117/api')
-# gazu.log_in('admin@netflixacademy.com', 'netflixacademy')
-# haji@netflixacademy.com
-# haji1127
-from PySide2.QtWidgets import QApplication, QMainWindow
+import sys
+import webbrowser
 
+from PySide2.QtWidgets import QApplication, QMainWindow
 from nuki.jiwoon.gazu_api.view.UI.LoginWidget import Ui_Login
 
 
@@ -15,30 +13,46 @@ class Login(QMainWindow, Ui_Login):
     super().setupUi(self)
     self.setWindowTitle('login')
 
+    # UI
+    self.ID_lineedit.setPlaceholderText('Email@address.com')
+    self.pw_lineedit.setPlaceholderText('Password')
+    self.pw_lineedit.setEchoMode(self.pw_lineedit.Password)
+    self.error_label.setText('')
+
     # signal & slot.
-    self.lineEdit_2.returnPressed.connect(self.login_btn_clicked)
-    self.pushButton.clicked.connect(self.login_btn_clicked)
+    self.pw_lineedit.returnPressed.connect(self.login_btn_clicked)
+    self.signin_btn.clicked.connect(self.login_btn_clicked)
+    self.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
 
-  def login(self):
-    id = self.lineEdit.text()
-    pw = self.lineEdit_2.text()
-    if id and pw:
+  def run_log_in(self):
+    try_id = self.ID_lineedit.text()
+    try_pw = self.pw_lineedit.text()
+    if try_id and try_pw:
       try:
-          gazu.log_in(id,pw)
-          print(f'Logged in as {id}')
+          gazu.log_in(try_id, try_pw)
+          print(f'Logged in as {try_id}')
 
-          # 로그인 로직에 관한건 더 여기다가 추가. # Perform additional login logic here
       except Exception as e:
         print('Login failed.')
+        self.error_label.setText("Couldn't find your Kitsu account")
+
     else:
       print('Please enter both ID and password.')
+      self.error_label.setText('Please enter both ID and password.')
 
   def login_btn_clicked(self):
-    self.login()
+    self.run_log_in()
     pass
 
 
-# app = QApplication()
-# window = Login()
-# window.show()
-# app.exec_()
+  def forgot_pw_cmdlink_btn_clicked(self):
+    forgot_password_browser = 'http://192.168.3.117/reset-password'
+    webbrowser.open(forgot_password_browser)
+    pass
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = Login()
+    window.show()
+    sys.exit(app.exec_())
