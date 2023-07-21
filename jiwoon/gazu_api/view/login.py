@@ -4,6 +4,8 @@ import webbrowser
 
 from PySide2.QtWidgets import QApplication, QMainWindow
 from jiwoon.gazu_api.view.UI.LoginWidget import Ui_Login
+from jiwoon.gazu_api.view.UI.nuki_main_widget import Ui_Nuki
+
 
 
 class Login(QMainWindow, Ui_Login):
@@ -12,6 +14,7 @@ class Login(QMainWindow, Ui_Login):
     super().__init__()
     super().setupUi(self)
     self.setWindowTitle('login')
+    self.ui = Ui_Nuki()
 
     # UI
     self.ID_lineedit.setPlaceholderText('Email@address.com')
@@ -32,6 +35,8 @@ class Login(QMainWindow, Ui_Login):
           gazu.log_in(try_id, try_pw)
           print(f'Logged in as {try_id}')
           self.close()
+          # self.Ui_Nuki()
+
 
       except Exception:
         print('Login failed.')

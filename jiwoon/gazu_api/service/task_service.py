@@ -11,14 +11,13 @@ class TaskService:
     __sequence = None
     __task = None
     __task_type = None
-    __task_status = None
+    __task_status = True
     __asset_type = None
     __asset_type_dict = None
     __new_values = None
     __temp = None
     __entity = None
     __ext = None
-
     def __init__(self, model, view):
         self.model = model
         self.view = view
@@ -64,6 +63,14 @@ class TaskService:
     def task(self, name):
         self.task_type = name
         self.__task = gazu.task.get_task_by_name(self.__entity, self.task_type)
+
+    @property
+    def task_status(self):
+        return self.__task_status
+
+    @task_status.setter
+    def task_status(self, value):
+        self.__task_status = value
 
     def reload_comptasks(self):
         """
@@ -171,9 +178,10 @@ class TaskService:
         self.project = project.get('name')
         self.sequence = sequence.get('name')
         self.shot = shot.get('name')
-
+        self.task_status = True
         tasks = gazu.task.all_tasks_for_shot(self.__shot)
         count = 0
+
         self.model.todo_datas = []
         self.model.todo_datas.append([])
         self.adjust_header_size()
@@ -190,6 +198,12 @@ class TaskService:
                 self.model.todo_datas[count].append(task.get('updated_at'))
                 self.model.todo_datas.append([])
                 count += 1
+
+        for todo_data in self.model.todo_datas:
+            if todo_data and todo_data[1] != 'Done':
+                self.task_status = False
+
+        self.model.task_status = self.task_status
         self.model.layoutChanged.emit()
 
         # self.file_tree = self.proj_dict.get('file_tree')
