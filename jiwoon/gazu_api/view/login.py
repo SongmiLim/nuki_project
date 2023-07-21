@@ -5,7 +5,7 @@ import gazu
 # haji1127
 from PySide2.QtWidgets import QApplication, QMainWindow
 
-from jiwoon.gazu_api.view.UI.login_view.LoginWidget import Ui_Login
+from nuki.jiwoon.gazu_api.view.UI.LoginWidget import Ui_Login
 
 
 class Login(QMainWindow, Ui_Login):
