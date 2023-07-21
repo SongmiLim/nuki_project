@@ -54,7 +54,7 @@ class TreeModel(QStandardItemModel):
             if (section == 0): return ' ' # header 기본값 없애주기
 
 
-
+...
 class View(QTreeView): # set model 해서 보여주는 기능
     def __init__(self):
         super().__init__()
@@ -113,4 +113,4 @@ window = MainWindow()
 window.show()
 
 sys.exit(app.exec_())
-
+...
