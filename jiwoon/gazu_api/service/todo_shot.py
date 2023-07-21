@@ -1,5 +1,9 @@
 import gazu
+from PySide2.QtGui import QPixmap, QPixmapCache, QImage
+import os
 
+basedir = os.path.dirname(__file__)
+default_img = QImage(os.path.join(basedir, '../image/default.jpg'))
 
 class TodoShot:
     def __init__(self, task) -> None:
@@ -17,7 +21,11 @@ class TodoShot:
             self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id)
         else:
             self._preview_file_url = ""
-        # self.refresh_comp_tasks()
+        if task.get('due_date'):
+            self._due_date = task.get('due_date')
+        else:
+            self._due_date = ''
+            # self.refresh_comp_tasks()
 
     @property
     def comp_tasks(self):
@@ -64,6 +72,9 @@ class TodoShot:
     def preview_file_url(self):
         return self._preview_file_url
 
+    @property
+    def due_date(self):
+        return self._due_date
 
     @property
     def todo_comp_tasks(self):
@@ -81,24 +92,31 @@ class TodoShot:
         """
         return self._done_comp_tasks
 
-    @property
-    def sorted_by_due_date(self):
-        """
-        Returns:
-            list: 'due_date' 기준으로 정렬된 comp_tasks
-        """
-        return self.sort_by('due_date')
-
-    @property
-    def sorted_by_priority(self):
-        """
-        Returns:
-            list: 'priority' 기준으로 정렬된 comp_tasks
-
-        'priority' 값은 0부터 3까지의 정수로 구성되어 있고,
-        3이 가장 긴급한 우선순위를 나타내기 때문에 reverse가 True
-        """
-        return self.sort_by('priority', True)
+    # def sorted_by_name(self):
+    #     """
+    #     Returns:
+    #         list: 'name' 기준으로 정렬된 comp_tasks
+    #     """
+    #     return self.sort_by('name')
+    #
+    # @property
+    # def sorted_by_due_date(self):
+    #     """
+    #     Returns:
+    #         list: 'due_date' 기준으로 정렬된 comp_tasks
+    #     """
+    #     return self.sort_by('due_date')
+    #
+    # @property
+    # def sorted_by_priority(self):
+    #     """
+    #     Returns:
+    #         list: 'priority' 기준으로 정렬된 comp_tasks
+    #
+    #     'priority' 값은 0부터 3까지의 정수로 구성되어 있고,
+    #     3이 가장 긴급한 우선순위를 나타내기 때문에 reverse가 True
+    #     """
+    #     return self.sort_by('priority', True)
 
     @property
     def is_comp_task_for_user(self):
