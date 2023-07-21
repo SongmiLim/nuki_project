@@ -3,7 +3,7 @@ import sys
 import webbrowser
 
 from PySide2.QtWidgets import QApplication, QMainWindow
-from nuki.jiwoon.gazu_api.view.UI.LoginWidget import Ui_Login
+from jiwoon.gazu_api.view.UI.LoginWidget import Ui_Login
 
 
 class Login(QMainWindow, Ui_Login):
@@ -31,8 +31,9 @@ class Login(QMainWindow, Ui_Login):
       try:
           gazu.log_in(try_id, try_pw)
           print(f'Logged in as {try_id}')
+          self.close()
 
-      except Exception as e:
+      except Exception:
         print('Login failed.')
         self.error_label.setText("Couldn't find your Kitsu account")
 
