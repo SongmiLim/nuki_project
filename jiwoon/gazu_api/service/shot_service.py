@@ -98,8 +98,8 @@ class ShotService:
             self.clicked_shot_detail_info(selected_item[0], task_service)
 
     def clicked_shot_detail_info(self, selected_item, task_service):
-        # 선택한 샷 정보 받아 오기
 
+        # 선택한 샷 정보 받아 오기
         self.project, self.sequence, self.shot = selected_item.split('/')
 
         # 선택한 샷 CompShot 객체로 생성
