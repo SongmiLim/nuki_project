@@ -19,9 +19,6 @@ class FileTreeService:
         if not self.view.filetree.isSortingEnabled():
             self.view.filetree.setSortingEnabled(True) # 할당된 순서대로 표시 후 헤더 누르면 오름차순 정렬
 
-        # self.filetree.expandAll()  # 실행 시 모든 Tree 확장되어 실행하게 함
-        self.view.filetree.expandToDepth(0)  # seq 까지만 확장
-
 
         # def clicked_shot_detail_info(self, str):
         #     # 선택한 샷 정보 받아오기
