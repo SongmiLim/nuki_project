@@ -5,6 +5,7 @@ from jiwoon.gazu_api.view.task_view import MainUI
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
+import datetime
 
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/default.jpg'))
@@ -51,26 +52,33 @@ class ShotService:
         self.__entity = self.__shot
 
     def get_all_tasks_todo(self):
-        todo_task_list = gazu.user.all_tasks_to_do()
+        self.todo_task_list = gazu.user.all_tasks_to_do()
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
 
-        for task in todo_task_list:
+        for task in self.todo_task_list:
             if task.get('task_type_id') == comp_task_id:
-                todo_shot = TodoShot(task)
+                self.load_view(task)
 
-                if todo_shot.preview_file_url != "":
-                    url = gazu.files.get_preview_file_url(todo_shot.preview_file_id)
-                    thumbnail = self.get_thumbnail(todo_shot, todo_shot.preview_file_url)
-                else:
-                    thumbnail = self.get_default_thumbnail()
-
-                # 모델에 데이터 추가
-                self.model.todo_shots.append([
-                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', thumbnail])
 
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
+
+        # sort_combobox 클릭 시 sorting 슬롯 호출
+        self.view.sorted_comboBox.currentTextChanged.connect(self.sort_by_combobox)
+
+    def load_view(self, task):
+        # task딕셔너리를 TodoShot 객체화
+        todo_shot = TodoShot(task)
+
+        if todo_shot.preview_file_url != "":
+            thumbnail = self.get_thumbnail(todo_shot, todo_shot.preview_file_url)
+        else:
+            thumbnail = self.get_default_thumbnail()
+
+        # 모델에 데이터 추가
+        self.model.todo_shots.append([
+            f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', thumbnail])
 
     def total_assigned_shot_num(self):
         assigned_shot_num = len(self.model.todo_shots)
@@ -144,8 +152,39 @@ class ShotService:
         self.view.thumbnail_label.setPixmap(default_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         return default_thumbnail
 
-    def get_all_task_done_status(self, status):
+    def get_all_task_done_status(self, status) -> bool:
         print(status)
 
+    def get_default_due_date(self, item):
+        if item['due_date'] is None:
+            # Return a date far in the future as a default value
+            return str(datetime.datetime.max)
+        return item['due_date']
 
+    def sort_by_combobox(self):
+        print("sort combobox clicked !")
+        # shot을 원하는 기준으로 sorting 위해 임시로 temp list에 추가해줌
+        self.temp_list = []
 
+        for task in self.todo_task_list:
+            self.temp_list.append(task)
+        print(self.temp_list)
+        if self.view.sorted_comboBox.currentText() == 'Name':
+            sorted_shot_list = sorted(self.temp_list,
+                                      key=lambda item: (item['project_name'], self.get_default_due_date(item)))
+
+        elif self.view.sorted_comboBox.currentText() == 'Due date':
+            sorted_shot_list = sorted(self.temp_list,
+                                      key=lambda item: (self.get_default_due_date(item), item['entity_name']))
+        print(sorted_shot_list)
+        # elif self.view.sorted_comboBox.currentText() == 'Priority':
+        #     self.temp_list.sorted_by_priority()
+
+        # 모델 기존 데이터 리셋 후 sort된 데이터로 추가
+        self.model.beginResetModel()
+        self.model.todo_shots = []
+
+        for task in sorted_shot_list:
+            self.load_view(task)
+
+        self.model.endResetModel()
