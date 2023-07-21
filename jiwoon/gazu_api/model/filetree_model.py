@@ -15,24 +15,24 @@ class TreeModel(QStandardItemModel):
         tasks = gazu.user.all_tasks_to_do()
         project_list = []
         for i in tasks:
-            self.p_list = []
+            self.project = None
             self.projectItem = QStandardItem(i['project_name'])
             if i['project_name'] not in project_list:
                 project_list.append(i['project_name'])
-                self.p_list.append(i['project_name'])
+                self.project = i['project_name']
                 self.appendRow(self.projectItem)
-                # print('gg', self.p_list)
+                print('gg', self.project)
                 self.sequence_tree()
 
     def sequence_tree(self):
         tasks = gazu.user.all_tasks_to_do()
         self.seq_list = []
         for i in tasks:
-            self.s_list = []
+            self.sequence_list = []
             self.seqItem = QStandardItem(i['sequence_name'])
-            if i['project_name'] in self.p_list and i['sequence_name'] not in self.seq_list:
+            if i['project_name'] == self.project and i['sequence_name'] not in self.seq_list:
                 self.seq_list.append(i['sequence_name'])
-                self.s_list.append(i['sequence_name'])
+                self.sequence_list.append(i['sequence_name'])
                 self.projectItem.appendRow(self.seqItem)
                 # print('DD', self.seq_list)
                 self.shot_tree()
@@ -42,7 +42,7 @@ class TreeModel(QStandardItemModel):
         for i in tasks:
             self.shot_list = []
             self.shotItem = QStandardItem(i['entity_name'])
-            if i['project_name'] in self.p_list and i['sequence_name'] in self.s_list and i[
+            if i['project_name'] == self.project and i['sequence_name'] in self.sequence_list and i[
                 'entity_name'] not in self.shot_list:
                 self.shot_list.append(i['entity_name'])
                 self.seqItem.appendRow(self.shotItem)

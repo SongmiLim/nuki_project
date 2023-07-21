@@ -41,6 +41,6 @@ class Controller:
         # self.view.addButton.clicked.connect(self.service.create_asset)
         # self.view.modifyButton.clicked.connect(self.service.update_asset)
         # self.view.deleteButton.clicked.connect(self.service.remove_asset)
-        self.view.filetree.clicked[QModelIndex].connect(self.filetree_model.select_filetree)
+        self.view.filetree.clicked.connect(self.filetree_model.select_filetree)
         self.view.update_filetree_btn.clicked.connect(self.filetree_model.production_tree)
         # self.view.update_filetree_btn.clicked.connect(self.view.filetree.expandAll()) # btn 누를 때도 전부다 확장
