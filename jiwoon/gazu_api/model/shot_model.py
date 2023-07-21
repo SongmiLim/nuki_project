@@ -17,7 +17,7 @@ class ShotModel(QAbstractListModel):
 
         if role == Qt.DecorationRole:  # 썸네일
             thumbnail = self.todo_shots[index.row()][1]  # thumbnail은 [][1]로 받아온다
-            thumbnail_resized = thumbnail.scaled(150, 300, Qt.KeepAspectRatio)
+            thumbnail_resized = thumbnail.scaled(150, 100, Qt.KeepAspectRatio)
             return thumbnail_resized
 
         if role == Qt.ForegroundRole:
