@@ -64,8 +64,6 @@ class ShotService:
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
-        # sort_combobox 클릭 시 sorting 슬롯 호출
-        self.view.sorted_comboBox.currentTextChanged.connect(self.sort_by_combobox)
 
     def load_view(self, task):
         # task딕셔너리를 TodoShot 객체화
@@ -104,6 +102,7 @@ class ShotService:
 
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_item[0], task_service)
+
 
     def clicked_shot_detail_info(self, selected_item, task_service):
 
@@ -162,13 +161,12 @@ class ShotService:
         return item['due_date']
 
     def sort_by_combobox(self):
-        print("sort combobox clicked !")
         # shot을 원하는 기준으로 sorting 위해 임시로 temp list에 추가해줌
         self.temp_list = []
 
         for task in self.todo_task_list:
             self.temp_list.append(task)
-        print(self.temp_list)
+
         if self.view.sorted_comboBox.currentText() == 'Name':
             sorted_shot_list = sorted(self.temp_list,
                                       key=lambda item: (item['project_name'], self.get_default_due_date(item)))
@@ -176,9 +174,11 @@ class ShotService:
         elif self.view.sorted_comboBox.currentText() == 'Due date':
             sorted_shot_list = sorted(self.temp_list,
                                       key=lambda item: (self.get_default_due_date(item), item['entity_name']))
-        print(sorted_shot_list)
-        # elif self.view.sorted_comboBox.currentText() == 'Priority':
-        #     self.temp_list.sorted_by_priority()
+
+        elif self.view.sorted_comboBox.currentText() == 'Priority':
+            # sorted_shot_list = sorted(self.temp_list,
+            #                           key=lambda item: (self.sorted_by_priority(item), item['entity_name']))
+            pass
 
         # 모델 기존 데이터 리셋 후 sort된 데이터로 추가
         self.model.beginResetModel()
