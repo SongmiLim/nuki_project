@@ -15,8 +15,8 @@ class ShotService:
     __project = None
     __shot = None
     __sequence = None
-    __task = None
-    __task_type = None
+    # __task = None
+    # __task_type = None
     __task_status = None
 
     def __init__(self, model, view):
@@ -27,6 +27,10 @@ class ShotService:
 
     @property
     def project(self):
+        """
+        Returns:
+            dict: 선택한 task의 project 정보
+        """
         return self.__project
 
     @project.setter
@@ -35,6 +39,10 @@ class ShotService:
 
     @property
     def sequence(self):
+        """
+        Returns:
+            dict: 선택한 task의 sequence 정보
+        """
         return self.__sequence
 
     @sequence.setter
@@ -43,6 +51,10 @@ class ShotService:
 
     @property
     def shot(self):
+        """
+        Returns:
+            dict: 선택한 task의 shot 정보
+        """
         return self.__shot
 
     @shot.setter
@@ -54,29 +66,24 @@ class ShotService:
     def get_all_tasks_todo(self):
         self.todo_task_list = gazu.user.all_tasks_to_do()
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-
+        # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         for task in self.todo_task_list:
             if task.get('task_type_id') == comp_task_id:
                 self.load_view(task)
-
 
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
 
-    def load_view(self, task):
-        # task딕셔너리를 TodoShot 객체화
+    def load_view(self, task: dict):
+        # 각 task를 TodoShot 객체로 생성
         todo_shot = TodoShot(task)
-
-        if todo_shot.preview_file_url != "":
-            thumbnail = self.get_thumbnail(todo_shot, todo_shot.preview_file_url)
-        else:
-            thumbnail = self.get_default_thumbnail()
+        shot_thumbnail = self.get_thumbnail(todo_shot, todo_shot.preview_file_url)
 
         # 모델에 데이터 추가
         self.model.todo_shots.append([
-            f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', thumbnail])
+            f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
 
     def total_assigned_shot_num(self):
         assigned_shot_num = len(self.model.todo_shots)
@@ -98,16 +105,16 @@ class ShotService:
         _index = self.view.shot_list.selectedIndexes()
         if _index:
             index = _index[0]
-            selected_item = self.model.todo_shots[index.row()]
+            selected_shot = self.model.todo_shots[index.row()]
+            selected_shot_info = selected_shot[0]   # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
 
             self.clear_shot_detail_info()
-            self.clicked_shot_detail_info(selected_item[0], task_service)
+            self.clicked_shot_detail_info(selected_shot_info, task_service)
 
-
-    def clicked_shot_detail_info(self, selected_item, task_service):
+    def clicked_shot_detail_info(self, selected_shot_info: str, task_service):
 
         # 선택한 샷 정보 받아 오기
-        self.project, self.sequence, self.shot = selected_item.split('/')
+        self.project, self.sequence, self.shot = selected_shot_info.split('/')
 
         # 선택한 샷 CompShot 객체로 생성
         comp_shot = CompShot(self.shot)
@@ -115,7 +122,7 @@ class ShotService:
         # send selected_item to task_service
         task_service.load_tasks(self.project, self.sequence, self.shot)
 
-        # UI에 data 뿌리기
+        # UI에 data set
         self.view.label_proj.setText(comp_shot.project_name)
         self.view.label_seq.setText(comp_shot.sequence_name)
         self.view.label_shot.setText(comp_shot.shot_name)
@@ -126,25 +133,22 @@ class ShotService:
         self.view.label_fps.setText(comp_shot.fps)
         self.view.label_revision.setText(comp_shot.revision)
 
-        # 썸네일 url이 없을 경우
-        if comp_shot.preview_file_url == "":
-            # self.view.thumbnail_label.setText("No Thumbnail")
-            thumbnail = self.get_default_thumbnail()
-            self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
+        shot_thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
+        self.view.thumbnail_label.adjustSize()
+        self.view.thumbnail_label.setPixmap(shot_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
+
+
+    def get_thumbnail(self, comp_shot, thumb_url) -> QPixmap:
+        if thumb_url == "":
+            return self.get_default_thumbnail()
         else:
-            thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
-
-            self.view.thumbnail_label.adjustSize()
-            self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
-
-    def get_thumbnail(self, comp_shot, thumb_url):
-        # 썸네일 데이터를 url을 통해 받아오기
-        thumbnail_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
-        # 이미지 url을 pixmap으로 변환하기
-        pixmap = QPixmap()
-        pixmap.loadFromData(thumbnail_data)
-        QPixmapCache.insert(thumb_url, pixmap)
-        return pixmap
+            # 썸네일 데이터를 url을 통해 받아오기
+            thumbnail_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
+            # 이미지 url을 pixmap으로 변환하기
+            pixmap = QPixmap()
+            pixmap.loadFromData(thumbnail_data)
+            QPixmapCache.insert(thumb_url, pixmap)
+            return pixmap
 
     def get_default_thumbnail(self) -> QPixmap:
         default_thumbnail = QPixmap.fromImage(default_img)
@@ -161,9 +165,8 @@ class ShotService:
         return item['due_date']
 
     def sort_by_combobox(self):
-        # shot을 원하는 기준으로 sorting 위해 임시로 temp list에 추가해줌
         self.temp_list = []
-
+        sorted_shot_list = []
         for task in self.todo_task_list:
             self.temp_list.append(task)
 
@@ -180,7 +183,7 @@ class ShotService:
             #                           key=lambda item: (self.sorted_by_priority(item), item['entity_name']))
             pass
 
-        # 모델 기존 데이터 리셋 후 sort된 데이터로 추가
+        # 모델의 기존 데이터 리셋 후 sort된 데이터로 추가
         self.model.beginResetModel()
         self.model.todo_shots = []
 
