@@ -3,9 +3,9 @@ import os
 from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
 from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import (
-    QApplication, QMainWindow, QTreeView, QFileSystemModel, QVBoxLayout, QWidget, QAbstractItemView
+    QApplication, QMainWindow, QFileSystemModel, QWidget, QAbstractItemView
 )
-from PySide2.QtCore import Qt, QAbstractItemModel, QStringListModel
+from PySide2.QtCore import Qt, QStringListModel
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -23,8 +23,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.file_system_model.setRootPath(root_path)  # Set the root path to your desired starting directory
         self.treeView.setModel(self.file_system_model)
         self.treeView.setRootIndex(self.file_system_model.index(self.file_system_model.rootPath()))
-        self.treeView.setSortingEnabled(True)
-        # self.treeView.expandAll()
+        self.treeView.setSortingEnabled(False)
 
         # customize the text in the treeview
         palette = self.treeView.palette()
@@ -75,6 +74,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dir_lineedit.setText(path)
 
         files = os.listdir(path)
+        files.sort()
 
         string_list_model = QStringListModel(files)
         self.exr_list.setModel(string_list_model)
@@ -86,7 +86,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("selected_files:")
         for file in selected_files:
             print(file)
-
 
     def text_changed(self, text):
         path = text
