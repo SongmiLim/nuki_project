@@ -61,35 +61,33 @@ class ShotService:
     def shot(self, name):
         # self.__shot = gazu.shot.get_shot(id)
         self.__shot = gazu.shot.get_shot_by_name(self.sequence, name)
-        # self.__entity = self.__shot
+        self.__entity = self.__shot
 
-    def get_all_shots_todo(self):
-        # 작업자가 할당받은 모든 shots 불러오기
-        self.todo_shot_list = gazu.user.all_tasks_to_do()
-        # 불러온 shots를 view에 load
-        self.load_shots_to_view(self.todo_shot_list)
+    def get_all_tasks_todo(self, task_service):
+        self.todo_task_list = gazu.user.all_tasks_to_do()
+        comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
+        for task in self.todo_task_list:
+            if task.get('task_type_id') == comp_task_id:
+                self.load_view(task)
 
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
-    def load_shots_to_view(self, todo_shot_list):
+    def load_view(self, task):
         # 모델의 기존 데이터 리셋 후 load
-        self.model.beginResetModel()
-        self.model.todo_shots = []
+        # self.model.beginResetModel()
+        # self.model.todo_shots = []
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
-        comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        for task in todo_shot_list:
-            if task.get('task_type_id') == comp_task_id:
-                # 각 task를 TodoShot 객체로 생성
-                todo_shot = TodoShot(task)
-                shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
+            # 각 task를 TodoShot 객체로 생성
+            todo_shot = TodoShot(task)
+            shot_thumbnail = self.get_thumbnail(todo_shot,todo_shot.preview_file_url)
 
-                # 모델에 데이터 추가
-                self.model.todo_shots.append([
-                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
-        self.model.endResetModel()
+            # 모델에 데이터 추가
+            self.model.todo_shots.append([
+                f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
+        # self.model.endResetModel()
 
     def total_assigned_shot_num(self):
         assigned_shot_num = len(self.model.todo_shots)
@@ -117,10 +115,10 @@ class ShotService:
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_shot_info, task_service)
 
-    def clicked_shot_detail_info(self, selected_shot_info: str, task_service):
+    def clicked_shot_detail_info(self, selected_item, task_service):
 
         # 선택한 샷 정보 받아 오기
-        self.project, self.sequence, self.shot = selected_shot_info.split('/')
+        self.project, self.sequence, self.shot = selected_item.split('/')
 
         # 선택한 샷 CompShot 객체로 생성
         comp_shot = CompShot(self.shot)
@@ -139,21 +137,18 @@ class ShotService:
         self.view.label_fps.setText(comp_shot.fps)
         self.view.label_revision.setText(comp_shot.revision)
 
-        shot_thumbnail = self.get_thumbnail(comp_shot.preview_file_url)
+        thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
         self.view.thumbnail_label.adjustSize()
-        self.view.thumbnail_label.setPixmap(shot_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
+        self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
 
-    def get_thumbnail(self, thumb_url) -> QPixmap:
-        if thumb_url == "":
-            return self.get_default_thumbnail()
-        else:
-            # 썸네일 데이터를 url을 통해 받아오기
-            thumbnail_data = gazu.client.get_file_data_from_url(thumb_url)
-            # 이미지 url을 pixmap으로 변환하기
-            pixmap = QPixmap()
-            pixmap.loadFromData(thumbnail_data)
-            QPixmapCache.insert(thumb_url, pixmap)
-            return pixmap
+    def get_thumbnail(self, comp_shot, thumb_url):
+        # 썸네일 데이터를 url을 통해 받아오기
+        thumbnail_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
+        # 이미지 url을 pixmap으로 변환하기
+        pixmap = QPixmap()
+        pixmap.loadFromData(thumbnail_data)
+        QPixmapCache.insert(thumb_url, pixmap)
+        return pixmap
 
     def get_default_thumbnail(self) -> QPixmap:
         default_thumbnail = QPixmap.fromImage(default_img)

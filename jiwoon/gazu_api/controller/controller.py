@@ -22,7 +22,7 @@ class Controller:
         self.task_service = TaskService(self.task_model, self.view)
 
         # 초기 데이터 호출
-        self.shot_service.get_all_shots_todo()
+        self.shot_service.get_all_tasks_todo(self.task_service)
         self.filetree_model.production_tree()
         # set Model
         self.view.filetree.setModel(self.filetree_model)
