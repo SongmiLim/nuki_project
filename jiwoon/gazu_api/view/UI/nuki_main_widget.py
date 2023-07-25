@@ -633,7 +633,7 @@ class Ui_Nuki(object):
         self.circularProgress.setObjectName(u"circularProgress")
         self.circularProgress.setGeometry(QRect(10, 10, 150, 150))
         self.circularProgress.setStyleSheet(u"QFrame{\n"
-"	background-color: qconicalgradient(cx:0.5, cy:0.5, angle:90, stop:0.749 rgba(206, 92, 0, 0), stop:0.750 rgba(237, 141, 32, 255));\n"
+"	background-color: qconicalgradient(cx:0.5, cy:0.5, angle:90, stop:0.999 rgba(206, 92, 0, 0), stop:1 rgba(237, 141, 32, 255));\n"
 "	border-radius:75px;\n"
 "}")
         self.circularProgress.setFrameShape(QFrame.NoFrame)

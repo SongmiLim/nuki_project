@@ -1,7 +1,5 @@
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import QAbstractListModel, Signal, Qt, QModelIndex
-from PySide2.QtGui import QColor
-from PySide2.QtWidgets import QHeaderView
+from PySide2 import QtCore, QtGui
+from PySide2.QtCore import Signal, Qt, QModelIndex
 
 
 class TaskModel(QtCore.QAbstractTableModel):
@@ -12,7 +10,6 @@ class TaskModel(QtCore.QAbstractTableModel):
         super().__init__()
         self.todo_datas = []
         self.header_title = ["Task Type", "Status", "Ver", "Ext", "Updated At"]
-
         self.color_dict = {
             "Done": QtGui.QColor("red"),
         }

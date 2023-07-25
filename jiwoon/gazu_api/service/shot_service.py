@@ -1,7 +1,6 @@
 import gazu
 from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
-from jiwoon.gazu_api.view.task_view import MainUI
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
@@ -51,19 +50,19 @@ class ShotService:
         self.__shot = gazu.shot.get_shot_by_name(self.sequence, name)
         self.__entity = self.__shot
 
-    def get_all_tasks_todo(self):
+    def get_all_tasks_todo(self, task_service):
         self.todo_task_list = gazu.user.all_tasks_to_do()
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-
+        status_list = []
         for task in self.todo_task_list:
             if task.get('task_type_id') == comp_task_id:
                 self.load_view(task)
-
-
+            status_list.append(task_service.get_all_status(task))
+        # 각 shot에 대한 task들의 status 정보
+        # print('status_list : ',status_list)
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
-
 
     def load_view(self, task):
         # task딕셔너리를 TodoShot 객체화
@@ -103,7 +102,6 @@ class ShotService:
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_item[0], task_service)
 
-
     def clicked_shot_detail_info(self, selected_item, task_service):
 
         # 선택한 샷 정보 받아 오기
@@ -133,7 +131,6 @@ class ShotService:
             self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         else:
             thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
-
             self.view.thumbnail_label.adjustSize()
             self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
 
@@ -151,8 +148,9 @@ class ShotService:
         self.view.thumbnail_label.setPixmap(default_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         return default_thumbnail
 
-    def get_all_task_done_status(self, status) -> bool:
-        print(status)
+    def get_task_done_status(self, status) -> bool:
+        pass
+        # print('status',status)
 
     def get_default_due_date(self, item):
         if item['due_date'] is None:

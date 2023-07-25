@@ -21,7 +21,6 @@ class TreeModel(QStandardItemModel):
                 project_list.append(i['project_name'])
                 self.project = i['project_name']
                 self.appendRow(self.projectItem)
-                print('gg', self.project)
                 self.sequence_tree()
 
     def sequence_tree(self):
@@ -34,7 +33,6 @@ class TreeModel(QStandardItemModel):
                 self.seq_list.append(i['sequence_name'])
                 self.sequence_list.append(i['sequence_name'])
                 self.projectItem.appendRow(self.seqItem)
-                # print('DD', self.seq_list)
                 self.shot_tree()
 
     def shot_tree(self):
@@ -46,8 +44,6 @@ class TreeModel(QStandardItemModel):
                 'entity_name'] not in self.shot_list:
                 self.shot_list.append(i['entity_name'])
                 self.seqItem.appendRow(self.shotItem)
-                # print('hh', self.shot_list)
-                # self.shot_detail_filetree()
 
     def headerData(self, section, orientation, role):
         if (orientation == Qt.Horizontal and role == Qt.DisplayRole):
@@ -65,8 +61,6 @@ class TreeModel(QStandardItemModel):
             path_list.append(seq_name)
             path_list.append(shot_name)
             self.shot_detail = '/'.join(path_list)
-            print('!!shot_detail!!', self.shot_detail)
-            # self.clicked_shot_detail_info(self.shot_detail)  # shot detail 정보 볼수 있는 함수에 연결
 
         else:
             pass

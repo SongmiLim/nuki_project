@@ -3,7 +3,7 @@ from PySide2 import QtWidgets
 
 
 from jiwoon.gazu_api.controller.controller import Controller
-from jiwoon.gazu_api.view.task_view import MainUI
+from jiwoon.gazu_api.view.main_view import MainUI
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

@@ -1,7 +1,8 @@
 import os
 
 from PySide2 import QtCore, QtUiTools
-from PySide2.QtWidgets import QMainWindow, QListView
+from PySide2.QtGui import QColor
+from PySide2.QtWidgets import QMainWindow, QListView, QGraphicsDropShadowEffect
 
 from jiwoon.gazu_api.view.UI.nuki_main_widget import Ui_Nuki
 
@@ -14,7 +15,6 @@ class MainUI(QMainWindow, Ui_Nuki):
         # UI
         # filetree_view 영역
         self.filetree.setStyleSheet('background-color: transparent; color: white')
-
 
         # shot_list_view 영역
         self.shot_list.setStyleSheet('background-color: transparent; font-size: 14px;')
