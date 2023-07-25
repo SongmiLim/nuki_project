@@ -54,10 +54,12 @@ class ShotService:
         self.todo_task_list = gazu.user.all_tasks_to_do()
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
         status_list = []
+        # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         for task in self.todo_task_list:
             if task.get('task_type_id') == comp_task_id:
                 self.load_view(task)
             status_list.append(task_service.get_all_status(task))
+
         # 각 shot에 대한 task들의 status 정보
         # print('status_list : ',status_list)
         # 작업자에게 할당된 샷의 총 개수
@@ -65,7 +67,7 @@ class ShotService:
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
     def load_view(self, task):
-        # task딕셔너리를 TodoShot 객체화
+        # 각 task를 TodoShot 객체로 생성
         todo_shot = TodoShot(task)
 
         if todo_shot.preview_file_url != "":
@@ -102,10 +104,10 @@ class ShotService:
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_item[0], task_service)
 
-    def clicked_shot_detail_info(self, selected_item, task_service):
+    def clicked_shot_detail_info(self, selected_shot_info: str, task_service):
 
         # 선택한 샷 정보 받아 오기
-        self.project, self.sequence, self.shot = selected_item.split('/')
+        self.project, self.sequence, self.shot = selected_shot_info.split('/')
 
         # 선택한 샷 CompShot 객체로 생성
         comp_shot = CompShot(self.shot)
@@ -130,9 +132,9 @@ class ShotService:
             thumbnail = self.get_default_thumbnail()
             self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         else:
-            thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
+            shot_thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
             self.view.thumbnail_label.adjustSize()
-            self.view.thumbnail_label.setPixmap(thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
+            self.view.thumbnail_label.setPixmap(shot_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
 
     def get_thumbnail(self, comp_shot, thumb_url):
         # 썸네일 데이터를 url을 통해 받아오기

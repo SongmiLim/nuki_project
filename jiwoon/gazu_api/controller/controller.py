@@ -1,14 +1,9 @@
-from PySide2.QtCore import QModelIndex
-from PySide2.QtGui import QColor
-from PySide2.QtWidgets import QGraphicsDropShadowEffect
-
 from jiwoon.gazu_api.model.filetree_model import TreeModel
 from jiwoon.gazu_api.model.task_model import TaskModel
 from jiwoon.gazu_api.model.shot_model import ShotModel
 from jiwoon.gazu_api.service.shot_service import ShotService
 from jiwoon.gazu_api.service.task_service import TaskService
 from jiwoon.gazu_api.service.filetree_service import FileTreeService
-from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
 
 
 class Controller:
