@@ -1,8 +1,6 @@
 import gazu as gazu
 from PySide2 import QtWidgets
-
-from jiwoon.gazu_api.service.comp_task import CompTask
-from jiwoon.gazu_api.service.file_tree import FileTree
+from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
 
 
 class TaskService:
@@ -18,10 +16,10 @@ class TaskService:
     __temp = None
     __entity = None
     __ext = None
+
     def __init__(self, model, view):
         self.model = model
         self.view = view
-
         self.host = gazu.client.set_host("http://192.168.3.117/api")
         gazu.log_in("admin@netflixacademy.com", "netflixacademy")
 
@@ -174,11 +172,28 @@ class TaskService:
             header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
             width.append(header.sectionSize(column))
 
+    def get_all_status(self, shot):
+        self.project = shot.get('project_name')
+        self.sequence = shot.get('sequence_name')
+        self.shot = shot.get('entity_name')
+        return self.set_task_init()
+
     def load_tasks(self, project, sequence, shot):
         self.project = project.get('name')
         self.sequence = sequence.get('name')
         self.shot = shot.get('name')
+
+        status_list = self.set_task_init()
+        value = (100 / (len(self.model.todo_datas) - 1)) * (status_list.count(True))
+        ProgressBar.set_progressbar(self.view, value)
+
+        self.model.task_status = self.task_status
+        self.model.all_task_status = status_list
+        self.model.layoutChanged.emit()
+
+    def set_task_init(self):
         self.task_status = True
+        self.all_task_status = []
         tasks = gazu.task.all_tasks_for_shot(self.__shot)
         count = 0
 
@@ -192,55 +207,20 @@ class TaskService:
                 self.model.todo_datas[count].append(task.get('task_type_name'))
                 self.model.todo_datas[count].append(task.get('task_status_name'))
                 self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('revision')) if task_file else \
-                self.model.todo_datas[count].append('-')
+                    self.model.todo_datas[count].append('-')
                 self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('extension')) if task_file else \
-                self.model.todo_datas[count].append('-')
+                    self.model.todo_datas[count].append('-')
                 self.model.todo_datas[count].append(task.get('updated_at'))
                 self.model.todo_datas.append([])
                 count += 1
 
         for todo_data in self.model.todo_datas:
-            if todo_data and todo_data[1] != 'Done':
-                self.task_status = False
+            if todo_data:
+                if todo_data and todo_data[1] != 'Done':
+                    self.task_status = False
+                else:
+                    self.task_status = True
+                self.all_task_status.append(self.task_status)
 
-        self.model.task_status = self.task_status
-        self.model.layoutChanged.emit()
+        return self.all_task_status
 
-        # self.file_tree = self.proj_dict.get('file_tree')
-
-        # info = self.user_info_tree(_comp_tasks)
-        # file_tree.update_file_tree()
-
-        # file_tree = FileTree(self.proj_dict)
-
-        # for task in tasks:
-        #     # comp_task = CompTask(task)
-        #     print(task)
-        # print(self.__shot)
-        # # gazu.files.get_last_output_files_for_entity(self.shot_dict, output_type=output_type, task_type=task_type)
-        # # output_types = gazu.files.all_output_types_for_entity(self.__shot)
-        # print(output_types)
-        # output_files_dict = gazu.files.get_last_output_files_for_entity(self.__shot)
-        # print(output_files_dict)
-
-        # plate_task_type = gazu.task.get_task_type_by_name('Compositing')
-        # plate_task = gazu.task.get_task_by_entity(self.__shot, plate_task_type)
-        #
-        #
-        # preview_file = gazu.files.get_all_preview_files_for_task(plate_task)
-        # print(preview_file)
-
-        # print(gazu.project.get_project_by_name("avengers"))
-        # tree = FileTree(gazu.project.get_project_by_name("avengers"))
-        # print(tree)
-        # tree.update_file_tree()
-
-        # for task in tasks:
-        # print(task)
-
-        # print(tasks)
-        # output_files_dict = gazu.files.get_last_output_files_for_entity(self.__shot)
-        # print(output_files_dict)
-
-        # self.model.datas.append(self.asset['name'], )
-        # self.model.layoutChanged.emit()

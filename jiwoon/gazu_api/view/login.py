@@ -5,7 +5,7 @@ import webbrowser
 
 from PySide2.QtWidgets import QApplication, QMainWindow
 from jiwoon.gazu_api.view.UI.LoginWidget import Ui_Login
-from jiwoon.gazu_api.view.task_view import MainUI
+from jiwoon.gazu_api.view.main_view import MainUI
 from jiwoon.gazu_api.service import exceptions
 
 class Login(QMainWindow, Ui_Login):
