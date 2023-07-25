@@ -1,11 +1,9 @@
-# QTreeView click > QListview import
-
 import sys
 import os
 from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
 from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import (
-    QApplication, QMainWindow, QTreeView, QFileSystemModel, QVBoxLayout, QWidget,
+    QApplication, QMainWindow, QTreeView, QFileSystemModel, QVBoxLayout, QWidget, QAbstractItemView
 )
 from PySide2.QtCore import Qt, QAbstractItemModel, QStringListModel
 
@@ -16,6 +14,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setup_file_tree()
         self.setWindowTitle('Upload to KITSU')
+        self.exr_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
@@ -24,6 +23,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.file_system_model.setRootPath(root_path)  # Set the root path to your desired starting directory
         self.treeView.setModel(self.file_system_model)
         self.treeView.setRootIndex(self.file_system_model.index(self.file_system_model.rootPath()))
+        self.treeView.setSortingEnabled(True)
         # self.treeView.expandAll()
 
         # customize the text in the treeview
@@ -33,6 +33,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         font = QFont("Arial", 10)
         self.treeView.setPalette(palette)
         self.treeView.setFont(font)
+
+        # customize the text in the listView
+        palette = self.exr_list.palette()
+        text_color = QColor(255, 255, 255) # white
+        palette.setColor(QPalette.Text, text_color)
+        font = QFont("Arial", 10)
+        self.exr_list.setPalette(palette)
+        self.exr_list.setFont(font)
 
         # Adjust the width of the first column to show the file names properly
         self.treeView.setColumnWidth(0, 160)
@@ -70,6 +78,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         string_list_model = QStringListModel(files)
         self.exr_list.setModel(string_list_model)
+
+        # multiselection
+        selected_indexes = self.exr_list.selectedIndexes()
+        selected_files = [string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
+
+        print("selected_files:")
+        for file in selected_files:
+            print(file)
 
 
     def text_changed(self, text):
