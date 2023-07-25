@@ -61,29 +61,35 @@ class ShotService:
     def shot(self, name):
         # self.__shot = gazu.shot.get_shot(id)
         self.__shot = gazu.shot.get_shot_by_name(self.sequence, name)
-        self.__entity = self.__shot
+        # self.__entity = self.__shot
 
-    def get_all_tasks_todo(self):
-        self.todo_task_list = gazu.user.all_tasks_to_do()
-        comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
-        for task in self.todo_task_list:
-            if task.get('task_type_id') == comp_task_id:
-                self.load_view(task)
+    def get_all_shots_todo(self):
+        # 작업자가 할당받은 모든 shots 불러오기
+        self.todo_shot_list = gazu.user.all_tasks_to_do()
+        # 불러온 shots를 view에 load
+        self.load_shots_to_view(self.todo_shot_list)
 
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
+    def load_shots_to_view(self, todo_shot_list):
+        # 모델의 기존 데이터 리셋 후 load
+        self.model.beginResetModel()
+        self.model.todo_shots = []
 
-    def load_view(self, task: dict):
-        # 각 task를 TodoShot 객체로 생성
-        todo_shot = TodoShot(task)
-        shot_thumbnail = self.get_thumbnail(todo_shot, todo_shot.preview_file_url)
+        # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
+        comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
+        for task in todo_shot_list:
+            if task.get('task_type_id') == comp_task_id:
+                # 각 task를 TodoShot 객체로 생성
+                todo_shot = TodoShot(task)
+                shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
 
-        # 모델에 데이터 추가
-        self.model.todo_shots.append([
-            f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
+                # 모델에 데이터 추가
+                self.model.todo_shots.append([
+                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
+        self.model.endResetModel()
 
     def total_assigned_shot_num(self):
         assigned_shot_num = len(self.model.todo_shots)
@@ -106,7 +112,7 @@ class ShotService:
         if _index:
             index = _index[0]
             selected_shot = self.model.todo_shots[index.row()]
-            selected_shot_info = selected_shot[0]   # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
+            selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
 
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_shot_info, task_service)
@@ -133,17 +139,16 @@ class ShotService:
         self.view.label_fps.setText(comp_shot.fps)
         self.view.label_revision.setText(comp_shot.revision)
 
-        shot_thumbnail = self.get_thumbnail(comp_shot, comp_shot.preview_file_url)
+        shot_thumbnail = self.get_thumbnail(comp_shot.preview_file_url)
         self.view.thumbnail_label.adjustSize()
         self.view.thumbnail_label.setPixmap(shot_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
 
-
-    def get_thumbnail(self, comp_shot, thumb_url) -> QPixmap:
+    def get_thumbnail(self, thumb_url) -> QPixmap:
         if thumb_url == "":
             return self.get_default_thumbnail()
         else:
             # 썸네일 데이터를 url을 통해 받아오기
-            thumbnail_data = gazu.client.get_file_data_from_url(comp_shot.preview_file_url)
+            thumbnail_data = gazu.client.get_file_data_from_url(thumb_url)
             # 이미지 url을 pixmap으로 변환하기
             pixmap = QPixmap()
             pixmap.loadFromData(thumbnail_data)
@@ -152,7 +157,6 @@ class ShotService:
 
     def get_default_thumbnail(self) -> QPixmap:
         default_thumbnail = QPixmap.fromImage(default_img)
-        self.view.thumbnail_label.setPixmap(default_thumbnail.scaled(400, 200, Qt.KeepAspectRatio))
         return default_thumbnail
 
     def get_all_task_done_status(self, status) -> bool:
@@ -165,17 +169,17 @@ class ShotService:
         return item['due_date']
 
     def sort_by_combobox(self):
-        self.temp_list = []
+        temp_list = []
         sorted_shot_list = []
-        for task in self.todo_task_list:
-            self.temp_list.append(task)
+        for task in self.todo_shot_list:
+            temp_list.append(task)
 
         if self.view.sorted_comboBox.currentText() == 'Name':
-            sorted_shot_list = sorted(self.temp_list,
+            sorted_shot_list = sorted(temp_list,
                                       key=lambda item: (item['project_name'], self.get_default_due_date(item)))
 
         elif self.view.sorted_comboBox.currentText() == 'Due date':
-            sorted_shot_list = sorted(self.temp_list,
+            sorted_shot_list = sorted(temp_list,
                                       key=lambda item: (self.get_default_due_date(item), item['entity_name']))
 
         elif self.view.sorted_comboBox.currentText() == 'Priority':
@@ -183,11 +187,5 @@ class ShotService:
             #                           key=lambda item: (self.sorted_by_priority(item), item['entity_name']))
             pass
 
-        # 모델의 기존 데이터 리셋 후 sort된 데이터로 추가
-        self.model.beginResetModel()
-        self.model.todo_shots = []
-
-        for task in sorted_shot_list:
-            self.load_view(task)
-
-        self.model.endResetModel()
+        # sort된 shot list로 데이터 set
+        self.load_shots_to_view(sorted_shot_list)
