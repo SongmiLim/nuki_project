@@ -14,7 +14,7 @@ class TodoShot:
         self._id = task.get('id')
         # self._comp_tasks = None
         # self._todo_comp_tasks = None
-        # self._done_comp_tasks = None
+        self._done_comp_tasks = None
         self._project_name = task.get('project_name')
         self._sequence_name = task.get('sequence_name')
         self._shot_name = task.get('entity_name')
@@ -83,14 +83,22 @@ class TodoShot:
     #     """
     #     return self._todo_comp_tasks
     #
-    # @property
-    # def done_comp_tasks(self):
-    #     """
-    #     Returns:
-    #         list: 사용자의 done compositing task 목록
-    #     """
-    #     return self._done_comp_tasks
 
+    @property
+    def done_comp_tasks(self):
+        """
+        Returns:
+            list: 사용자의 done compositing task 목록
+        """
+        return self._done_comp_tasks
+
+    @done_comp_tasks.setter
+    def done_comp_tasks(self, done_comp_tasks):
+        """
+        Returns:
+            list: 사용자의 done compositing task 목록
+        """
+        self._done_comp_tasks = done_comp_tasks
     # def sorted_by_name(self):
     #     """
     #     Returns:
