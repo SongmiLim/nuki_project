@@ -64,15 +64,15 @@ class ShotService:
 
     def get_all_tasks_todo(self, task_service):
         # 작업자 가 할당 받은 모든 shots 불러 오기
-        self.todo_shots_list = gazu.user.all_tasks_to_do()
+        self.todo_shots_dict = gazu.user.all_tasks_to_do()
         # 불러온 shots 를 view 에 load
-        self.load_shots_to_view(self.todo_shots_list, task_service)
+        self.load_shots_to_view(self.todo_shots_dict, task_service)
 
         # 작업자 에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
-    def load_shots_to_view(self, todo_shots_list, task_service):
+    def load_shots_to_view(self, todo_shots_dict, task_service):
         # 모델의 기존 데이터 리셋 후 load
         self.model.beginResetModel()
         self.model.todo_shots = []
@@ -80,7 +80,7 @@ class ShotService:
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        for task in todo_shots_list:
+        for task in todo_shots_dict:
             if task.get('task_type_id') == comp_task_id:
                 # 각 task를 TodoShot 객체로 생성
                 todo_shot = TodoShot(task)
