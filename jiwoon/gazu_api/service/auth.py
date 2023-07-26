@@ -1,6 +1,6 @@
 import json
 import os
-
+from jiwoon.gazu_api.service.exceptions import *
 import gazu
 from jiwoon.gazu_api.service.logger import Logger
 
@@ -16,11 +16,11 @@ class Auth:
         self._valid_host = False
         self._valid_user = False
 
-        self.dir_path = os.path.expanduser('~/.config/Molo/')
+        self.dir_path = os.path.expanduser('~/nuki/jiwoon/gazu_api/data')
         self.user_path = os.path.join(self.dir_path, 'user.json')
 
-        # if self.access_setting():
-        #     self.load_setting()
+        if self.access_setting():
+            self.load_setting()
 
     @property
     def valid_host(self):
@@ -48,6 +48,39 @@ class Auth:
             str: 연결된 host URL
         """
         return self._host
+    def access_setting(self):
+        """
+        디렉토리와 각 json 파일이 존재하는지 확인하고 없으면 초기화
+
+        Returns:
+            bool: self.user_path에 해당하는 json 파일이 존재하거나 생성되면 True, 아니면 False
+        """
+        if not os.path.exists(self.dir_path):
+            try:
+                os.makedirs(self.dir_path)
+            except OSError:
+                raise AuthFileIOError("Error: Failed to create the directory.")
+
+        try:
+            if not os.path.exists(self.user_path):
+                self.reset_setting()
+        except OSError:
+            raise AuthFileIOError("Error: Failed to create user.json file.")
+        return True
+    def load_setting(self):
+        """
+        json file에서 정보를 읽어오기
+
+        json에 기록된 host나 user의 valid 값이 True이면 자동 login
+        """
+        user_dict = {}
+        with open(self.user_path, 'r') as json_file:
+            user_dict = json.load(json_file)
+
+        if user_dict.get('valid_host'):
+            self.connect_host(user_dict.get('host'))
+        if user_dict.get('valid_user'):
+            self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
     def log_in(self, try_id, try_pw) -> bool:
         # print(try_id, try_pw)
@@ -98,3 +131,15 @@ class Auth:
         }
         with open(self.user_path, 'w') as json_file:
             json.dump(user_dict, json_file)
+
+    def reset_setting(self):
+        """
+        json file에 저장된 정보 삭제
+        """
+        self._host = ''
+        self._user_id = ''
+        self._user_pw = ''
+        self._valid_host = False
+        self._valid_user = False
+
+        self.save_setting()
