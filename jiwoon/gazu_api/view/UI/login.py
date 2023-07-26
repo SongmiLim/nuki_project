@@ -1,12 +1,9 @@
 import os
-
-import gazu
 import sys
 import webbrowser
-
+from jiwoon.gazu_api.service.exceptions import *
 from PySide2 import QtCore, QtUiTools, QtWidgets
-from PySide2.QtWidgets import QApplication, QMainWindow
-
+from PySide2.QtWidgets import QMainWindow
 from jiwoon.gazu_api.controller.controller import Controller
 from jiwoon.gazu_api.service.auth import Auth
 from jiwoon.gazu_api.view.main_view import MainUI
@@ -21,19 +18,24 @@ class Login(QMainWindow):
         self.screen_width = None
         self.auth = Auth()
         self.setWindowTitle('login')
-        self.host_widget()
+
+        if self.auth.valid_host and self.auth.valid_user:
+            self.main_widget()
+        elif not self.auth.valid_host:
+            self.host_widget()
+        else:
+            self.login_widget()
 
     def run_log_in(self):
         try_id = self.login_ui.user_id_input.text()
         try_pw = self.login_ui.user_pw_input.text()
         try:
             self.auth.log_in(try_id, try_pw)
-        # except molo.exceptions.InvalidAuthError:
-        except:
+        except InvalidAuthError:
             pass
         if self.auth.valid_user:
-            # if self.login_ui.remember_check.isChecked():
-            self.auth.save_setting()
+            if self.login_ui.remember_check.isChecked():
+                self.auth.save_setting()
             self.login_ui.close()
             Controller(MainUI())
         else:
@@ -76,7 +78,7 @@ class Login(QMainWindow):
         try_host = self.host_ui.host_input.text()
         try:
             self.auth.connect_host(try_host)
-        except:
+        except UnconnectedHostError:
             pass
         if self.auth.valid_host:
             self.auth.save_setting()
@@ -112,4 +114,10 @@ class Login(QMainWindow):
         ui.move(w, h)
         ui.show()
         return ui
+
+if __name__ == '__main__':
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
+    myapp = QtWidgets.QApplication(sys.argv)
+    login = Login()
+    sys.exit(myapp.exec_())
 
