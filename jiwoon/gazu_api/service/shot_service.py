@@ -7,7 +7,7 @@ import os
 import datetime
 
 basedir = os.path.dirname(__file__)
-default_img = QImage(os.path.join(basedir, '../image/default.png'))
+default_img = QImage(os.path.join(basedir, '../image/nuke.png'))
 
 
 class ShotService:
@@ -206,7 +206,7 @@ class ShotService:
         self.reload_view(sorted_shot_list)
 
     def get_default_due_date(self, item):
-        if item.due_date is None:
+        if item.due_date is "":
             # Return a date far in the future as a default value
             return str(datetime.datetime.max)
         return item.due_date
@@ -215,7 +215,7 @@ class ShotService:
         return item.project_name, self.get_default_due_date(item)
 
     def sort_by_due_date(self, item):
-        return item.due_date
+        return self.get_default_due_date(item), item.project_name
 
     def sort_by_priority(self, item):
         return not item.done_comp_tasks, item.project_name, self.get_default_due_date(item)
