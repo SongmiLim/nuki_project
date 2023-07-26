@@ -1,6 +1,11 @@
 from PySide2.QtGui import QStandardItemModel, QStandardItem
 from PySide2.QtCore import Qt
 import gazu
+import json
+import os
+
+basedir = os.path.dirname(__file__)
+user_data = os.path.join(basedir, '../data/user.json')
 
 gazu.client.set_host("http://192.168.3.117/api")
 gazu.log_in("admin@netflixacademy.com", "netflixacademy")
@@ -47,7 +52,13 @@ class TreeModel(QStandardItemModel):
 
     def headerData(self, section, orientation, role):
         if (orientation == Qt.Horizontal and role == Qt.DisplayRole):
-            if (section == 0): return ' '  # header 기본값 없애주기
+            # if (section == 0): return ' '  # header 기본값 없애주기
+            if (section == 0): # header에 user id 넣어주기
+                with open (user_data, 'r') as f:
+                    data = json.load(f)
+                    user_id = data['user_id'].split('@')
+                    return user_id[0]
+
 
     def select_filetree(self, index):
         self.item = self.itemFromIndex(index)
