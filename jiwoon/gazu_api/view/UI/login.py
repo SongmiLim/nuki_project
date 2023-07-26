@@ -32,15 +32,16 @@ class Login(QMainWindow):
         try:
             self.auth.log_in(try_id, try_pw)
         except InvalidAuthError:
-            pass
+            print('error')
         if self.auth.valid_user:
             if self.login_ui.remember_check.isChecked():
                 self.auth.save_setting()
             self.login_ui.close()
             Controller(MainUI())
         else:
-            self.login_ui.error_msg.setText('Incorrect ID or password!')
-            self.login_ui.error_msg.setStyleSheet("Color : orange")
+            print('error')
+            # self.login_ui.error_msg.setText('Incorrect ID or password!')
+            # self.login_ui.error_msg.setStyleSheet("Color : orange")
 
     def login_btn_clicked(self):
         self.run_log_in()
