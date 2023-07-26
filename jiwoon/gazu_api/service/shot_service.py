@@ -8,7 +8,7 @@ import os
 import datetime
 
 basedir = os.path.dirname(__file__)
-default_img = QImage(os.path.join(basedir, '../image/default.jpg'))
+default_img = QImage(os.path.join(basedir, '../image/default.png'))
 
 
 class ShotService:
@@ -25,7 +25,7 @@ class ShotService:
         self.host = gazu.client.set_host("http://192.168.3.117/api")
         gazu.log_in("admin@netflixacademy.com", "netflixacademy")
         self.todo_shots_obj = []
-        self.todo_shots_dict = []
+        self.todo_shots_list = []
 
     @property
     def project(self):
@@ -67,9 +67,9 @@ class ShotService:
 
     def get_all_tasks_todo(self, task_service):
         # 작업자가 할당받은 모든 shots 불러오기
-        self.todo_shots_dict = gazu.user.all_tasks_to_do()
+        self.todo_shots_list = gazu.user.all_tasks_to_do()
         # 불러온 shots를 view에 load
-        self.load_shots_to_view(self.todo_shots_dict, task_service)
+        self.load_shots_to_view(self.todo_shots_list, task_service)
 
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
