@@ -1,5 +1,4 @@
 import os
-import sys
 import webbrowser
 from jiwoon.gazu_api.service.exceptions import *
 from PySide2 import QtCore, QtUiTools, QtWidgets
@@ -9,7 +8,7 @@ from jiwoon.gazu_api.service.auth import Auth
 from jiwoon.gazu_api.view.main_view import MainUI
 
 
-class Login(QMainWindow):
+class Nuki(QMainWindow):
     def __init__(self):
         super().__init__()
         self.login_ui = None
@@ -37,11 +36,11 @@ class Login(QMainWindow):
             if self.login_ui.remember_check.isChecked():
                 self.auth.save_setting()
             self.login_ui.close()
-            Controller(MainUI())
+            self.main_widget()
+
         else:
             print('error')
-            # self.login_ui.error_msg.setText('Incorrect ID or password!')
-            # self.login_ui.error_msg.setStyleSheet("Color : orange")
+
 
     def login_btn_clicked(self):
         self.run_log_in()
@@ -51,6 +50,9 @@ class Login(QMainWindow):
         forgot_password_browser = 'http://192.168.3.117/reset-password'
         webbrowser.open(forgot_password_browser)
         pass
+
+    def main_widget(self):
+        Controller(MainUI())
 
     def host_widget(self):
         """
@@ -116,9 +118,4 @@ class Login(QMainWindow):
         ui.show()
         return ui
 
-if __name__ == '__main__':
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-    myapp = QtWidgets.QApplication(sys.argv)
-    login = Login()
-    sys.exit(myapp.exec_())
 
