@@ -63,9 +63,9 @@ class ShotService:
         self.__entity = self.__shot
 
     def get_all_tasks_todo(self, task_service):
-        # 작업자 가 할당 받은 모든 shots 불러 오기
+        # 작업자가 할당받은 모든 shots 불러오기
         self.todo_shots_dict = gazu.user.all_tasks_to_do()
-        # 불러온 shots 를 view 에 load
+        # 불러온 shots를 view에 load
         self.load_shots_to_view(self.todo_shots_dict, task_service)
 
         # 작업자 에게 할당된 샷의 총 개수
