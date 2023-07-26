@@ -24,6 +24,8 @@ class ShotService:
         self.view = view
         self.host = gazu.client.set_host("http://192.168.3.117/api")
         gazu.log_in("admin@netflixacademy.com", "netflixacademy")
+        self.todo_shots_obj = []
+        self.todo_shots_dict = []
 
     @property
     def project(self):
@@ -61,38 +63,61 @@ class ShotService:
     def shot(self, name):
         # self.__shot = gazu.shot.get_shot(id)
         self.__shot = gazu.shot.get_shot_by_name(self.sequence, name)
-        self.__entity = self.__shot
+        # self.__entity = self.__shot
 
     def get_all_tasks_todo(self, task_service):
         # 작업자가 할당받은 모든 shots 불러오기
-        self.todo_shot_list = gazu.user.all_tasks_to_do()
+        self.todo_shots_dict = gazu.user.all_tasks_to_do()
         # 불러온 shots를 view에 load
-        self.load_shots_to_view(self.todo_shot_list, task_service)
+        self.load_shots_to_view(self.todo_shots_dict, task_service)
 
         # 작업자에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
-    def load_shots_to_view(self, todo_shot_list, task_service):
+    def load_shots_to_view(self, todo_shots_dict, task_service):
         # 모델의 기존 데이터 리셋 후 load
         self.model.beginResetModel()
         self.model.todo_shots = []
-        status_list = []
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        for task in todo_shot_list:
+        for task in todo_shots_dict:
             if task.get('task_type_id') == comp_task_id:
                 # 각 task를 TodoShot 객체로 생성
                 todo_shot = TodoShot(task)
                 shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
 
+                # TodoShot 객체에 done_comp_tasks 값 set
+                status_list = task_service.get_all_status(task)
+                todo_shot.done_comp_tasks = self.check_tasks_all_done(status_list)
+                self.todo_shots_obj.append(todo_shot)
+
                 # 모델에 데이터 추가
                 self.model.todo_shots.append([
                     f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
-            status_list.append(task_service.get_all_status(task))
-        # print('status_list',status_list)
+            # status_list.append(task_service.get_all_status(task))
         self.model.endResetModel()
+
+    def reload_view(self, shot_list):
+        # 모델의 기존 데이터 리셋 후 load
+        self.model.beginResetModel()
+        self.model.todo_shots = []
+
+        for task in shot_list:
+            shot_thumbnail = self.get_thumbnail(task.preview_file_url)
+            # 모델에 데이터 추가
+            self.model.todo_shots.append([
+                f'{task.project_name}/{task.sequence_name}/{task.shot_name}', shot_thumbnail])
+        self.model.endResetModel()
+
+    def check_tasks_all_done(self, status_list):
+        all_true = True
+        for status in status_list:
+            if not status:
+                all_true = False
+                break
+        return all_true
 
     def total_assigned_shot_num(self):
         assigned_shot_num = len(self.model.todo_shots)
@@ -165,30 +190,32 @@ class ShotService:
     def get_all_task_done_status(self, status) -> bool:
         print(status)
 
+    def sort_by_combobox(self):
+        temp_list = list(self.todo_shots_obj)
+        sorted_shot_list = []
+
+        sorting_option = self.view.sorted_comboBox.currentText()
+        if sorting_option == 'Name':
+            sorted_shot_list = sorted(temp_list, key=self.sort_by_name)
+        elif sorting_option == 'Due date':
+            sorted_shot_list = sorted(temp_list, key=self.sort_by_due_date)
+        elif sorting_option == 'Priority':
+            sorted_shot_list = sorted(temp_list, key=self.sort_by_priority)
+
+        # sorted_shot_list로 데이터 set
+        self.reload_view(sorted_shot_list)
+
     def get_default_due_date(self, item):
-        if item['due_date'] is None:
+        if item.due_date is None:
             # Return a date far in the future as a default value
             return str(datetime.datetime.max)
-        return item['due_date']
+        return item.due_date
 
-    def sort_by_combobox(self):
-        temp_list = []
-        sorted_shot_list = []
-        for task in self.todo_shot_list:
-            temp_list.append(task)
+    def sort_by_name(self, item):
+        return item.project_name, self.get_default_due_date(item)
 
-        if self.view.sorted_comboBox.currentText() == 'Name':
-            sorted_shot_list = sorted(temp_list,
-                                      key=lambda item: (item['project_name'], self.get_default_due_date(item)))
+    def sort_by_due_date(self, item):
+        return item.due_date
 
-        elif self.view.sorted_comboBox.currentText() == 'Due date':
-            sorted_shot_list = sorted(temp_list,
-                                      key=lambda item: (self.get_default_due_date(item), item['entity_name']))
-
-        elif self.view.sorted_comboBox.currentText() == 'Priority':
-            # sorted_shot_list = sorted(self.temp_list,
-            #                           key=lambda item: (self.sorted_by_priority(item), item['entity_name']))
-            pass
-
-        # sort된 shot list로 데이터 set
-        self.load_shots_to_view(sorted_shot_list)
+    def sort_by_priority(self, item):
+        return not item.done_comp_tasks, item.project_name, self.get_default_due_date(item)
