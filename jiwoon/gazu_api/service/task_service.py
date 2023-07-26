@@ -1,5 +1,7 @@
 import gazu as gazu
 from PySide2 import QtWidgets
+
+from jiwoon.gazu_api.service.comp_task import CompTask
 from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
 
 
@@ -203,6 +205,7 @@ class TaskService:
 
         for task in tasks:
             if task.get('task_type_name') != 'Compositing':
+                # self.new_nuke_working_file(CompTask(task))
                 task_file = gazu.files.get_all_preview_files_for_task(task.get('id'))
                 self.model.todo_datas[count].append(task.get('task_type_name'))
                 self.model.todo_datas[count].append(task.get('task_status_name'))
@@ -223,4 +226,42 @@ class TaskService:
                 self.all_task_status.append(self.task_status)
 
         return self.all_task_status
+
+    def new_nuke_working_file(self, comptask, name='main', comment='') -> dict:
+        """
+        입력받은 CompTask의 task에 대해 Kitsu DB상에 새로운 working file을 생성하는 함수.
+        outputfile 만들 때 쓰일 dictionary 형태 working file을 반환한다.
+        open_new_nuke_working_file()를 실행시켜 실제 nuke script를 저장한다.
+
+        Args:
+            comptask(molo.CompTask): 생성하고자 하는 compositing task의 CompTask 객체
+            name(str, optional): working file dict의 이름, 기본값 "main"
+            comment(str, optional): working file dict의 설명
+
+        Returns:
+            working_file (dict)
+        """
+        # nuke = gazu.files.get_software_by_name('nuke')
+        nukenc = gazu.files.get_software_by_name('nukenc')
+        working_file = gazu.files.new_working_file(comptask.task_dict, name=name, comment=comment,
+                                                   software=nukenc, person=self.user)
+
+        # self.working_file_path = construct_full_path(working_file)
+        #
+        # root_dir = os.path.dirname(self.working_file_path)
+        # file_name = os.path.basename(self.working_file_path)
+        #
+        # if not os.path.isdir(root_dir):
+        #     os.makedirs(root_dir)
+        #
+        # for file in os.listdir(root_dir):
+        #     if file == file_name:
+        #         raise WorkingFileExistsError("Already exists working file")
+        #
+        # molo_nuke.project_setting(comptask)
+        # molo_nuke.save_script(self.working_file_path)
+        # self.logger.create_working_file_log(self.user.get('full_name'), self.working_file_path)
+
+        return working_file
+
 

@@ -78,7 +78,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="user_id_input">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -125,7 +125,7 @@
      </palette>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_2">
+   <widget class="QLineEdit" name="user_pw_input">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -326,7 +326,7 @@
      <string>Forgot Password?</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="login_btn">
     <property name="geometry">
      <rect>
       <x>50</x>

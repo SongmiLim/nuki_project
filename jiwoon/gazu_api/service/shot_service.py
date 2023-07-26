@@ -1,7 +1,6 @@
 import gazu
 from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
-from jiwoon.gazu_api.view.main_view import MainUI
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
@@ -64,12 +63,12 @@ class ShotService:
         self.__entity = self.__shot
 
     def get_all_tasks_todo(self, task_service):
-        # 작업자가 할당받은 모든 shots 불러오기
+        # 작업자 가 할당 받은 모든 shots 불러 오기
         self.todo_shot_list = gazu.user.all_tasks_to_do()
-        # 불러온 shots를 view에 load
+        # 불러온 shots 를 view 에 load
         self.load_shots_to_view(self.todo_shot_list, task_service)
 
-        # 작업자에게 할당된 샷의 총 개수
+        # 작업자 에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
@@ -163,7 +162,8 @@ class ShotService:
         return default_thumbnail
 
     def get_all_task_done_status(self, status) -> bool:
-        print(status)
+        pass
+        # print(status)
 
     def get_default_due_date(self, item):
         if item['due_date'] is None:

@@ -1,11 +1,7 @@
-import gazu
-
-
 class FileTreeService:
 
-    def __init__(self, model, view):
+    def __init__(self, view):
         super().__init__()
-        self.model = model
         self.view = view
 
         if not self.view.filetree.isSortingEnabled():
