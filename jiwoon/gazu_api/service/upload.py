@@ -11,6 +11,8 @@ from PySide2.QtCore import Qt, QStringListModel, QItemSelectionModel, QItemSelec
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
+        self.file_system_model = None
+        self.string_list_model = None
         self.setupUi(self)
         self.setup_file_tree()
         self.setWindowTitle('Upload to KITSU')
@@ -27,7 +29,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # customize the text in the treeview
         palette = self.treeView.palette()
-        text_color = QColor(255, 255, 255) # white
+        text_color = QColor(255, 255, 255)  # white
         palette.setColor(QPalette.Text, text_color)
         font = QFont("Arial", 10)
         self.treeView.setPalette(palette)
@@ -35,7 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # customize the text in the listView
         palette = self.exr_list.palette()
-        text_color = QColor(255, 255, 255) # white
+        text_color = QColor(255, 255, 255)  # white
         palette.setColor(QPalette.Text, text_color)
         font = QFont("Arial", 10)
         self.exr_list.setPalette(palette)
@@ -72,7 +74,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_tree_item_clicked(self, index):
         if not index.isValid():
             return
-        path = self.file_system_model.filePath(index) # 클릭 된 아이템 파일 경로
+        path = self.file_system_model.filePath(index)  # 클릭 된 아이템 파일 경로
         self.dir_lineedit.setText(path)
 
         files = os.listdir(path)
@@ -81,35 +83,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.string_list_model = QStringListModel(files)
         self.exr_list.setModel(self.string_list_model)
 
-        # multiselection
-        selected_indexes = self.exr_list.selectedIndexes()
-        selected_files = [self.string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
-
-        print("selected_files:")
-        for file in selected_files:
-            print(file)
+        # signal
+        self.exr_list.selectionModel().selectionChanged.connect(self.on_listview_selection_changed)
 
     def text_changed(self, text):
         path = text
         index = self.file_system_model.index(path)
         self.treeView.setCurrentIndex(index)
 
+    def on_listview_selection_changed(self):
+        selected_indexes = self.exr_list.selectedIndexes()
+        if selected_indexes:
+            self.get_selected_files()
+
     def select_all_btn_clicked(self):
-        num_files = self.string_list_model.rowCount()
-        selection_model = self.exr_list.selectionModel()
-        selection_model.clear()
-
-        selection_range = self.string_list_model.index(0), self.string_list_model.index(num_files - 1)
-        selection_model.select(
-            QItemSelection(selection_range[0], selection_range[1]),
-            QItemSelectionModel.Select
-        )
-        print('selected all btn clicked')
-
+        self.exr_list.selectAll()
 
     def upload_btn_clicked(self):
         print('upload btn clicked')
         pass
+
+    def get_selected_files(self):
+        selected_indexes = self.exr_list.selectedIndexes()
+        selected_files = [self.string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
+        print('selected files: ', selected_files)
+        return selected_files
 
 
 if __name__ == '__main__':
