@@ -5,7 +5,7 @@ from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import (
     QApplication, QMainWindow, QFileSystemModel, QWidget, QAbstractItemView
 )
-from PySide2.QtCore import Qt, QStringListModel
+from PySide2.QtCore import Qt, QStringListModel, QItemSelectionModel, QItemSelection
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -20,7 +20,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Create the QFileSystemModel and set it up with the QTreeView
         root_path = "/home/rapa/Nuki_Project"
         self.file_system_model = QFileSystemModel()
-        self.file_system_model.setRootPath(root_path)  # Set the root path to your desired starting directory
+        self.file_system_model.setRootPath(root_path)
         self.treeView.setModel(self.file_system_model)
         self.treeView.setRootIndex(self.file_system_model.index(self.file_system_model.rootPath()))
         self.treeView.setSortingEnabled(False)
@@ -50,6 +50,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.file_system_model.directoryLoaded.connect(self.expand_tree)
         self.treeView.clicked.connect(self.on_tree_item_clicked)
         self.dir_lineedit.textChanged.connect(self.text_changed)
+        self.select_all_btn.clicked.connect(self.select_all_btn_clicked)
+        self.upload_btn.clicked.connect(self.upload_btn_clicked)
 
     def expand_tree(self):
         root_index = self.file_system_model.index(self.file_system_model.rootPath())
@@ -76,12 +78,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         files = os.listdir(path)
         files.sort()
 
-        string_list_model = QStringListModel(files)
-        self.exr_list.setModel(string_list_model)
+        self.string_list_model = QStringListModel(files)
+        self.exr_list.setModel(self.string_list_model)
 
         # multiselection
         selected_indexes = self.exr_list.selectedIndexes()
-        selected_files = [string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
+        selected_files = [self.string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
 
         print("selected_files:")
         for file in selected_files:
@@ -91,6 +93,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         path = text
         index = self.file_system_model.index(path)
         self.treeView.setCurrentIndex(index)
+
+    def select_all_btn_clicked(self):
+        num_files = self.string_list_model.rowCount()
+        selection_model = self.exr_list.selectionModel()
+        selection_model.clear()
+
+        selection_range = self.string_list_model.index(0), self.string_list_model.index(num_files - 1)
+        selection_model.select(
+            QItemSelection(selection_range[0], selection_range[1]),
+            QItemSelectionModel.Select
+        )
+        print('selected all btn clicked')
+
+
+    def upload_btn_clicked(self):
+        print('upload btn clicked')
+        pass
 
 
 if __name__ == '__main__':
