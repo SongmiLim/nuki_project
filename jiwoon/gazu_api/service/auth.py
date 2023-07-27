@@ -18,7 +18,6 @@ class Auth:
 
         self.dir_path = os.path.expanduser('~/nuki/jiwoon/gazu_api/data')
         self.user_path = os.path.join(self.dir_path, 'user.json')
-
         if self.access_setting():
             self.load_setting()
 
