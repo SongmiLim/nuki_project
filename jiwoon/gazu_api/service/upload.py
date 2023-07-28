@@ -5,12 +5,14 @@ from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import (
     QApplication, QMainWindow, QFileSystemModel, QWidget, QAbstractItemView
 )
-from PySide2.QtCore import Qt, QStringListModel
+from PySide2.QtCore import Qt, QStringListModel, QItemSelectionModel, QItemSelection
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
+        self.file_system_model = None
+        self.string_list_model = None
         self.setupUi(self)
         self.setup_file_tree()
         self.setWindowTitle('Upload to KITSU')
@@ -20,14 +22,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Create the QFileSystemModel and set it up with the QTreeView
         root_path = "/home/rapa/Nuki_Project"
         self.file_system_model = QFileSystemModel()
-        self.file_system_model.setRootPath(root_path)  # Set the root path to your desired starting directory
+        self.file_system_model.setRootPath(root_path)
         self.treeView.setModel(self.file_system_model)
         self.treeView.setRootIndex(self.file_system_model.index(self.file_system_model.rootPath()))
         self.treeView.setSortingEnabled(False)
 
         # customize the text in the treeview
         palette = self.treeView.palette()
-        text_color = QColor(255, 255, 255) # white
+        text_color = QColor(255, 255, 255)  # white
         palette.setColor(QPalette.Text, text_color)
         font = QFont("Arial", 10)
         self.treeView.setPalette(palette)
@@ -35,7 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # customize the text in the listView
         palette = self.exr_list.palette()
-        text_color = QColor(255, 255, 255) # white
+        text_color = QColor(255, 255, 255)  # white
         palette.setColor(QPalette.Text, text_color)
         font = QFont("Arial", 10)
         self.exr_list.setPalette(palette)
@@ -50,6 +52,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.file_system_model.directoryLoaded.connect(self.expand_tree)
         self.treeView.clicked.connect(self.on_tree_item_clicked)
         self.dir_lineedit.textChanged.connect(self.text_changed)
+        self.select_all_btn.clicked.connect(self.select_all_btn_clicked)
+        self.upload_btn.clicked.connect(self.upload_btn_clicked)
 
     def expand_tree(self):
         root_index = self.file_system_model.index(self.file_system_model.rootPath())
@@ -70,27 +74,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_tree_item_clicked(self, index):
         if not index.isValid():
             return
-        path = self.file_system_model.filePath(index) # 클릭 된 아이템 파일 경로
+        path = self.file_system_model.filePath(index)  # 클릭 된 아이템 파일 경로
         self.dir_lineedit.setText(path)
 
         files = os.listdir(path)
         files.sort()
 
-        string_list_model = QStringListModel(files)
-        self.exr_list.setModel(string_list_model)
+        self.string_list_model = QStringListModel(files)
+        self.exr_list.setModel(self.string_list_model)
 
-        # multiselection
-        selected_indexes = self.exr_list.selectedIndexes()
-        selected_files = [string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
-
-        print("selected_files:")
-        for file in selected_files:
-            print(file)
+        # signal
+        self.exr_list.selectionModel().selectionChanged.connect(self.on_listview_selection_changed)
 
     def text_changed(self, text):
         path = text
         index = self.file_system_model.index(path)
         self.treeView.setCurrentIndex(index)
+
+    def on_listview_selection_changed(self):
+        selected_indexes = self.exr_list.selectedIndexes()
+        if selected_indexes:
+            self.get_selected_files()
+
+    def select_all_btn_clicked(self):
+        self.exr_list.selectAll()
+
+    def upload_btn_clicked(self):
+        print('upload btn clicked')
+        pass
+
+    def get_selected_files(self):
+        selected_indexes = self.exr_list.selectedIndexes()
+        selected_files = [self.string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
+        print('selected files: ', selected_files)
+        return selected_files
 
 
 if __name__ == '__main__':
