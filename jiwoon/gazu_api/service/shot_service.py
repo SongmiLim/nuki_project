@@ -98,6 +98,18 @@ class ShotService:
             # status_list.append(task_service.get_all_status(task))
         self.model.endResetModel()
 
+    def check_tasks_all_done(self, status_list) -> bool:
+        all_true = True
+        for status in status_list:
+            if not status:
+                all_true = False
+                break
+        return all_true
+
+    def total_assigned_shot_num(self):
+        assigned_shot_num = len(self.model.todo_shots)
+        return assigned_shot_num
+
     def reload_view(self, shot_list):
         # 모델의 기존 데이터 리셋 후 load
         self.model.beginResetModel()
@@ -110,17 +122,15 @@ class ShotService:
                 f'{task.project_name}/{task.sequence_name}/{task.shot_name}', shot_thumbnail])
         self.model.endResetModel()
 
-    def check_tasks_all_done(self, status_list):
-        all_true = True
-        for status in status_list:
-            if not status:
-                all_true = False
-                break
-        return all_true
+    def shot_clicked(self, task_service):
+        _index = self.view.shot_list.selectedIndexes()
+        if _index:
+            index = _index[0]
+            selected_shot = self.model.todo_shots[index.row()]
+            selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
 
-    def total_assigned_shot_num(self):
-        assigned_shot_num = len(self.model.todo_shots)
-        return assigned_shot_num
+            self.clear_shot_detail_info()
+            self.clicked_shot_detail_info(selected_shot_info, task_service)
 
     # shot detail 정보 초기화
     def clear_shot_detail_info(self):
@@ -133,16 +143,6 @@ class ShotService:
         self.view.label_resolution.setText("")
         self.view.label_fps.setText("")
         self.view.label_revision.setText("")
-
-    def shot_clicked(self, task_service):
-        _index = self.view.shot_list.selectedIndexes()
-        if _index:
-            index = _index[0]
-            selected_shot = self.model.todo_shots[index.row()]
-            selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
-
-            self.clear_shot_detail_info()
-            self.clicked_shot_detail_info(selected_shot_info, task_service)
 
     def clicked_shot_detail_info(self, selected_item, task_service):
 
@@ -186,9 +186,9 @@ class ShotService:
         default_thumbnail = QPixmap.fromImage(default_img)
         return default_thumbnail
 
-    def get_all_task_done_status(self, status) -> bool:
-        pass
-        # print(status)
+    # def get_all_task_done_status(self, status) -> bool:
+    #     pass
+    #     # print(status)
 
     def sort_by_combobox(self):
         temp_list = list(self.todo_shots_obj)
