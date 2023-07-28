@@ -42,4 +42,5 @@ class Controller:
         # self.task_model.task_done.connect(self.shot_service.get_all_task_done_status)
         self.view.filetree.clicked.connect(self.filetree_model.select_filetree)
         self.view.update_filetree_btn.clicked.connect(self.filetree_model.production_tree)
+        self.view.update_filetree_btn.clicked.connect(self.view.filetree.expandAll)
 
