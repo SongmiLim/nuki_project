@@ -127,10 +127,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.upload_msg_label.setText('Error')
             self.upload_msg_label.setStyleSheet('color: red;')
 
-    def upload_btn_clicked(self):
+    def convert_to_mp4(self):
         input_dir = self.path
         input_file_name = self.name_split
-        # num_format = None
         input_file_extension = self.format_split
         output_codec = '-c:v libx264'
         output_pixel = '-pix_fmt yuv420p'
@@ -149,6 +148,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         f'{output_codec} {output_pixel} {output_dir}/{output_name}.{output_vide_format}'
         print(command_input)
         self.run_ffmpeg(command_input)
+
+    def extract_thumbnail_from_exr(self):
+        input_dir = self.path
+        input_file_name = self.name_split
+        input_file_extension = self.format_split
+        input_file_num = self.count_split
+        input_file_path = f'{input_dir}/{input_file_name}.{input_file_num}.{input_file_extension}'
+
+        output_dir = '/home/rapa/ffmpeg_test/test2'
+        output_name = 'thumbnail'
+        output_vide_format = 'jpg'
+        output_file_path = f'{output_dir}/{output_name}.{output_vide_format}'
+        jpeg_pixel = '640'
+
+        command_input = f'ffmpeg -i {input_file_path} -vf "scale={jpeg_pixel}:-1" -vframes 1 {output_file_path}'
+        print(command_input)
+        self.run_ffmpeg(command_input)
+
+    def upload_btn_clicked(self):
+        self.convert_to_mp4()
+        self.extract_thumbnail_from_exr()
 
 
 if __name__ == '__main__':
