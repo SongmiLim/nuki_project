@@ -17,6 +17,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_file_tree()
         self.setWindowTitle('Upload to KITSU')
         self.exr_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.comment_plaintextedit.setPlaceholderText('Leave your comment...')
+        self.upload_msg_label.setText('')
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
@@ -74,11 +76,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_tree_item_clicked(self, index):
         if not index.isValid():
             return
-        path = self.file_system_model.filePath(index)  # 클릭 된 아이템 파일 경로
-        self.dir_lineedit.setText(path)
+        self.path = self.file_system_model.filePath(index)  # 클릭 된 아이템 파일 경로
+        self.dir_lineedit.setText(self.path)
 
-        files = os.listdir(path)
+        files = os.listdir(self.path)
         files.sort()
+        # print(files)
+        # print(files[0])
+        split_files = files[0].split('.')
+        # print(self.split_files[0])
+        self.name_split = split_files[0]
+        # print(self.name_split)
+        self.count_split = split_files[1]
+        # print(self.count_split)
+        self.format_split = split_files[2]
+        # print(self.format_split)
 
         self.string_list_model = QStringListModel(files)
         self.exr_list.setModel(self.string_list_model)
@@ -99,15 +111,64 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def select_all_btn_clicked(self):
         self.exr_list.selectAll()
 
-    def upload_btn_clicked(self):
-        print('upload btn clicked')
-        pass
-
     def get_selected_files(self):
         selected_indexes = self.exr_list.selectedIndexes()
         selected_files = [self.string_list_model.data(index, Qt.DisplayRole) for index in selected_indexes]
         print('selected files: ', selected_files)
         return selected_files
+
+    def run_ffmpeg(self, commands):
+        if os.system(commands) == 0:
+            print("ffmpeg Script Ran Successfully")
+            self.upload_msg_label.setText('Upload Success!!')
+            self.upload_msg_label.setStyleSheet('color: #ed8d20;')
+        else:
+            print("There was an error running your ffmpeg script")
+            self.upload_msg_label.setText('Error')
+            self.upload_msg_label.setStyleSheet('color: red;')
+
+    def convert_to_mp4(self):
+        input_dir = self.path
+        input_file_name = self.name_split
+        input_file_extension = self.format_split
+        output_codec = '-c:v libx264'
+        output_pixel = '-pix_fmt yuv420p'
+        output_dir = '/home/rapa/ffmpeg_test/test2'
+        output_name = 'test2'
+        output_vide_format = 'mp4'
+
+        if self.count_split.isdigit():
+            num_digits = len(self.count_split)
+            num_format = f'%0{num_digits}d'
+            print(num_format)
+        else:
+            num_format = '%04d'
+
+        command_input = f'ffmpeg -i {input_dir}/{input_file_name}.{num_format}.{input_file_extension} ' \
+                        f'{output_codec} {output_pixel} {output_dir}/{output_name}.{output_vide_format}'
+        print(command_input)
+        self.run_ffmpeg(command_input)
+
+    def extract_thumbnail_from_exr(self):
+        input_dir = self.path
+        input_file_name = self.name_split
+        input_file_extension = self.format_split
+        input_file_num = self.count_split
+        input_file_path = f'{input_dir}/{input_file_name}.{input_file_num}.{input_file_extension}'
+
+        output_dir = '/home/rapa/ffmpeg_test/test2'
+        output_name = 'thumbnail'
+        output_vide_format = 'jpg'
+        output_file_path = f'{output_dir}/{output_name}.{output_vide_format}'
+        jpeg_pixel = '640'
+
+        command_input = f'ffmpeg -i {input_file_path} -vf "scale={jpeg_pixel}:-1" -vframes 1 {output_file_path}'
+        print(command_input)
+        self.run_ffmpeg(command_input)
+
+    def upload_btn_clicked(self):
+        self.convert_to_mp4()
+        self.extract_thumbnail_from_exr()
 
 
 if __name__ == '__main__':
