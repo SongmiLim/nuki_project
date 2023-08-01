@@ -14,6 +14,6 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QLineEdit, QWidget, QPu
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QtWidgets.QApplication(sys.argv)
-    Nuki()
+    apps = Nuki()
     sys.exit(app.exec_())
 

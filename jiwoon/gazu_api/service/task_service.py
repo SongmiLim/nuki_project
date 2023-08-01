@@ -201,6 +201,8 @@ class TaskService:
 
         self.model.todo_datas = []
         self.model.todo_datas.append([])
+        self.model.selected_datas = []
+        self.model.selected_datas.append([])
         self.adjust_header_size()
 
         for task in tasks:
@@ -214,7 +216,9 @@ class TaskService:
                 self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('extension')) if task_file else \
                     self.model.todo_datas[count].append('-')
                 self.model.todo_datas[count].append(task.get('updated_at'))
+                self.model.selected_datas[count].append(task)
                 self.model.todo_datas.append([])
+                self.model.selected_datas.append([])
                 count += 1
 
         for todo_data in self.model.todo_datas:

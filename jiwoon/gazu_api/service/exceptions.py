@@ -25,3 +25,9 @@ class AuthFileIOError(NukiException):
     로그인과 관련한 파일 생성 및 입출력에 실패한 경우
     """
     pass
+
+class WorkingFileExistsError(NukiException):
+    """
+    생성하고자 하는 working file 경로에 파일이 이미 존재하는 경우
+    """
+    pass

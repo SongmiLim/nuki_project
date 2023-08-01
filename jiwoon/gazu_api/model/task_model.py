@@ -14,6 +14,7 @@ class TaskModel(QtCore.QAbstractTableModel):
             "Done": QtGui.QColor("red"),
         }
         self.selection_model = []
+        self.selected_datas = []
 
     @property
     def task_status(self):

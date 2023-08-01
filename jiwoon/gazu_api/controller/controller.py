@@ -46,7 +46,7 @@ class Controller:
         self.view.update_filetree_btn.clicked.connect(self.filetree_model.production_tree)
         self.view.update_filetree_btn.clicked.connect(self.view.filetree.expandAll)
         self.view.opennuke_btn.clicked.connect(self.nuke_service.run_nuke)
-        self.task_model.selection_model.selectionChanged.connect(self.nuke_service.selected_comptask)
-
+        self.task_model.selection_model.selectionChanged.connect(self.nuke_service.update_selected_task_count)
+        self.task_model.selection_model.selectionChanged.connect(lambda: self.nuke_service.update_selected_comptask(self.task_model.selected_datas[self.task_model.selection_model.currentIndex().row()]))
 
 

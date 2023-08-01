@@ -1,5 +1,7 @@
 import gazu as gazu
 from PySide2 import QtWidgets
+
+from jiwoon.gazu_api.service.filetree import FileTree
 from jiwoon.gazu_api.service.loader import Loader
 from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
 
@@ -23,6 +25,7 @@ class NukeService:
         self.view = view
         self.host = gazu.client.set_host("http://192.168.3.117/api")
         self.loader = Loader()
+        self.selected_comptask = None
         gazu.log_in("admin@netflixacademy.com", "netflixacademy")
 
     @property
@@ -72,14 +75,18 @@ class NukeService:
     def task_status(self, value):
         self.__task_status = value
 
-    def selected_comptask(self):
+    def update_selected_task_count(self):
         """
         table data 선택 한 개수 표시
         """
-        self.view.tasks_num_label.setText(f'{len(self.model.selection_model.selectedRows())} / {len(self.model.todo_datas)-1}')
+        self.view.tasks_num_label.setText(
+            f'{len(self.model.selection_model.selectedRows())} / {len(self.model.todo_datas) - 1}')
 
+    def update_selected_comptask(self, comptask):
+        self.selected_comptask = comptask
 
     def run_nuke(self):
+        tree = FileTree()
         """
                btn_run_nuke 클릭하면 해당 nuke파일이 열리거나,
                현재 파일로 아웃풋 파일들을 로드한다.
@@ -98,7 +105,12 @@ class NukeService:
         #         return
 
         # 해당 task의 working file을 생성하거나 open
-        working_file = self.loader.open_nuke_working_file(self.selected_comptask)
+        selected = self.model.selection_model.selectedRows()
+        selected_list = list(map(lambda x: x.row(), selected))
+        for index in selected_list:
+            pass
+            # print('selected_task : ', self.model.selected_datas[index])
+        working_file = self.loader.open_nuke_working_file(self.model.selected_datas[0])
         # self.selected_comptask.last_comptask_revision = working_file
         # self.identify_nuke_file()
         # self.update_selected_comptask(self.selected_comptask)
@@ -309,5 +321,3 @@ class NukeService:
         # self.logger.create_working_file_log(self.user.get('full_name'), self.working_file_path)
 
         return working_file
-
-
