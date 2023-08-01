@@ -2,5 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/packages/gazu/0.9.4/platform-linux/arch-x86_64/os-centos-8/gazu" vcs="Git" />
   </component>
 </project>

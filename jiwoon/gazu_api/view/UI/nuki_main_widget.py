@@ -727,7 +727,7 @@ class Ui_Nuki(object):
         self.update_filetree_btn.setText(QCoreApplication.translate("Nuki", u"Update Filetree", None))
         self.reload_btn.setText(QCoreApplication.translate("Nuki", u"Reload", None))
         self.tasks_label.setText(QCoreApplication.translate("Nuki", u"Tasks", None))
-        self.tasks_num_label.setText(QCoreApplication.translate("Nuki", u"0/0", None))
+        self.tasks_num_label.setText(QCoreApplication.translate("Nuki", u"0 / 6", None))
         self.opennuke_btn.setText(QCoreApplication.translate("Nuki", u"Project setting in Nuke", None))
         self.percentage_label.setText(QCoreApplication.translate("Nuki", u"<p><span style=\" font-size:28pt;\">0</span><span style=\" vertical-align:super;\">%</span></p>", None))
         self.toComplete_label.setText(QCoreApplication.translate("Nuki", u"to Complete", None))
