@@ -164,7 +164,7 @@ class ShotService:
         self.view.label_frame_out.setText(comp_shot.frame_out)
         self.view.label_resolution.setText(comp_shot.resolution)
         self.view.label_fps.setText(comp_shot.fps)
-        self.view.label_revision.setText(comp_shot.revision)
+        self.view.label_revision.setText(f'ver {comp_shot.revision}.')
 
         thumbnail = self.get_thumbnail(comp_shot.preview_file_url)
         self.view.thumbnail_label.adjustSize()
