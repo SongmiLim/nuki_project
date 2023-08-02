@@ -24,7 +24,8 @@ class CompShot:
         self._shot_name = shot.get('name')
         self._preview_file_id = shot.get('preview_file_id')
         self._preview_file_url = gazu.files.get_preview_file_url(self.preview_file_id) if self.preview_file_id else ""
-        self._revision = "1"
+        self._revision = ""
+        self._file_path = ""
 
         # shot detail data가 있을 경우 none값 가진 data validation
         if shot.get('data'):
@@ -87,10 +88,9 @@ class CompShot:
     def fps(self):
         return self._fps
 
-    @property
-    def revision(self):
-        self._revision = self.get_last_comp_task_revision()
-        return self._revision
+    # @property
+    # def revision(self):
+    #     return self._revision
 
     @property
     def created_at(self):
@@ -108,14 +108,29 @@ class CompShot:
     def preview_file_url(self):
         return self._preview_file_url
 
-    def get_last_comp_task_revision(self):
-        # revision을 알기 위해서는 task dict이 필요
+    @property
+    def revision(self):
+        # 최신 version을 알기 위해서는 task dict이 필요
+        last_comp_task_revision_dict = self.get_task_dict()
+        last_comp_task_revision = last_comp_task_revision_dict.get('revision')
+        return str(last_comp_task_revision) if last_comp_task_revision else '1'
+
+
+    @property
+    def file_path(self):
+        # 최신 version file의 path을 알기 위해서는 task dict이 필요
+        last_comp_task_revision_dict = self.get_task_dict()
+        last_comp_task_path = last_comp_task_revision_dict.get('path')
+        return last_comp_task_path if last_comp_task_path else '/home'
+
+
+    def get_task_dict(self) -> dict:
         tasks = gazu.task.all_tasks_for_shot(self.shot)
         for task in tasks:
             if task.get('task_type_name') == 'Compositing':
                 last_comp_task_revision_dict = gazu.files.get_last_working_file_revision(task) or {}
-                last_comp_task_revision = last_comp_task_revision_dict.get('revision')
-                return str(last_comp_task_revision) if last_comp_task_revision else "1"
+                return last_comp_task_revision_dict
+
 # @property
 # def is_ready(self) -> bool:
 #     """
