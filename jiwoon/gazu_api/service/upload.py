@@ -2,10 +2,8 @@ import sys
 import os
 from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
 from PySide2.QtGui import QColor, QPalette, QFont
-from PySide2.QtWidgets import (
-    QApplication, QMainWindow, QFileSystemModel, QWidget, QAbstractItemView
-)
-from PySide2.QtCore import Qt, QStringListModel, QItemSelectionModel, QItemSelection
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbstractItemView
+from PySide2.QtCore import Qt, QStringListModel
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -76,27 +74,58 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_tree_item_clicked(self, index):
         if not index.isValid():
             return
-        self.path = self.file_system_model.filePath(index)  # 클릭 된 아이템 파일 경로
+        self.path = self.file_system_model.filePath(index) # 클릭 된 아이템 파일 경로
         self.dir_lineedit.setText(self.path)
+        if not os.path.basename(self.path).endswith('pre-comp'):
+            self.upload_msg_label.setText('')
+            self.exr_list.setEnabled(True)
+            self.exr_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         files = os.listdir(self.path)
         files.sort()
-        # print(files)
-        # print(files[0])
-        split_files = files[0].split('.')
-        # print(self.split_files[0])
-        self.name_split = split_files[0]
-        # print(self.name_split)
-        self.count_split = split_files[1]
-        # print(self.count_split)
-        self.format_split = split_files[2]
-        # print(self.format_split)
+
+        # Get the parent folder of the clicked folder
+        parent_index = index.parent()
+        parent_folder = self.file_system_model.filePath(parent_index)
+
+        # Check if the parent folder is the "pre-comp" folder
+        if parent_folder.endswith("/pre-comp"):
+            if files:
+                try:
+                    split_files = files[0].split('.')
+                    self.name_split = split_files[0]
+                    self.count_split = split_files[1]
+                    self.format_split = split_files[2]
+                    self.upload_msg_label.setText('')
+                    self.list_enabled_setting()
+
+                except IndexError:
+                    # If the format is incorrect, set default values and show an error message.
+                    self.name_split = "No Name"
+                    self.count_split = '0001'
+                    self.format_split = 'exr'
+                    self.upload_msg_label.setText('<Error> \n Incorrect file format')
+                    self.upload_msg_label.setStyleSheet('color : red;')
+                    self.exr_list.setEnabled(False)
+                    # set the color grey when disabled.
+                    palette = self.exr_list.palette()
+                    color = QColor(100, 100, 100)
+                    palette.setColor(QPalette.Text, color)
+                    self.exr_list.setPalette(palette)
+        else:
+            self.list_enabled_setting()
 
         self.string_list_model = QStringListModel(files)
         self.exr_list.setModel(self.string_list_model)
-
         # signal
         self.exr_list.selectionModel().selectionChanged.connect(self.on_listview_selection_changed)
+
+    def list_enabled_setting(self):
+        self.exr_list.setEnabled(True)
+        palette = self.exr_list.palette()
+        color = QColor(255, 255, 255) # White color when enabled.
+        palette.setColor(QPalette.Text, color)
+        self.exr_list.setPalette(palette)
 
     def text_changed(self, text):
         path = text
