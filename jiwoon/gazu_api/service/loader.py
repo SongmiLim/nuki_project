@@ -8,6 +8,7 @@ from jiwoon.gazu_api.service.exceptions import WorkingFileExistsError
 from jiwoon.gazu_api.service.nuke_function import *
 from jiwoon.gazu_api.service.logger import Logger
 from jiwoon.gazu_api.service.utils import construct_full_path
+import nuke
 
 
 class Loader:
@@ -33,8 +34,7 @@ class Loader:
         if last_working_file is None:
             return self.new_nuke_working_file(comptask)
         self.working_file_path = construct_full_path(last_working_file)
-        print(self.working_file_path)
-        # open_current_nuke_file(self.working_file_path)
+        open_current_nuke_file(self.working_file_path)
         return last_working_file
 
     def new_nuke_working_file(self, comptask, name='main', comment='') -> dict:
@@ -52,32 +52,29 @@ class Loader:
             working_file (dict)
         """
         # nuke = gazu.files.get_software_by_name('nuke')
-        nukenc = gazu.files.get_software_by_name('nukenc')
+        # gazu.files.new_software('nuki','nk','nk')
+        nukenc = gazu.files.get_software_by_name('nuki')
         working_file = gazu.files.new_working_file(comptask.task_dict, name=name, comment=comment,
                                                    software=nukenc, person=self.user)
         self.working_file_path = construct_full_path(working_file)
-        print(self.working_file_path)
+        root_dir = os.path.dirname(self.working_file_path)
+        file_name = os.path.basename(self.working_file_path)
 
-        # print('working_file',working_file)
-        # self.working_file_path = construct_full_path(working_file)
-        # root_dir = os.path.dirname(self.working_file_path)
-        # file_name = os.path.basename(self.working_file_path)
-        #
-        # if not os.path.isdir(root_dir):
-        #     os.makedirs(root_dir)
-        #
-        # for file in os.listdir(root_dir):
-        #     if file == file_name:
-        #         raise WorkingFileExistsError("Already exists working file")
-        #
-        # print('root_dir',root_dir)
-        # print('file_name',file_name)
+        if not os.path.isdir(root_dir):
+            os.makedirs(root_dir)
 
-        # project_setting(comptask)
-        # save_script(self.working_file_path)
-        # self.logger.create_working_file_log(self.user.get('full_name'), self.working_file_path)
+        for file in os.listdir(root_dir):
+            if file == file_name:
+                raise WorkingFileExistsError("Already exists working file")
 
-        # return working_file
+        print('root_dir',root_dir)
+        print('file_name',file_name)
+
+        project_setting(comptask)
+        save_script(self.working_file_path)
+        self.logger.create_working_file_log(self.user.get('full_name'), self.working_file_path)
+
+        return working_file
 
     def create_nodes(self, info_dict):
         molo_nuke.create_nodes(info_dict, lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))

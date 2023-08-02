@@ -1,7 +1,7 @@
 import os
+import nuke
 # import fileseq
 from PySide2 import QtCore
-
 
 def project_setting(comptask):
     """

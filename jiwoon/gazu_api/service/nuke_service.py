@@ -19,6 +19,7 @@ class NukeService:
     __temp = None
     __entity = None
     __ext = None
+    __test = None
 
     def __init__(self, model, view):
         self.model = model
@@ -84,13 +85,28 @@ class NukeService:
 
     def update_selected_comptask(self, comptask):
         self.selected_comptask = comptask
+        self.project = comptask[0].get('project_name')
 
     def run_nuke(self):
-        tree = FileTree()
         """
-               btn_run_nuke 클릭하면 해당 nuke파일이 열리거나,
-               현재 파일로 아웃풋 파일들을 로드한다.
-               """
+        btn_run_nuke 클릭하면 해당 nuke파일이 열리거나,
+        현재 파일로 아웃풋 파일들을 로드한다.
+        """
+
+        tree = FileTree(self.project)
+        # tree.mnt_point = '{NEW MNT POINT}'
+        # tree.root = '{NEW ROOT}'
+        # tree.style = '{NEW STYLE}'
+        # tree.working_shot_file_path = '{NEW SHOT FILE PATH}'
+        # tree.working_asset_file_path = '{NEW ASSET FILE PATH}'
+        # tree.working_shot_file_name = '{NEW SHOT FILE NAME}'
+        # tree.working_asset_file_name = '{NEW ASSET FILE NAME}'
+        # tree.output_shot_file_path = '{NEW SHOT FILE PATH}'
+        # tree.output_asset_file_path = '{NEW ASSET FILE PATH}'
+        # tree.output_shot_file_name = '{NEW SHOT FILE NAME}'
+        # tree.update_file_tree()
+
+
         # if self.load_mode:
         #     # 선택한 output file들에 대한 node들을 create or update
         #     create_path_dict, update_path_dict = self.get_outputfiles_path()
@@ -110,7 +126,7 @@ class NukeService:
         for index in selected_list:
             pass
             # print('selected_task : ', self.model.selected_datas[index])
-        working_file = self.loader.open_nuke_working_file(self.model.selected_datas[0])
+        working_file = self.loader.open_nuke_working_file(self.model.selected_datas[2])
         # self.selected_comptask.last_comptask_revision = working_file
         # self.identify_nuke_file()
         # self.update_selected_comptask(self.selected_comptask)

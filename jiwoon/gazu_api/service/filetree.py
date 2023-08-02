@@ -210,7 +210,7 @@ class FileTree:
         file_tree값이 None이면 update_file_tree의 file_tree(dict) value값을 None으로 return.
         file_tree값이 dict가 아니면 update_file_tree의 file_tree(dict) value값을 빈 dict를 return
         """
-        if not self.file_tree:
+        if self.file_tree:
             return self.update_file_tree()
 
         elif not isinstance(self.file_tree, dict):
@@ -262,4 +262,4 @@ class FileTree:
                 }
             }
         }
-        gazu.files.update_project_file_tree(self.project, file_tree)
+        # gazu.files.update_project_file_tree(self.project, file_tree)
