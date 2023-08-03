@@ -16,7 +16,7 @@ def update_filetree(mountpoint, root):
             "mountpoint": mountpoint,
             "root": root,
             "folder_path": {
-                "shot": "<Project>/shots/<Sequence>/<Shot>/<TaskType>/working/v<Revision>",
+                "shot": "<Project>/<Sequence>/<Shot>/<TaskType>/working/v<Revision>",
                 "asset": "<Project>/assets/<AssetType>/<Asset>/<TaskType>/working/v<Revision>",
                 "style": "lowercase"
             },
@@ -30,14 +30,14 @@ def update_filetree(mountpoint, root):
             "mountpoint": mountpoint,
             "root": root,
             "folder_path": {
-                "shot": "<Project>/shots/<Sequence>/<Shot>/<TaskType>/output/<OutputType>/v<Revision>",
+                "shot": "<Project>/<Sequence>/<Shot>/<TaskType>/output/v<Revision>/<OutputType>",
                 "asset": "<Project>/assets/<AssetType>/<Asset>/<TaskType>/output/<OutputType>/v<Revision>",
                 "style": "lowercase"
             },
             "file_name": {
-                "shot": "<Project>_<Sequence>_<Shot>_<OutputType>_v<Revision>",
-                "asset": "<Project>_<AssetType>_<Asset>_<OutputType>_v<Revision>",
-                "style": "lowercase"
+                "shot": ""
+                # "asset": "<Project>_<AssetType>_<Asset>_<OutputType>_v<Revision>",
+                # "style": "lowercase"
             }
         }
     }
