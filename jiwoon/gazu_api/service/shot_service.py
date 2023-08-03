@@ -2,12 +2,18 @@ import gazu
 from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
 from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QMenu, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
 import datetime
 
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/nuke.png'))
+
+FILE_FILTERS = [
+    '*.nknc',
+    'All files (*)'
+]
 
 
 class ShotService:
@@ -21,8 +27,9 @@ class ShotService:
     def __init__(self, model, view):
         self.model = model
         self.view = view
-        self.host = gazu.client.set_host("http://192.168.3.117/api")
-        gazu.log_in("admin@netflixacademy.com", "netflixacademy")
+        # self.host = gazu.client.set_host("http://192.168.3.117/api")
+        # gazu.log_in("admin@netflixacademy.com", "netflixacademy")
+        print("host test", gazu.client.get_host)
         self.todo_shots_obj = []
         self.todo_shots_list = []
 
@@ -219,3 +226,29 @@ class ShotService:
 
     def sort_by_priority(self, item):
         return not item.done_comp_tasks, item.project_name, self.get_default_due_date(item)
+
+    def on_custom_context_menu_requested(self, pos):
+        index = self.view.shot_list.indexAt(pos)
+        if not index.isValid():
+            return
+
+        # 선택한 샷의 path 정보 받아 오기
+        self.project, self.sequence, self.shot = index.data().split('/')
+        comp_shot = CompShot(self.shot)
+        self.comp_shot_path = os.path.dirname(comp_shot.file_path)
+        print('shot path: ', self.comp_shot_path)
+
+        context_menu = QMenu(self.view)
+        file_open_action = context_menu.addAction("open in Files")
+
+        action = context_menu.exec_(self.view.mapToGlobal(pos))
+        if action == file_open_action:
+            self.open_shot_file_tree()
+
+    def open_shot_file_tree(self):
+        filters = ';;'.join(FILE_FILTERS)
+        file_name = QFileDialog.getOpenFileName(self.view, 'open in Files', self.comp_shot_path,
+                                                filter=filters)
+        if file_name == "":
+            return
+        print("Selected File:", file_name)
