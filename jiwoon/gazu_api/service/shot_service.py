@@ -75,7 +75,7 @@ class ShotService:
         # 작업자가 할당받은 모든 shots 불러오기
         self.todo_shots_list = gazu.user.all_tasks_to_do()
         # 불러온 shots를 view에 load
-        self.load_shots_to_view(self.todo_shots_list, task_service)
+        self.load_shots_to_view(task_service)
 
         # 작업자 에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
@@ -83,15 +83,25 @@ class ShotService:
 
         self.view.sorted_comboBox.setCurrentIndex(0)
 
-    def load_shots_to_view(self, todo_shots_dict, task_service):
-        # 모델의 기존 데이터 리셋 후 load
+    def load_shots_to_view(self, task_service):
+        # 모델의 기존 데이터 리셋 후 update
         self.model.beginResetModel()
+        self.update_compositing_todo_shots(task_service)
+
+        for todo_shot in self.todo_shots_obj:
+            # 모델에 데이터 추가
+            shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
+            self.model.todo_shots.append([
+                f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
+        self.model.endResetModel()
+
+    def update_compositing_todo_shots(self, task_service):
         self.model.todo_shots = []
         self.todo_shots_obj = []
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        for task in todo_shots_dict:
+        for task in self.todo_shots_list:
             if task.get('task_type_id') == comp_task_id:
                 # 각 task를 TodoShot 객체로 생성
                 todo_shot = TodoShot(task)
@@ -101,12 +111,6 @@ class ShotService:
                 status_list = task_service.get_all_status(task)
                 todo_shot.done_comp_tasks = self.check_tasks_all_done(status_list)
                 self.todo_shots_obj.append(todo_shot)
-
-                # 모델에 데이터 추가
-                self.model.todo_shots.append([
-                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
-            # status_list.append(task_service.get_all_status(task))
-        self.model.endResetModel()
 
     def check_tasks_all_done(self, status_list) -> bool:
         all_true = True
@@ -200,7 +204,8 @@ class ShotService:
     #     pass
     #     # print(status)
 
-    def sort_by_combobox(self):
+    def sort_by_combobox(self, task_service):
+        self.update_compositing_todo_shots(task_service)
         temp_list = list(self.todo_shots_obj)
         sorted_shot_list = []
 
@@ -228,7 +233,8 @@ class ShotService:
         return self.get_default_due_date(item), item.project_name, item.sequence_name, item.shot_name,
 
     def sort_by_priority(self, item):
-        return not item.done_comp_tasks, item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(item)
+        return not item.done_comp_tasks, item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(
+            item)
 
     def on_custom_context_menu_requested(self, pos):
         index = self.view.shot_list.indexAt(pos)

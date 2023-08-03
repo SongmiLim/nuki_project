@@ -41,7 +41,7 @@ class Controller:
 
         # events & slots
         self.view.shot_list.clicked.connect(lambda: self.shot_service.shot_clicked(self.task_service)) # shot_list 에서 사용자 가 한 shot 을 클릭 했을 때 시그널 등록
-        self.view.sorted_comboBox.currentTextChanged.connect(self.shot_service.sort_by_combobox) # sort_combobox 클릭 시 sorting 슬롯 호출
+        self.view.sorted_comboBox.currentTextChanged.connect(lambda: self.shot_service.sort_by_combobox(self.task_service)) # sort_combobox 클릭 시 sorting 슬롯 호출
         self.view.shot_list.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)    # shot_list view에 컨텍스트 메뉴(Context Menu) 사용
         self.view.shot_list.customContextMenuRequested.connect(self.shot_service.on_custom_context_menu_requested)
         self.view.filetree.clicked.connect(self.filetree_model.select_filetree)
