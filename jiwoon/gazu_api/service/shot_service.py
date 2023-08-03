@@ -81,10 +81,13 @@ class ShotService:
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
+        self.view.sorted_comboBox.setCurrentIndex(0)
+
     def load_shots_to_view(self, todo_shots_dict, task_service):
         # 모델의 기존 데이터 리셋 후 load
         self.model.beginResetModel()
         self.model.todo_shots = []
+        self.todo_shots_obj = []
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
@@ -219,13 +222,13 @@ class ShotService:
         return item.due_date
 
     def sort_by_name(self, item):
-        return item.project_name, self.get_default_due_date(item)
+        return item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(item)
 
     def sort_by_due_date(self, item):
-        return self.get_default_due_date(item), item.project_name
+        return self.get_default_due_date(item), item.project_name, item.sequence_name, item.shot_name,
 
     def sort_by_priority(self, item):
-        return not item.done_comp_tasks, item.project_name, self.get_default_due_date(item)
+        return not item.done_comp_tasks, item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(item)
 
     def on_custom_context_menu_requested(self, pos):
         index = self.view.shot_list.indexAt(pos)
@@ -251,7 +254,7 @@ class ShotService:
 
     def open_comp_shot_dir(self, comp_shot_dir_path):
         filters = ';;'.join(FILE_FILTERS)
-
+        print("file path:", comp_shot_dir_path)
         # 해당 파일이 없을 시
         if comp_shot_dir_path == '':
             QMessageBox.information(self.view, "Message", "file doesn't exists")
