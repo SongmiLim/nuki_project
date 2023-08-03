@@ -1,7 +1,7 @@
 import gazu
 from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QDir
 from PySide2.QtWidgets import QMenu, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
@@ -11,7 +11,7 @@ basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/nuke.png'))
 
 FILE_FILTERS = [
-    '*.nknc',
+    '*.nknc (*.nknc)',
     'All files (*)'
 ]
 
@@ -232,22 +232,41 @@ class ShotService:
         if not index.isValid():
             return
 
-        # 선택한 샷의 path 정보 받아 오기
-        self.project, self.sequence, self.shot = index.data().split('/')
-        comp_shot = CompShot(self.shot)
-        self.comp_shot_path = os.path.dirname(comp_shot.file_path)
-        print('shot path: ', self.comp_shot_path)
+        # 선택한 샷이 속한 디렉토리 path 정보 받아 오기
+        comp_shot_dir_path = self.get_comp_shot_dir_path(index)
 
         context_menu = QMenu(self.view)
         file_open_action = context_menu.addAction("open in Files")
 
         action = context_menu.exec_(self.view.mapToGlobal(pos))
         if action == file_open_action:
-            self.open_shot_file_tree()
+            self.open_comp_shot_dir(comp_shot_dir_path)
 
-    def open_shot_file_tree(self):
+    def get_comp_shot_dir_path(self, index):
+        self.project, self.sequence, self.shot = index.data().split('/')
+        comp_shot = CompShot(self.shot)
+        comp_shot_dir_path = os.path.dirname(comp_shot.file_path)
+        # print('shot path: ', comp_shot_path)
+        return comp_shot_dir_path
+
+    def open_comp_shot_dir(self, comp_shot_dir_path):
         filters = ';;'.join(FILE_FILTERS)
-        file_name = QFileDialog.getOpenFileName(self.view, 'open in Files', self.comp_shot_path,
+
+        # 해당 파일이 없을 시
+        if comp_shot_dir_path == '':
+            QMessageBox.information(self.view, "Message", "file doesn't exists")
+            return
+
+        dir = QDir(comp_shot_dir_path)
+        # 해당 파일 트리가 없을 시 트리 생성
+        # => 서버에서 공유하는 파일 트리일때는 무조건 존재 해당 코드 필요 X, 현재 테스트용으로 로컬에서 임시로 사용하므로 없을 경우 만들어 줌
+        if not dir.exists():
+            if dir.mkpath(comp_shot_dir_path):
+                QMessageBox.information(self.view, "Message", "Directory Created")
+        # else:
+        #     QMessageBox.information(self.view, "Message", "Directory Already Existed")
+
+        file_name = QFileDialog.getOpenFileName(self.view, 'open in Files', comp_shot_dir_path,
                                                 filter=filters)
         if file_name == "":
             return
