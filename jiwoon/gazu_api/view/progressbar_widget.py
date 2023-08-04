@@ -14,7 +14,7 @@ class ProgressBar(QMainWindow):
              stop:{STOP_1} rgba(206, 92, 0, 0), stop:{STOP_2} rgba(237, 141, 32, 255));
         }
         '''
-        value = round(value, 2)
+        value = int(value)
         progress = (100 - value) / 100.0
         stop_1 = str(progress - 0.001)
         stop_2 = str(progress)

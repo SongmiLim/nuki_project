@@ -128,7 +128,6 @@ class ShotService:
             index = _index[0]
             selected_shot = self.model.todo_shots[index.row()]
             selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
-
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_shot_info, task_service)
 
