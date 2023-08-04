@@ -3,10 +3,10 @@ from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
 from PySide2.QtCore import Qt, QDir
 from PySide2.QtWidgets import QMenu, QMessageBox, QFileDialog
-from PySide2.QtGui import QPixmap, QPixmapCache, QImage
+from PySide2.QtGui import QPixmap, QPixmapCache, QImage, QCursor
 import os
 import datetime
-
+from jiwoon.gazu_api.service.filetree_1 import *
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/nuke.png'))
 
@@ -101,7 +101,6 @@ class ShotService:
         self.model.endResetModel()
 
     def filter_todo_shots(self, task_service):
-        self.model.todo_shots = []
         self.filtered_todo_shots = []
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
@@ -130,18 +129,6 @@ class ShotService:
     def total_assigned_shot_num(self):
         assigned_shot_num = len(self.model.todo_shots)
         return assigned_shot_num
-
-    # def reload_view(self, shot_list):
-    #     # 모델의 기존 데이터 리셋 후 load
-    #     self.model.beginResetModel()
-    #     self.model.todo_shots = []
-    #
-    #     for task in shot_list:
-    #         shot_thumbnail = self.get_thumbnail(task.preview_file_url)
-    #         # 모델에 데이터 추가
-    #         self.model.todo_shots.append([
-    #             f'{task.project_name}/{task.sequence_name}/{task.shot_name}', shot_thumbnail])
-    #     self.model.endResetModel()
 
     def shot_clicked(self, task_service):
         _index = self.view.shot_list.selectedIndexes()
@@ -253,7 +240,11 @@ class ShotService:
         context_menu = QMenu(self.view)
         file_open_action = context_menu.addAction("open in Files")
 
-        action = context_menu.exec_(self.view.mapToGlobal(pos))
+        action = context_menu.exec_(QCursor.pos())
+        # menu_pos = self.view.mapToGlobal(pos)
+        # menu_pos.setX(menu_pos.x() + context_menu.sizeHint().width())
+        # action = context_menu.exec_(self.view.mapToGlobal(menu_pos))
+
         if action == file_open_action:
             self.open_comp_shot_dir(comp_shot_dir_path)
 
@@ -272,12 +263,12 @@ class ShotService:
             QMessageBox.information(self.view, "Message", "file doesn't exists")
             return
 
-        dir = QDir(comp_shot_dir_path)
-        # 해당 파일 트리가 없을 시 트리 생성
-        # => 서버에서 공유하는 파일 트리일때는 무조건 존재 해당 코드 필요 X, 현재 테스트용으로 로컬에서 임시로 사용하므로 없을 경우 만들어 줌
-        if not dir.exists():
-            if dir.mkpath(comp_shot_dir_path):
-                QMessageBox.information(self.view, "Message", "Directory Created")
+        # dir = QDir(comp_shot_dir_path)
+        # # 해당 파일 트리가 없을 시 트리 생성
+        # # => 서버에서 공유하는 파일 트리일때는 무조건 존재 해당 코드 필요 X, 현재 테스트용으로 로컬에서 임시로 사용하므로 없을 경우 만들어 줌
+        # if not dir.exists():
+        #     if dir.mkpath(comp_shot_dir_path):
+        #         QMessageBox.information(self.view, "Message", "Directory Created")
         # else:
         #     QMessageBox.information(self.view, "Message", "Directory Already Existed")
 
