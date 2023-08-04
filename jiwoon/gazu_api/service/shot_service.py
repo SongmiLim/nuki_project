@@ -29,9 +29,10 @@ class ShotService:
         self.view = view
         # self.host = gazu.client.set_host("http://192.168.3.117/api")
         # gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-        print("host test", gazu.client.get_host)
-        self.todo_shots_obj = []
-        self.todo_shots_list = []
+        # print("host test", gazu.client.get_host)
+        self.raw_todo_shots_list = []
+        self.filtered_todo_shots = []
+
 
     @property
     def project(self):
@@ -72,10 +73,14 @@ class ShotService:
         # self.__entity = self.__shot
 
     def get_all_tasks_todo(self, task_service):
-        # 작업자가 할당받은 모든 shots 불러오기
-        self.todo_shots_list = gazu.user.all_tasks_to_do()
-        # 불러온 shots를 view에 load
-        self.load_shots_to_view(task_service)
+        # 작업자가 할당받은 모든 todo_shots 불러오기
+        self.raw_todo_shots_list = gazu.user.all_tasks_to_do()
+
+        # todo_shots의 많은 정보 중 필요한 정보들만 객체에 저장
+        self.filter_todo_shots(task_service)
+
+        # filtered_todo_shots를 view에 load
+        self.load_shots_to_view(self.filtered_todo_shots)
 
         # 작업자 에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
@@ -83,25 +88,25 @@ class ShotService:
 
         self.view.sorted_comboBox.setCurrentIndex(0)
 
-    def load_shots_to_view(self, task_service):
+    def load_shots_to_view(self, todo_shots):
         # 모델의 기존 데이터 리셋 후 update
         self.model.beginResetModel()
-        self.update_compositing_todo_shots(task_service)
+        self.model.todo_shots = []
 
-        for todo_shot in self.todo_shots_obj:
+        for todo_shot in todo_shots:
             # 모델에 데이터 추가
             shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
             self.model.todo_shots.append([
                 f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
         self.model.endResetModel()
 
-    def update_compositing_todo_shots(self, task_service):
+    def filter_todo_shots(self, task_service):
         self.model.todo_shots = []
-        self.todo_shots_obj = []
+        self.filtered_todo_shots = []
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        for task in self.todo_shots_list:
+        for task in self.raw_todo_shots_list:
             if task.get('task_type_id') == comp_task_id:
                 # 각 task를 TodoShot 객체로 생성
                 todo_shot = TodoShot(task)
@@ -110,7 +115,9 @@ class ShotService:
                 # TodoShot 객체에 done_comp_tasks 값 set
                 status_list = task_service.get_all_status(task)
                 todo_shot.done_comp_tasks = self.check_tasks_all_done(status_list)
-                self.todo_shots_obj.append(todo_shot)
+
+                # 정보가 저장된 todo_shot를 전역적으로 사용하기위해 todo_shots_obj 리스트에 추가
+                self.filtered_todo_shots.append(todo_shot)
 
     def check_tasks_all_done(self, status_list) -> bool:
         all_true = True
@@ -124,17 +131,17 @@ class ShotService:
         assigned_shot_num = len(self.model.todo_shots)
         return assigned_shot_num
 
-    def reload_view(self, shot_list):
-        # 모델의 기존 데이터 리셋 후 load
-        self.model.beginResetModel()
-        self.model.todo_shots = []
-
-        for task in shot_list:
-            shot_thumbnail = self.get_thumbnail(task.preview_file_url)
-            # 모델에 데이터 추가
-            self.model.todo_shots.append([
-                f'{task.project_name}/{task.sequence_name}/{task.shot_name}', shot_thumbnail])
-        self.model.endResetModel()
+    # def reload_view(self, shot_list):
+    #     # 모델의 기존 데이터 리셋 후 load
+    #     self.model.beginResetModel()
+    #     self.model.todo_shots = []
+    #
+    #     for task in shot_list:
+    #         shot_thumbnail = self.get_thumbnail(task.preview_file_url)
+    #         # 모델에 데이터 추가
+    #         self.model.todo_shots.append([
+    #             f'{task.project_name}/{task.sequence_name}/{task.shot_name}', shot_thumbnail])
+    #     self.model.endResetModel()
 
     def shot_clicked(self, task_service):
         _index = self.view.shot_list.selectedIndexes()
@@ -205,8 +212,8 @@ class ShotService:
     #     # print(status)
 
     def sort_by_combobox(self, task_service):
-        self.update_compositing_todo_shots(task_service)
-        temp_list = list(self.todo_shots_obj)
+        # self.update_compositing_todo_shots(task_service)
+        temp_list = list(self.filtered_todo_shots)
         sorted_shot_list = []
 
         sorting_option = self.view.sorted_comboBox.currentText()
@@ -218,7 +225,7 @@ class ShotService:
             sorted_shot_list = sorted(temp_list, key=self.sort_by_priority)
 
         # sorted_shot_list로 데이터 set
-        self.reload_view(sorted_shot_list)
+        self.load_shots_to_view(sorted_shot_list)
 
     def get_default_due_date(self, item):
         if item.due_date is "":
