@@ -21,7 +21,7 @@ def update_filetree(mountpoint, root):
                 "style": "lowercase"
             },
             "file_name": {
-                "shot": "",
+                "shot": ""
                 # "asset": "<Project>_<AssetType>_<Asset>_<TaskType>_<Revision>",
                 # "style": "lowercase"
             }
