@@ -121,7 +121,7 @@ class CompShot:
         # 최신 version file의 path을 알기 위해서는 task dict이 필요
         last_comp_task_revision_dict = self.get_task_dict()
         last_comp_task_path = last_comp_task_revision_dict.get('path')
-        return last_comp_task_path if last_comp_task_path else '/home'
+        return last_comp_task_path if last_comp_task_path else ''
 
 
     def get_task_dict(self) -> dict:

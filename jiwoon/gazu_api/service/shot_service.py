@@ -1,7 +1,7 @@
 import gazu
 from jiwoon.gazu_api.service.comp_shot import CompShot
 from jiwoon.gazu_api.service.todo_shot import TodoShot
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QDir
 from PySide2.QtWidgets import QMenu, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
@@ -11,7 +11,7 @@ basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/nuke.png'))
 
 FILE_FILTERS = [
-    '*.nknc',
+    '*.nknc (*.nknc)',
     'All files (*)'
 ]
 
@@ -29,9 +29,10 @@ class ShotService:
         self.view = view
         # self.host = gazu.client.set_host("http://192.168.3.117/api")
         # gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-        print("host test", gazu.client.get_host)
-        self.todo_shots_obj = []
-        self.todo_shots_list = []
+        # print("host test", gazu.client.get_host)
+        self.raw_todo_shots_list = []
+        self.filtered_todo_shots = []
+
 
     @property
     def project(self):
@@ -72,23 +73,40 @@ class ShotService:
         # self.__entity = self.__shot
 
     def get_all_tasks_todo(self, task_service):
-        # 작업자가 할당받은 모든 shots 불러오기
-        self.todo_shots_list = gazu.user.all_tasks_to_do()
-        # 불러온 shots를 view에 load
-        self.load_shots_to_view(self.todo_shots_list, task_service)
+        # 작업자가 할당받은 모든 todo_shots 불러오기
+        self.raw_todo_shots_list = gazu.user.all_tasks_to_do()
+
+        # todo_shots의 많은 정보 중 필요한 정보들만 객체에 저장
+        self.filter_todo_shots(task_service)
+
+        # filtered_todo_shots를 view에 load
+        self.load_shots_to_view(self.filtered_todo_shots)
 
         # 작업자 에게 할당된 샷의 총 개수
         assigned_shot_num = self.total_assigned_shot_num()
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
-    def load_shots_to_view(self, todo_shots_dict, task_service):
-        # 모델의 기존 데이터 리셋 후 load
+        self.view.sorted_comboBox.setCurrentIndex(0)
+
+    def load_shots_to_view(self, todo_shots):
+        # 모델의 기존 데이터 리셋 후 update
         self.model.beginResetModel()
         self.model.todo_shots = []
 
+        for todo_shot in todo_shots:
+            # 모델에 데이터 추가
+            shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
+            self.model.todo_shots.append([
+                f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
+        self.model.endResetModel()
+
+    def filter_todo_shots(self, task_service):
+        self.model.todo_shots = []
+        self.filtered_todo_shots = []
+
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
-        for task in todo_shots_dict:
+        for task in self.raw_todo_shots_list:
             if task.get('task_type_id') == comp_task_id:
                 # 각 task를 TodoShot 객체로 생성
                 todo_shot = TodoShot(task)
@@ -97,13 +115,9 @@ class ShotService:
                 # TodoShot 객체에 done_comp_tasks 값 set
                 status_list = task_service.get_all_status(task)
                 todo_shot.done_comp_tasks = self.check_tasks_all_done(status_list)
-                self.todo_shots_obj.append(todo_shot)
 
-                # 모델에 데이터 추가
-                self.model.todo_shots.append([
-                    f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
-            # status_list.append(task_service.get_all_status(task))
-        self.model.endResetModel()
+                # 정보가 저장된 todo_shot를 전역적으로 사용하기위해 todo_shots_obj 리스트에 추가
+                self.filtered_todo_shots.append(todo_shot)
 
     def check_tasks_all_done(self, status_list) -> bool:
         all_true = True
@@ -117,17 +131,17 @@ class ShotService:
         assigned_shot_num = len(self.model.todo_shots)
         return assigned_shot_num
 
-    def reload_view(self, shot_list):
-        # 모델의 기존 데이터 리셋 후 load
-        self.model.beginResetModel()
-        self.model.todo_shots = []
-
-        for task in shot_list:
-            shot_thumbnail = self.get_thumbnail(task.preview_file_url)
-            # 모델에 데이터 추가
-            self.model.todo_shots.append([
-                f'{task.project_name}/{task.sequence_name}/{task.shot_name}', shot_thumbnail])
-        self.model.endResetModel()
+    # def reload_view(self, shot_list):
+    #     # 모델의 기존 데이터 리셋 후 load
+    #     self.model.beginResetModel()
+    #     self.model.todo_shots = []
+    #
+    #     for task in shot_list:
+    #         shot_thumbnail = self.get_thumbnail(task.preview_file_url)
+    #         # 모델에 데이터 추가
+    #         self.model.todo_shots.append([
+    #             f'{task.project_name}/{task.sequence_name}/{task.shot_name}', shot_thumbnail])
+    #     self.model.endResetModel()
 
     def shot_clicked(self, task_service):
         _index = self.view.shot_list.selectedIndexes()
@@ -135,7 +149,6 @@ class ShotService:
             index = _index[0]
             selected_shot = self.model.todo_shots[index.row()]
             selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
-
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_shot_info, task_service)
 
@@ -197,8 +210,9 @@ class ShotService:
     #     pass
     #     # print(status)
 
-    def sort_by_combobox(self):
-        temp_list = list(self.todo_shots_obj)
+    def sort_by_combobox(self, task_service):
+        # self.update_compositing_todo_shots(task_service)
+        temp_list = list(self.filtered_todo_shots)
         sorted_shot_list = []
 
         sorting_option = self.view.sorted_comboBox.currentText()
@@ -210,7 +224,7 @@ class ShotService:
             sorted_shot_list = sorted(temp_list, key=self.sort_by_priority)
 
         # sorted_shot_list로 데이터 set
-        self.reload_view(sorted_shot_list)
+        self.load_shots_to_view(sorted_shot_list)
 
     def get_default_due_date(self, item):
         if item.due_date is "":
@@ -219,35 +233,55 @@ class ShotService:
         return item.due_date
 
     def sort_by_name(self, item):
-        return item.project_name, self.get_default_due_date(item)
+        return item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(item)
 
     def sort_by_due_date(self, item):
-        return self.get_default_due_date(item), item.project_name
+        return self.get_default_due_date(item), item.project_name, item.sequence_name, item.shot_name,
 
     def sort_by_priority(self, item):
-        return not item.done_comp_tasks, item.project_name, self.get_default_due_date(item)
+        return not item.done_comp_tasks, item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(
+            item)
 
     def on_custom_context_menu_requested(self, pos):
         index = self.view.shot_list.indexAt(pos)
         if not index.isValid():
             return
 
-        # 선택한 샷의 path 정보 받아 오기
-        self.project, self.sequence, self.shot = index.data().split('/')
-        comp_shot = CompShot(self.shot)
-        self.comp_shot_path = os.path.dirname(comp_shot.file_path)
-        print('shot path: ', self.comp_shot_path)
+        # 선택한 샷이 속한 디렉토리 path 정보 받아 오기
+        comp_shot_dir_path = self.get_comp_shot_dir_path(index)
 
         context_menu = QMenu(self.view)
         file_open_action = context_menu.addAction("open in Files")
 
         action = context_menu.exec_(self.view.mapToGlobal(pos))
         if action == file_open_action:
-            self.open_shot_file_tree()
+            self.open_comp_shot_dir(comp_shot_dir_path)
 
-    def open_shot_file_tree(self):
+    def get_comp_shot_dir_path(self, index):
+        self.project, self.sequence, self.shot = index.data().split('/')
+        comp_shot = CompShot(self.shot)
+        comp_shot_dir_path = os.path.dirname(comp_shot.file_path)
+        # print('shot path: ', comp_shot_path)
+        return comp_shot_dir_path
+
+    def open_comp_shot_dir(self, comp_shot_dir_path):
         filters = ';;'.join(FILE_FILTERS)
-        file_name = QFileDialog.getOpenFileName(self.view, 'open in Files', self.comp_shot_path,
+        print("file path:", comp_shot_dir_path)
+        # 해당 파일이 없을 시
+        if comp_shot_dir_path == '':
+            QMessageBox.information(self.view, "Message", "file doesn't exists")
+            return
+
+        dir = QDir(comp_shot_dir_path)
+        # 해당 파일 트리가 없을 시 트리 생성
+        # => 서버에서 공유하는 파일 트리일때는 무조건 존재 해당 코드 필요 X, 현재 테스트용으로 로컬에서 임시로 사용하므로 없을 경우 만들어 줌
+        if not dir.exists():
+            if dir.mkpath(comp_shot_dir_path):
+                QMessageBox.information(self.view, "Message", "Directory Created")
+        # else:
+        #     QMessageBox.information(self.view, "Message", "Directory Already Existed")
+
+        file_name = QFileDialog.getOpenFileName(self.view, 'open in Files', comp_shot_dir_path,
                                                 filter=filters)
         if file_name == "":
             return

@@ -22,6 +22,8 @@ def update_filetree(mountpoint, root):
             },
             "file_name": {
                 "shot": ""
+                # "asset": "<Project>_<AssetType>_<Asset>_<TaskType>_<Revision>",
+                # "style": "lowercase"
             }
         },
         "output": {
@@ -43,7 +45,7 @@ def update_filetree(mountpoint, root):
     print(project)
     gazu.files.update_project_file_tree(project, tree)
 
-update_filetree('/home/rapa/kitsu', 'nuki')
+update_filetree('/home/rapa/nuki', 'nuki project')
 
 project = gazu.project.get_project_by_name('movie2')
 print(project)

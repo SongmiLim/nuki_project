@@ -1,7 +1,10 @@
+from datetime import datetime
+
 import gazu as gazu
 from PySide2 import QtWidgets
 
 from jiwoon.gazu_api.service.comp_task import CompTask
+from jiwoon.gazu_api.service.utils import construct_full_path
 from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
 
 
@@ -186,6 +189,16 @@ class TaskService:
         self.sequence = sequence.get('name')
         self.shot = shot.get('name')
 
+        self.update_progress_and_status()
+        # status_list = self.set_task_init()
+        # value = (100 / (len(self.model.todo_datas) - 1)) * (status_list.count(True))
+        # ProgressBar.set_progressbar(self.view, value)
+        #
+        # self.model.task_status = self.task_status
+        # self.model.all_task_status = status_list
+        # self.model.layoutChanged.emit()
+
+    def update_progress_and_status(self):
         status_list = self.set_task_init()
         value = (100 / (len(self.model.todo_datas) - 1)) * (status_list.count(True))
         ProgressBar.set_progressbar(self.view, value)
@@ -198,8 +211,12 @@ class TaskService:
         self.task_status = True
         self.all_task_status = []
         tasks = gazu.task.all_tasks_for_shot(self.__shot)
+        files = gazu.files.get_last_output_files_for_entity(self.__shot, output_type=None,
+                                                            task_type=None)
         count = 0
 
+        # print('files',files)
+        # print('---------------------')
         self.model.todo_datas = []
         self.model.todo_datas.append([])
         self.model.selected_datas = []
@@ -209,15 +226,27 @@ class TaskService:
         for task in tasks:
             if task.get('task_type_name') != 'Compositing':
                 # self.new_nuke_working_file(CompTask(task))
-                task_file = gazu.files.get_all_preview_files_for_task(task.get('id'))
+                # task의 output file이 있는지 찾기
+                task_file = None
+                for file in files:
+                    if file.get('task_type_id') == task.get('task_type_id'):
+                        task_file = file
+                        files.remove(file)
+                        break
+
+                task_preview_file = gazu.files.get_all_preview_files_for_task(task.get('id'))
                 self.model.todo_datas[count].append(task.get('task_type_name'))
                 self.model.todo_datas[count].append(task.get('task_status_name'))
-                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('revision')) if task_file else \
+                self.model.todo_datas[count].append(task_preview_file[len(task_preview_file) - 1].get('revision')) if task_preview_file else \
                     self.model.todo_datas[count].append('-')
-                self.model.todo_datas[count].append(task_file[len(task_file) - 1].get('extension')) if task_file else \
+                self.model.todo_datas[count].append(task_preview_file[len(task_preview_file) - 1].get('extension')) if task_preview_file else \
                     self.model.todo_datas[count].append('-')
-                self.model.todo_datas[count].append(task.get('updated_at'))
+                self.model.todo_datas[count].append(datetime.strptime(task.get('updated_at'), '%Y-%m-%dT%H:%M:%S').strftime('%Y/%m/%d %H:%M'))
                 self.model.selected_datas[count].append(task)
+                self.model.selected_datas[count][0]['sequence'] = self.sequence
+                if task_file:
+                    self.model.selected_datas[count][0]['output_type_id'] = task_file.get('id')
+                    self.model.selected_datas[count][0]['output_path'] = construct_full_path(task_file)
                 self.model.todo_datas.append([])
                 self.model.selected_datas.append([])
                 count += 1
@@ -231,6 +260,9 @@ class TaskService:
                 self.all_task_status.append(self.task_status)
 
         return self.all_task_status
+
+    def reload_tasks(self):
+        self.update_progress_and_status()
 
     def new_nuke_working_file(self, comptask, name='main', comment='') -> dict:
         """
@@ -268,5 +300,3 @@ class TaskService:
         # self.logger.create_working_file_log(self.user.get('full_name'), self.working_file_path)
 
         return working_file
-
-

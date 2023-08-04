@@ -1,6 +1,6 @@
 import os
 import nuke
-# import fileseq
+import fileseq
 from PySide2 import QtCore
 
 def project_setting(comptask):
@@ -36,18 +36,18 @@ def nodes_data():
     source_dic = {}
 
     for node in nodes:
-        if not (node.knob('task_type') and node.knob('molo_id')):
+        if not (node.knob('task_type') and node.knob('nuke_id')):
             continue
         node_type = node["task_type"].value()
-        node_id = node["molo_id"].value()
+        node_id = node["nuke_id"].value()
         source_dic[node_type] = node_id
 
     return source_dic
 
 
-def create_node(object_type, molo_id, task_path, xpos, ypos):
+def create_node(object_type, nuki_id, task_path, xpos, ypos):
     """
-
+create_node(object_type, nuki_id, file_path, xpos, ypos)
     Args:
         object_type:
         molo_id:
@@ -66,9 +66,9 @@ def create_node(object_type, molo_id, task_path, xpos, ypos):
             print("해당하는 파일이 경로에 없습니다.")
             return False
         cam = nuke.nodes.Camera3(file=task_path, xpos=xpos + 200, ypos=ypos + 150)
-        cam.addKnob(nuke.Text_Knob('molo_id', 'DB_id'))
+        cam.addKnob(nuke.Text_Knob('nuke_id', 'DB_id'))
         cam.addKnob(nuke.Text_Knob('task_type', 'Task_Type'))
-        cam['molo_id'].setValue(molo_id)
+        cam['nuke_id'].setValue(nuki_id)
         cam['task_type'].setValue(object_type)
         cam.setSelected(True)
 
@@ -81,9 +81,9 @@ def create_node(object_type, molo_id, task_path, xpos, ypos):
         first = seq.start()
         last = seq.end()
         node = nuke.nodes.Read(file=task_path, first=first, last=last, xpos=xpos + 200, ypos=ypos + 150)
-        node.addKnob(nuke.Text_Knob('molo_id', 'DB_id'))
+        node.addKnob(nuke.Text_Knob('nuki_id', 'DB_id'))
         node.addKnob(nuke.Text_Knob('task_type', 'Task_Type'))
-        node['molo_id'].setValue(molo_id)
+        node['nuki_id'].setValue(nuki_id)
         node['task_type'].setValue(object_type)
         node.setSelected(True)
     nuke.nodes.BackdropNode(xpos=xpos, ypos=ypos, bdwidth=500, bdheight=400, label=object_type,
@@ -105,9 +105,11 @@ def create_nodes(info_dict, log_func=None):
         return
 
     xpos, ypos = get_nodes_bound()
+
     for object_type, path_list in info_dict.items():
-        for molo_id, file_path in path_list.items():
-            res = create_node(object_type, molo_id, file_path, xpos, ypos)
+        for nuki_id, file_path in path_list.items():
+            print('info : ', object_type, nuki_id, file_path, xpos, ypos)
+            res = create_node(object_type, nuki_id, file_path, xpos, ypos)
             if log_func and res:
                 # 나중에 수정 필요
                 log_func(file_path + ' create!')
@@ -132,11 +134,11 @@ def update_nodes(info_dict, log_func=None):
     # 누크 내에 있는 모든 노드들의 task_type_name을 가져옴.
     for node in nodes:
         node.setSelected(False)
-        if not (node.knob('task_type') and node.knob('molo_id')):
+        if not (node.knob('task_type') and node.knob('nuke_id')):
             continue
         node_type = node["task_type"].value()
         if node_type in info_dict.keys():
-            molo_id = next(iter(info_dict[node_type].keys()))
+            nuke_id = next(iter(info_dict[node_type].keys()))
             file_path = next(iter(info_dict[node_type].values()))
             if not os.path.exists(file_path):
                 print("해당하는 파일이 경로에 없습니다.")
@@ -147,7 +149,7 @@ def update_nodes(info_dict, log_func=None):
                 except fileseq.FileSeqException:
                     print("해당하는 파일이 경로에 없습니다.")
                     continue
-                node["molo_id"].setValue(molo_id)
+                node["nuke_id"].setValue(nuke_id)
                 node["file"].setValue(file_path)
                 first = seq.start()
                 last = seq.end()
