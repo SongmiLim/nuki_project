@@ -189,6 +189,16 @@ class TaskService:
         self.sequence = sequence.get('name')
         self.shot = shot.get('name')
 
+        self.update_progress_and_status()
+        # status_list = self.set_task_init()
+        # value = (100 / (len(self.model.todo_datas) - 1)) * (status_list.count(True))
+        # ProgressBar.set_progressbar(self.view, value)
+        #
+        # self.model.task_status = self.task_status
+        # self.model.all_task_status = status_list
+        # self.model.layoutChanged.emit()
+
+    def update_progress_and_status(self):
         status_list = self.set_task_init()
         value = (100 / (len(self.model.todo_datas) - 1)) * (status_list.count(True))
         ProgressBar.set_progressbar(self.view, value)
@@ -251,6 +261,9 @@ class TaskService:
 
         return self.all_task_status
 
+    def reload_tasks(self):
+        self.update_progress_and_status()
+
     def new_nuke_working_file(self, comptask, name='main', comment='') -> dict:
         """
         입력받은 CompTask의 task에 대해 Kitsu DB상에 새로운 working file을 생성하는 함수.
@@ -287,5 +300,3 @@ class TaskService:
         # self.logger.create_working_file_log(self.user.get('full_name'), self.working_file_path)
 
         return working_file
-
-
