@@ -20,7 +20,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
-        root_path = "/home/rapa/Nuki_Project"
+        root_path = "/home/rapa/kitsu/nuki"
         self.file_system_model = QFileSystemModel()
         self.file_system_model.setRootPath(root_path)
         self.treeView.setModel(self.file_system_model)
@@ -43,10 +43,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exr_list.setPalette(palette)
         self.exr_list.setFont(font)
 
-        # Adjust the width of the first column to show the file names properly
-        self.treeView.setColumnWidth(0, 160)
+        # # Adjust the width of the first column to show the file names properly
+        self.treeView.setColumnWidth(0, 180)
         self.treeView.setColumnWidth(1, 50)
         self.treeView.setColumnWidth(2, 70)
+
 
         # signal
         self.file_system_model.directoryLoaded.connect(self.expand_tree)
@@ -54,6 +55,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dir_lineedit.textChanged.connect(self.text_changed)
         self.select_all_btn.clicked.connect(self.select_all_btn_clicked)
         self.upload_btn.clicked.connect(self.upload_btn_clicked)
+
+    # def resize_column_width(self):
+    #     """
+    #     Resize the column width in the treeview depending on the files name length.
+    #     """
+    #     files_names = self.treeView.model().filePaths()
+    #     for index, file_name in enumerate(files_names):
+    #         file_name_length = len(file_name)
+    #         column_width = file_name_length * 9
 
     def expand_tree(self):
         root_index = self.file_system_model.index(self.file_system_model.rootPath())
@@ -72,6 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.expand_tree_recursive(child_index, path)
 
     def on_tree_item_clicked(self, index):
+        # self.resize_column_width()
         if not index.isValid():
             return
         self.path = self.file_system_model.filePath(index) # 클릭 된 아이템 파일 경로
