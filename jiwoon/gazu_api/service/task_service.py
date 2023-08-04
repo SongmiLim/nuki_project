@@ -25,8 +25,9 @@ class TaskService:
     def __init__(self, model, view):
         self.model = model
         self.view = view
-        self.host = gazu.client.set_host("http://192.168.3.117/api")
-        gazu.log_in("admin@netflixacademy.com", "netflixacademy")
+        # self.host = gazu.client.set_host("http://192.168.3.117/api")
+        # gazu.log_in("admin@netflixacademy.com", "netflixacademy")
+        print("host test", gazu.client.get_host)
 
     @property
     def project(self):

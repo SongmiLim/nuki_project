@@ -7,9 +7,9 @@ import os
 basedir = os.path.dirname(__file__)
 user_data = os.path.join(basedir, '../data/user.json')
 
-gazu.client.set_host("http://192.168.3.117/api")
-gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-
+# gazu.client.set_host("http://192.168.3.117/api")
+# gazu.log_in("admin@netflixacademy.com", "netflixacademy")
+print("host test", gazu.client.get_host)
 
 class TreeModel(QStandardItemModel):
     def __init__(self):
