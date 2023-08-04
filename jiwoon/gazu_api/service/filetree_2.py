@@ -38,11 +38,11 @@ class MyGazu:
         print(f'working_file : {self.working_file}')
 
 
-    def type_outputfile(self):
+    def create_outputfile(self):
         self.output_type = gazu.files.new_output_type(self.output_type_name, self.output_type_short_name)
-        print(f'output_type : {output_type}')
+        print(f'output_type : {self.output_type}')
 
-    def outputfile(self):
+    def outputfile_path(self):
         output_type = gazu.files.get_output_type_by_name('exr')
         print(f'output_type : {output_type}')
         output_type_2 = gazu.files.get_output_type_by_name('jpg')
@@ -110,14 +110,14 @@ class MyGazu:
 gz = MyGazu()
 gz.create_workingfile()
 # gz.type_outputfile()
-gz.outputfile()
+gz.outputfile_path()
 
 # gz.get_status()
 # gz.comment_previewpublish()
-# gz.make_folder_tree_working('/home/rapa/kitsu/nuki')
-gz.make_folder_tree_output_1('/home/rapa/kitsu/nuki')
-gz.make_folder_tree_output_2('/home/rapa/kitsu/nuki')
-gz.make_folder_tree_output_3('/home/rapa/kitsu/nuki')
+gz.make_folder_tree_working('/home/rapa/nuki/nuki project')
+gz.make_folder_tree_output_1('/home/rapa/nuki/nuki project')
+gz.make_folder_tree_output_2('/home/rapa/nuki/nuki project')
+gz.make_folder_tree_output_3('/home/rapa/kitsu/nuki project')
 
 
 
