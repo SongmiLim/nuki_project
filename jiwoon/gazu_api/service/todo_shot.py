@@ -4,6 +4,7 @@
 import gazu
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
+import datetime
 
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/default.jpg'))
@@ -66,6 +67,9 @@ class TodoShot:
 
     @property
     def due_date(self):
+        if self._due_date is "":
+            # Return a date far in the future as a default value
+            return str(datetime.datetime.max)
         return self._due_date
 
     # @property

@@ -5,8 +5,8 @@ from PySide2.QtCore import Qt, QDir
 from PySide2.QtWidgets import QMenu, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage, QCursor
 import os
-import datetime
 from jiwoon.gazu_api.service.filetree_1 import *
+
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/nuke.png'))
 
@@ -32,7 +32,6 @@ class ShotService:
         # print("host test", gazu.client.get_host)
         self.raw_todo_shots_list = []
         self.filtered_todo_shots = []
-
 
     @property
     def project(self):
@@ -77,7 +76,7 @@ class ShotService:
         self.raw_todo_shots_list = gazu.user.all_tasks_to_do()
 
         # todo_shots의 많은 정보 중 필요한 정보들만 객체에 저장
-        self.filter_todo_shots(task_service)
+        self.filtered_todo_shots = self.filter_todo_shots(task_service)
 
         # filtered_todo_shots를 view에 load
         self.load_shots_to_view(self.filtered_todo_shots)
@@ -87,21 +86,11 @@ class ShotService:
         self.view.assigned_shot_num.setText(f'{str(assigned_shot_num)} shots')
 
         self.view.sorted_comboBox.setCurrentIndex(0)
+        self.clear_shot_detail_info()
+        task_service.reload_tasks()
 
-    def load_shots_to_view(self, todo_shots):
-        # 모델의 기존 데이터 리셋 후 update
-        self.model.beginResetModel()
-        self.model.todo_shots = []
-
-        for todo_shot in todo_shots:
-            # 모델에 데이터 추가
-            shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
-            self.model.todo_shots.append([
-                f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
-        self.model.endResetModel()
-
-    def filter_todo_shots(self, task_service):
-        self.filtered_todo_shots = []
+    def filter_todo_shots(self, task_service) -> list:
+        filtered_todo_shots = []
 
         # 할당받은 task 중 compositing에 해당하는 task만 view에 추가
         comp_task_id = gazu.task.get_task_type_by_name('Compositing')['id']
@@ -116,7 +105,20 @@ class ShotService:
                 todo_shot.done_comp_tasks = self.check_tasks_all_done(status_list)
 
                 # 정보가 저장된 todo_shot를 전역적으로 사용하기위해 todo_shots_obj 리스트에 추가
-                self.filtered_todo_shots.append(todo_shot)
+                filtered_todo_shots.append(todo_shot)
+        return filtered_todo_shots
+
+    def load_shots_to_view(self, todo_shots):
+        # 모델의 기존 데이터 리셋 후 update
+        self.model.beginResetModel()
+        self.model.todo_shots = []
+
+        for todo_shot in todo_shots:
+            # 모델에 데이터 추가
+            shot_thumbnail = self.get_thumbnail(todo_shot.preview_file_url)
+            self.model.todo_shots.append([
+                f'{todo_shot.project_name}/{todo_shot.sequence_name}/{todo_shot.shot_name}', shot_thumbnail])
+        self.model.endResetModel()
 
     def check_tasks_all_done(self, status_list) -> bool:
         all_true = True
@@ -139,7 +141,6 @@ class ShotService:
             self.clear_shot_detail_info()
             self.clicked_shot_detail_info(selected_shot_info, task_service)
 
-    # shot detail 정보 초기화
     def clear_shot_detail_info(self):
         self.view.label_proj.setText("")
         self.view.label_seq.setText("")
@@ -156,11 +157,11 @@ class ShotService:
         # 선택한 샷 정보 받아 오기
         self.project, self.sequence, self.shot = selected_item.split('/')
 
-        # 선택한 샷 CompShot 객체로 생성
-        comp_shot = CompShot(self.shot)
-
         # send selected_item to task_service
         task_service.load_tasks(self.project, self.sequence, self.shot)
+
+        # 선택한 샷 CompShot 객체로 생성
+        comp_shot = CompShot(self.shot)
 
         # UI에 data set
         self.view.label_proj.setText(comp_shot.project_name)
@@ -213,21 +214,14 @@ class ShotService:
         # sorted_shot_list로 데이터 set
         self.load_shots_to_view(sorted_shot_list)
 
-    def get_default_due_date(self, item):
-        if item.due_date is "":
-            # Return a date far in the future as a default value
-            return str(datetime.datetime.max)
-        return item.due_date
-
     def sort_by_name(self, item):
-        return item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(item)
+        return item.project_name, item.sequence_name, item.shot_name, item.due_date
 
     def sort_by_due_date(self, item):
-        return self.get_default_due_date(item), item.project_name, item.sequence_name, item.shot_name,
+        return item.due_date, item.project_name, item.sequence_name, item.shot_name,
 
     def sort_by_priority(self, item):
-        return not item.done_comp_tasks, item.project_name, item.sequence_name, item.shot_name, self.get_default_due_date(
-            item)
+        return not item.done_comp_tasks, item.project_name, item.sequence_name, item.shot_name, item.due_date
 
     def on_custom_context_menu_requested(self, pos):
         index = self.view.shot_list.indexAt(pos)
