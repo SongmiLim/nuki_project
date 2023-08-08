@@ -45,7 +45,7 @@ def update_filetree(mountpoint, root):
     print(project)
     gazu.files.update_project_file_tree(project, tree)
 
-update_filetree('/home/rapa/nuki', 'nuki project')
+update_filetree('/home/rapa/nuki', 'nuki_project')
 
 project = gazu.project.get_project_by_name('movie2')
 print(project)

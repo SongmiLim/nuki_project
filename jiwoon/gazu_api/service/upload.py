@@ -1,8 +1,9 @@
 import sys
 import os
+import re
 from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
 from PySide2.QtGui import QColor, QPalette, QFont
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbstractItemView
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbstractItemView, QHeaderView
 from PySide2.QtCore import Qt, QStringListModel
 
 
@@ -16,11 +17,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle('Upload to KITSU')
         self.exr_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.comment_plaintextedit.setPlaceholderText('Leave your comment...')
+        self.comment_plaintextedit.setFocus()
         self.upload_msg_label.setText('')
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
-        root_path = "/home/rapa/kitsu/nuki"
+        root_path = "/home/rapa/nuki/nuki_project"
         self.file_system_model = QFileSystemModel()
         self.file_system_model.setRootPath(root_path)
         self.treeView.setModel(self.file_system_model)
@@ -43,11 +45,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exr_list.setPalette(palette)
         self.exr_list.setFont(font)
 
-        # # Adjust the width of the first column to show the file names properly
-        self.treeView.setColumnWidth(0, 180)
-        self.treeView.setColumnWidth(1, 50)
-        self.treeView.setColumnWidth(2, 70)
-
+        # set the column widths to be automatically adjusted
+        self.treeView.header().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         # signal
         self.file_system_model.directoryLoaded.connect(self.expand_tree)
@@ -56,51 +55,61 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.select_all_btn.clicked.connect(self.select_all_btn_clicked)
         self.upload_btn.clicked.connect(self.upload_btn_clicked)
 
-    # def resize_column_width(self):
-    #     """
-    #     Resize the column width in the treeview depending on the files name length.
-    #     """
-    #     files_names = self.treeView.model().filePaths()
-    #     for index, file_name in enumerate(files_names):
-    #         file_name_length = len(file_name)
-    #         column_width = file_name_length * 9
-
     def expand_tree(self):
         root_index = self.file_system_model.index(self.file_system_model.rootPath())
-        self.expand_tree_recursive(root_index, 'pre-comp')
+        path = r'v\d{3}'
+        # root_path = re.findall(r'v\b\d{1,3}\d')
+        self.expand_tree_recursive(root_index, path)
 
     def expand_tree_recursive(self, index, path):
         # Recursively expand all items in the tree
         if not index.isValid():
             return
         self.treeView.expand(index)
-        if path == index.data(Qt.ItemDataRole.DisplayRole):
+        folder_name = index.data(Qt.ItemDataRole.DisplayRole)
+        if re.match(path, folder_name):
             return
         for i in range(self.file_system_model.rowCount(index)):
             child_index = index.child(i, 0)
             if child_index.isValid():
                 self.expand_tree_recursive(child_index, path)
 
+    def disable_buttons(self):
+        self.upload_btn.setEnabled(False)
+        self.select_all_btn.setEnabled(False)
+
+    def set_enabled_buttons(self):
+        self.upload_btn.setEnabled(True)
+        self.select_all_btn.setEnabled(True)
+
     def on_tree_item_clicked(self, index):
-        # self.resize_column_width()
         if not index.isValid():
             return
         self.path = self.file_system_model.filePath(index) # 클릭 된 아이템 파일 경로
         self.dir_lineedit.setText(self.path)
-        if not os.path.basename(self.path).endswith('pre-comp'):
+
+        pattern = r'v\d{3}'
+        folder_name = index.data(Qt.ItemDataRole.DisplayRole)
+        # print(folder_name)
+
+        if not os.path.basename(self.path).endswith('exr'):
             self.upload_msg_label.setText('')
             self.exr_list.setEnabled(True)
             self.exr_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.disable_buttons()
+        else:
+            self.set_enabled_buttons()
 
+        # print(self.path)
         files = os.listdir(self.path)
         files.sort()
+        self.list_len = len(files)
 
         # Get the parent folder of the clicked folder
-        parent_index = index.parent()
-        parent_folder = self.file_system_model.filePath(parent_index)
+        parent_folder = index.parent().data(Qt.ItemDataRole.DisplayRole)
 
         # Check if the parent folder is the "pre-comp" folder
-        if parent_folder.endswith("/pre-comp"):
+        if re.match(pattern, parent_folder):
             if files:
                 try:
                     split_files = files[0].split('.')
@@ -169,12 +178,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def convert_to_mp4(self):
         input_dir = self.path
+        print(self.path)
         input_file_name = self.name_split
         input_file_extension = self.format_split
         output_codec = '-c:v libx264'
         output_pixel = '-pix_fmt yuv420p'
-        output_dir = '/home/rapa/ffmpeg_test/test2'
-        output_name = 'test2'
+        output_dir = self.path.replace('exr', 'mp4')
+        output_name = self.name_split
         output_vide_format = 'mp4'
 
         if self.count_split.isdigit():
@@ -193,11 +203,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         input_dir = self.path
         input_file_name = self.name_split
         input_file_extension = self.format_split
-        input_file_num = self.count_split
+        # middle of the frame.
+        num_digits = len(self.count_split)
+        input_file_num = str(int(self.list_len / 2)).zfill(num_digits)
+
         input_file_path = f'{input_dir}/{input_file_name}.{input_file_num}.{input_file_extension}'
 
-        output_dir = '/home/rapa/ffmpeg_test/test2'
-        output_name = 'thumbnail'
+        output_dir = self.path.replace('exr', 'jpg')
+        output_name = f'{self.name_split}_thumbnail'
         output_vide_format = 'jpg'
         output_file_path = f'{output_dir}/{output_name}.{output_vide_format}'
         jpeg_pixel = '640'
