@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from jiwoon.gazu_api.service.exceptions import *
 import gazu
 from jiwoon.gazu_api.service.logger import Logger
@@ -82,6 +83,7 @@ class Auth:
             self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
     def log_in(self, try_id, try_pw) -> bool:
+        self.user_email_valid(try_id)
         # print(try_id, try_pw)
         if not self._valid_host:
             # raise UnconnectedHostError('Error: Host to login is not connected.')
@@ -100,6 +102,14 @@ class Auth:
         self._valid_user = True
         self.logger.enter_log(self.user.get("full_name"))
         return True
+
+    def user_email_valid(self, try_id):
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if re.match(email_pattern, try_id):
+            return True
+        else:
+            print('login failed')
+            return False
 
     def connect_host(self, try_host) -> bool:
         """

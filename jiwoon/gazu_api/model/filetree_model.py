@@ -83,7 +83,7 @@ class TreeModel(QStandardItemModel):
             path_list.append(project_name)
             path_list.append(seq_name)
             path_list.append(shot_name)
-            self.shot_detail = '/'.join(path_list)
+            self.shot_Connect= '/'.join(path_list)
 
         else:
             pass

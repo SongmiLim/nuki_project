@@ -22,10 +22,11 @@ class FileTreeSetting:
         tasks = gazu.user.all_tasks_to_do()
         print(tasks)
         for i in tasks:
-            if i['task_type_name'] == 'Compositing': # 전체 task 종류별로 만들다 보면 여러번 반복 'Compositing' 으로 할당 됐는지 확인
+            if i['task_type_name'] == 'Compositing': # 'Compositing' 으로 할당 된 것만
                 project_name = i['project_name']
                 seq_name = i['sequence_name']
                 shot_name = i['entity_name']
+                self.task_name = i['task_type_name']
 
                 self.project = gazu.project.get_project_by_name(project_name)
                 print(f'project : {self.project}')
@@ -36,26 +37,22 @@ class FileTreeSetting:
 
                 self.create_workingfile()
 
-
     def create_workingfile(self):
         self.task_type = None
-        task_list = ['Animation', 'Compositing', 'FX', 'Layout', 'Lighting', 'Rendering', 'Storyboard']
         task_types = gazu.task.all_task_types_for_project(self.project)
         for self.task_type in task_types:
-            for task in task_list: # 하나의 task type 말고 여러 task 들 한꺼번에 폴더 만들기
-                if self.task_type['name'] == task and self.task_type['for_entity'] == self.shot['type']:
-                    self.task_type = self.task_type
-                    # print(f'task_type : {self.task_type}')
-                    self.task = gazu.task.get_task_by_name(self.shot, self.task_type)
-                    # print(f'task : {self.task}') # 'assigner_id': '8f70afe0-2227-463f-b056-262c5239b502'
-                    # workingfile path
-                    self.working_file = gazu.files.new_working_file(self.task, person=None)
-                    # print(f'working_file : {self.working_file}') # 'person_id': 'ba657db8-2424-4184-87c2-fbc4949151d6'
-                    # ouputfile 경로 생성
-                    self.outputfile_path()
-                    # working 폴더 생성
-                    self.make_folder_tree_working('/home/rapa/nuki/nuki_project')
-
+            if self.task_type['name'] == self.task_name and self.task_type['for_entity'] == self.shot['type']:
+                self.task_type = self.task_type
+                print(f'task_type : {self.task_type}')
+                self.task = gazu.task.get_task_by_name(self.shot, self.task_type)
+                print(f'task : {self.task}')
+                # workingfile path
+                self.working_file = gazu.files.new_working_file(self.task, person=None)
+                print(f'working_file : {self.working_file}')
+                # ouputfile 경로 생성
+                self.outputfile_path()
+                # working 폴더 생성
+                self.make_folder_tree_working('/home/rapa/nuki/nuki_project')
 
     def create_outputfile(self): # 한번만 실행
         output_list = ['mp4', 'exr', 'jpg']
@@ -69,7 +66,7 @@ class FileTreeSetting:
     def outputfile_path(self):
         output_list = ['mp4', 'exr', 'jpg']
         for out in output_list:
-            if self.task_type['name'] == 'Compositing':
+            if self.task_type['name'] == 'Compositing': # 'Compositing' 만 output 폴더 생성
                 output_type = gazu.files.get_output_type_by_name(out)
                 # print(f'output_type : {output_type}')
                 self.output_file = gazu.files.new_entity_output_file(self.shot, output_type, self.task_type, 'publish', working_file=self.working_file, revision=self.working_file['revision'])
@@ -93,9 +90,7 @@ class FileTreeSetting:
         else:
             print("폴더가 이미 존재합니다.")
 
-
-
 nk = FileTreeSetting()
-nk.user_tasks_filetree()
+nk.user_tasks_filetree() # 함수 들이 연결 되어 있어서 이 함수만 실행 하면 됨
 
 # nk.create_outputfile() # 한번만 실행
