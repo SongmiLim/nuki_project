@@ -182,13 +182,13 @@ class Ui_MainWindow(object):
         font = QFont()
         font.setPointSize(12)
         self.reload_btn.setFont(font)
-        self.widget = QWidget(self.centralwidget)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(720, 160, 161, 241))
-        self.verticalLayout = QVBoxLayout(self.widget)
+        self.layoutWidget = QWidget(self.centralwidget)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(720, 160, 161, 241))
+        self.verticalLayout = QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.comment_lineedit = QLineEdit(self.widget)
+        self.comment_lineedit = QLineEdit(self.layoutWidget)
         self.comment_lineedit.setObjectName(u"comment_lineedit")
         font1 = QFont()
         font1.setPointSize(10)
@@ -201,7 +201,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.comment_lineedit)
 
-        self.comment_plaintextedit = QPlainTextEdit(self.widget)
+        self.comment_plaintextedit = QPlainTextEdit(self.layoutWidget)
         self.comment_plaintextedit.setObjectName(u"comment_plaintextedit")
         font2 = QFont()
         font2.setPointSize(9)
@@ -210,13 +210,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.comment_plaintextedit)
 
-        self.widget1 = QWidget(self.centralwidget)
-        self.widget1.setObjectName(u"widget1")
-        self.widget1.setGeometry(QRect(738, 406, 121, 81))
-        self.verticalLayout_2 = QVBoxLayout(self.widget1)
+        self.layoutWidget1 = QWidget(self.centralwidget)
+        self.layoutWidget1.setObjectName(u"layoutWidget1")
+        self.layoutWidget1.setGeometry(QRect(738, 406, 121, 82))
+        self.verticalLayout_2 = QVBoxLayout(self.layoutWidget1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.select_all_btn = QPushButton(self.widget1)
+        self.select_all_btn = QPushButton(self.layoutWidget1)
         self.select_all_btn.setObjectName(u"select_all_btn")
         palette5 = QPalette()
         palette5.setBrush(QPalette.Active, QPalette.WindowText, brush)
@@ -259,7 +259,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.select_all_btn)
 
-        self.upload_btn = QPushButton(self.widget1)
+        self.upload_btn = QPushButton(self.layoutWidget1)
         self.upload_btn.setObjectName(u"upload_btn")
         palette6 = QPalette()
         palette6.setBrush(QPalette.Active, QPalette.WindowText, brush)
@@ -301,6 +301,15 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.upload_btn)
 
+        self.status_combo = QComboBox(self.centralwidget)
+        self.status_combo.addItem("")
+        self.status_combo.addItem("")
+        self.status_combo.addItem("")
+        self.status_combo.addItem("")
+        self.status_combo.addItem("")
+        self.status_combo.addItem("")
+        self.status_combo.setObjectName(u"status_combo")
+        self.status_combo.setGeometry(QRect(720, 120, 161, 38))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -317,5 +326,12 @@ class Ui_MainWindow(object):
         self.comment_plaintextedit.setPlainText("")
         self.select_all_btn.setText(QCoreApplication.translate("MainWindow", u"Select ALL", None))
         self.upload_btn.setText(QCoreApplication.translate("MainWindow", u"Upload", None))
+        self.status_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"TODO", None))
+        self.status_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"Done", None))
+        self.status_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"Ready", None))
+        self.status_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"Retake", None))
+        self.status_combo.setItemText(4, QCoreApplication.translate("MainWindow", u"WFA", None))
+        self.status_combo.setItemText(5, QCoreApplication.translate("MainWindow", u"WIP", None))
+
     # retranslateUi
 
