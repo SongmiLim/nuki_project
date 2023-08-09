@@ -24,11 +24,9 @@ class NukeService:
     def __init__(self, model, view):
         self.model = model
         self.view = view
-        self.host = gazu.client.set_host("http://192.168.3.117/api")
         self.loader = Loader()
         self.selected_comptask = None
         self.load_mode = False
-        gazu.log_in("admin@netflixacademy.com", "netflixacademy")
 
     @property
     def project(self):
