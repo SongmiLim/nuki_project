@@ -26,14 +26,15 @@ class Nuki(QMainWindow):
             self.login_widget()
 
     def run_log_in(self):
-        try_id = self.login_ui.user_id_input.text()
-        try_pw = self.login_ui.user_pw_input.text()
+        try_id = self.login_ui.ID_lineedit.text()
+        try_pw = self.login_ui.pw_lineedit.text()
         try:
             self.auth.log_in(try_id, try_pw)
         except InvalidAuthError:
             print('error')
+            self.error_label.setText("Couldn't find your Kitsu account")
         if self.auth.valid_user:
-            if self.login_ui.remember_check.isChecked():
+            if self.login_ui.remember_checkbox.isChecked():
                 self.auth.save_setting()
             self.login_ui.close()
             self.main_widget()
@@ -72,6 +73,8 @@ class Nuki(QMainWindow):
         self.login_ui.pw_lineedit.setEchoMode(self.login_ui.pw_lineedit.Password)
         self.login_ui.pw_lineedit.returnPressed.connect(self.run_log_in)
         self.login_ui.signin_btn.clicked.connect(self.run_log_in)
+        self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
+        self.login_ui.error_label.setText('')
 
     def run_connect_host(self):
         """
