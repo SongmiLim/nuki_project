@@ -22,7 +22,7 @@ class UUpload(QMainWindow, Ui_MainWindow):
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
-        root_path = "/home/rapa/nuki/nuki_project"
+        root_path = "/home/rapa/kitsu/nuki"
         self.file_system_model = QFileSystemModel()
         self.file_system_model.setRootPath(root_path)
         self.treeView.setModel(self.file_system_model)
@@ -223,9 +223,26 @@ class UUpload(QMainWindow, Ui_MainWindow):
         self.convert_to_mp4()
         self.extract_thumbnail_from_exr()
 
-
 # if __name__ == '__main__':
 #     app = QApplication(sys.argv)
-window = UUpload()
-window.show()
-#     sys.exit(app.exec_())
+# window = UUpload()
+# window.show()
+    # sys.exit(app.exec_())
+
+# def show_upload_ui():
+#     # app = QApplication(sys.argv)
+#     window = UUpload()
+#     window.show()
+#     # sys.exit(app.exec_())
+#
+# if __name__ == '__main__':
+#     show_upload_ui()
+
+def show_upload_ui():
+    # app = QApplication(sys.argv)
+    window = UUpload()
+    window.show()
+    # sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    show_upload_ui()
