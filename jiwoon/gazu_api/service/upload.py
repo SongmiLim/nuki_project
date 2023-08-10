@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbst
 from PySide2.QtCore import Qt, QStringListModel
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+class UUpload(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.file_system_model = None
@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Get the parent folder of the clicked folder
         parent_folder = index.parent().data(Qt.ItemDataRole.DisplayRole)
 
-        # Check if the parent folder is the "pre-comp" folder
+        # Check if the clicked folder is match with the pattern.
         if re.match(pattern, parent_folder):
             if files:
                 try:
@@ -224,8 +224,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.extract_thumbnail_from_exr()
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+window = UUpload()
+window.show()
+#     sys.exit(app.exec_())
