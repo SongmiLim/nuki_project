@@ -67,11 +67,11 @@ class Nuki(QMainWindow):
         로그인 ui 설정
         """
         self.login_ui = self.init_ui('loginwidget.ui')
-        self.login_ui.user_id_input.setPlaceholderText('Email@address.com')
-        self.login_ui.user_pw_input.setPlaceholderText('Password')
-        self.login_ui.user_pw_input.setEchoMode(self.login_ui.user_pw_input.Password)
-        self.login_ui.user_pw_input.returnPressed.connect(self.run_log_in)
-        self.login_ui.login_btn.clicked.connect(self.run_log_in)
+        self.login_ui.ID_lineedit.setPlaceholderText('Email@address.com')
+        self.login_ui.pw_lineedit.setPlaceholderText('Password')
+        self.login_ui.pw_lineedit.setEchoMode(self.login_ui.pw_lineedit.Password)
+        self.login_ui.pw_lineedit.returnPressed.connect(self.run_log_in)
+        self.login_ui.signin_btn.clicked.connect(self.run_log_in)
 
     def run_connect_host(self):
         """
@@ -88,8 +88,8 @@ class Nuki(QMainWindow):
             self.host_ui.close()
             self.login_widget()
         else:
-            self.host_ui.error_msg.setText('Invalid address!')
-            self.host_ui.error_msg.setStyleSheet("Color : orange")
+            self.host_ui.error_label.setText('Invalid address!')
+            self.host_ui.error_label.setStyleSheet("Color : orange")
 
     def init_ui(self, ui_path):
         """
