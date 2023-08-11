@@ -3,8 +3,6 @@
 """
 import os
 import gazu
-# from .utils import construct_full_path
-
 from datetime import datetime
 
 
@@ -49,23 +47,17 @@ class CompTask:
 
         self._comments = gazu.task.all_comments_for_task(self._task_dict)
 
-        # self.thumbnail_image = self.get_thumbnail_url()
-        # self.last_comptask_revision = gazu.files.get_last_working_file_revision(self.task_dict) or {}
-
-
     @property
-    def task_status(self):
+    def task_status(self) -> dict:
         """
-        Returns:
-            dict: 선택한 task의 status 정보??????
+        Returns: 선택한 task의 status 정보
         """
         return self._task_status
 
     @property
     def is_ready(self) -> bool:
         """
-        Returns:
-            bool: 해당 comp task의 shot에서 comp 이외의 다른 task들이 Done인지 여부
+        Returns: 해당 comp task의 shot에서 comp 이외의 다른 task들이 Done인지 여부
 
         다른 task들이 모두 Done 상태이면 True, 아니면 False
         """
@@ -178,15 +170,6 @@ class CompTask:
             res.append(temp)
         return res
 
-    def published_output_files(self, output_type=None, task_type=None):
-        """
-        all_output_files 결과에서 publish 태그 필터링
-
-        json 파일에 output file의 id 저장
-        output file id : project > seq > shot > dep
-        """
-        # 기능 추가 예정
-        pass
 
     def latest_output_files_info(self, output_type=None, task_type=None) -> list:
         """

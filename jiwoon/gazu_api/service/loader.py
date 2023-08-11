@@ -1,14 +1,10 @@
 import gazu
-import os
 import glob
-
 from jiwoon.gazu_api.service.comp_task import CompTask
 from jiwoon.gazu_api.service.exceptions import WorkingFileExistsError
-# from jiwoon.gazu_api.service.exceptions import WorkingFileExistsError
 from jiwoon.gazu_api.service.nuke_function import *
 from jiwoon.gazu_api.service.logger import Logger
 from jiwoon.gazu_api.service.utils import construct_full_path
-# import nuke
 
 
 class Loader:
@@ -17,7 +13,6 @@ class Loader:
         self.logger = Logger()
         self.working_file_path = None
         self.user = gazu.client.get_current_user()
-        # self.nuke_command = self.set_nuke_command(version, nuke_command, nc, nukex)
 
     def open_nuke_working_file(self, comptask):
         """
@@ -31,14 +26,17 @@ class Loader:
         # clear_current_nuke_file()
         comptask = CompTask(comptask[0])
         last_working_file = gazu.files.get_last_working_file_revision(comptask.task_dict)
-        # print('last_working_file',last_working_file)
-        # return self.new_nuke_working_file(comptask)
+        print('last_working_file', last_working_file)
+        return self.new_nuke_working_file(comptask)
         # if last_working_file:
         #     return self.new_nuke_working_file(comptask)
         self.working_file_path = construct_full_path(last_working_file)
-        nuke.scriptOpen('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/sh01.nknc')
-        nuke.scriptReadFile('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/glass_onion_a_knives_out_mystery_sq01_sh01_layout_0018.nk')
+        print('working_file', self.working_file_path)
+
+        # nuke.scriptOpen('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/sh01.nknc')
+        # nuke.scriptReadFile('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/glass_onion_a_knives_out_mystery_sq01_sh01_layout_0018.nk')
         # open_current_nuke_file(self.working_file_path)
+
         return last_working_file
 
     def new_nuke_working_file(self, comptask, name='main', comment='') -> dict:
@@ -60,7 +58,7 @@ class Loader:
         nukenc = gazu.files.get_software_by_name('nuki')
         working_file = gazu.files.new_working_file(comptask.task_dict, name=name, comment=comment,
                                                    software=nukenc, person=self.user)
-        self.working_file_path = construct_full_path(working_file)
+        self.working_file_path = construct_full_path(working_file)  # arg : working_file or output_file
         root_dir = os.path.dirname(self.working_file_path)
         file_name = os.path.basename(self.working_file_path)
 
@@ -71,8 +69,8 @@ class Loader:
             if file == file_name:
                 raise WorkingFileExistsError("Already exists working file")
 
-        print('root_dir',root_dir)
-        print('file_name',file_name)
+        print('root_dir', root_dir)
+        print('file_name', file_name)
 
         project_setting(comptask)
         save_script(self.working_file_path)
@@ -81,10 +79,12 @@ class Loader:
         return working_file
 
     def create_nodes(self, info_dict):
-        create_nodes(info_dict, lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
+        create_nodes(info_dict,
+                     lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
 
     def update_nodes(self, info_dict):
-        update_nodes(info_dict, lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
+        update_nodes(info_dict,
+                     lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
 
     def set_nuke_command(self, version, nuke_command, nc, nukex):
         """
@@ -125,3 +125,31 @@ class Loader:
         self.nuke_command = ' '.join(nuke_path)
 
         return self.nuke_command
+
+    def construct_full_path(file: dict):
+        """
+        output file이나 working file의 딕셔너리를 받아서 확장자까지 연결된 full path를 반환
+
+        Args:
+            file(dict):working file 혹은 output file dict
+
+        Returns:
+            str: file의 실제 절대경로
+                    {dir_name}/{file_name}.{extension}
+                확장자가 레스터 이미지 확장자인 경우, padding을 포함
+                    {dir_name}/{file_name}.####.{extension}
+        """
+        path = file.get('path')
+        file_type = file.get('type')
+        padding = '.'
+        if file_type == 'WorkingFile':
+            software_id = file.get('software_id')
+            ext = gazu.files.get_software(software_id).get('file_extension')
+        elif file_type == 'OutputFile':
+            output_type = file.get('output_type_id')
+            ext = gazu.files.get_output_type(output_type).get('short_name')
+            if ext in ['exr', 'dpx', 'jpg', 'jpeg', 'png', 'tga']:
+                padding = '_####.'
+        else:
+            raise Exception('파일 딕셔너리가 아님')
+        return path + padding + ext

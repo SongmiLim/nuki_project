@@ -1,6 +1,5 @@
 import gazu as gazu
 from PySide2 import QtWidgets
-
 from jiwoon.gazu_api.service.filetree import FileTree
 from jiwoon.gazu_api.service.loader import Loader
 from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
@@ -158,6 +157,8 @@ class NukeService:
             # task = gazu.task.get_task_by_name(self.shot, task_type)
             #
             create_path_dict, update_path_dict = self.get_outputfiles_path()
+            # create_path_dict = {'Layout': {'2d49b7e6-df15-4c9c-9c36-9cad45ed7aa8': '/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/glass_onion_a_knives_out_mystery_sq01_sh01_layout_0018.nk'}}
+
             # for object_type, path_list in create_path_dict.items():
             #     for nuki_id, file_path in path_list.items():
             #         print('info : ',file_path)
@@ -173,12 +174,19 @@ class NukeService:
             files = gazu.files.get_last_output_files_for_entity(self.shot, output_type=None,
                                                                 task_type=None)
             # print('files',files)
-            # 0803 jw_test
-            # self.loader.create_nodes(create_path_dict)
-            # self.loader.update_nodes(update_path_dict)
 
             for index in selected_list:
                 working_file = self.loader.open_nuke_working_file(self.model.selected_datas[index])
+
+
+
+            # 0803 jw_test
+            task_path = '/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/BB8.0002.exr'
+            create_path_dict = {'Layout': {'2d49b7e6-df15-4c9c-9c36-9cad45ed7aa8': '/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/BB8.0002.exr'},
+                                'FX': {'2d49b7e6-df15-4c9c-9c36-9cad45ed7aa8': '/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/BB8.0002.exr'}}
+
+            self.loader.create_nodes(create_path_dict)
+            # self.loader.update_nodes(update_path_dict)
 
             # self.selected_comptask.last_comptask_revision = working_file
             # self.identify_nuke_file()
@@ -214,7 +222,7 @@ class NukeService:
             task_type_name = self.model.selected_datas[index][0].get('task_type_name')
             output_id = self.model.selected_datas[index][0].get('output_type_id') if self.model.selected_datas[index][0].get('output_type_id') else ''
             output_path = self.model.selected_datas[index][0].get('output_path') if self.model.selected_datas[index][0].get('output_path') else ''
-
+            print(task_type_name,'/',output_id,'/',output_path)
         #     if node_status == 0:
         #         create_path_dict[task_type_name] = {output_id: output_path}
         #     elif node_status == 1:

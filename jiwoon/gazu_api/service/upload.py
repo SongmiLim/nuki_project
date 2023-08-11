@@ -22,8 +22,7 @@ class UUpload(QMainWindow, Ui_MainWindow):
 
         self.select_all_btn.setStyleSheet("")
         self.upload_btn.setStyleSheet("")
-        # self.select_all_btn.setStyleSheet("QPushButton:disabled { color: gray; }")
-        # self.upload_btn.setStyleSheet("QPushButton:disabled { color: gray; }")
+
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView

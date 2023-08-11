@@ -37,11 +37,11 @@ def update_filetree(mountpoint, root):
     }
     # open project 함수를 써서 전부 다 파일 트리를 생성할 수 있지만, 다른팀과 같이 써야하므로 각각 프로젝트명으로 파일트리 생성해줌
     project = gazu.project.get_project_by_name('movie')
-    print(project)
+    # print(project)
     gazu.files.update_project_file_tree(project, tree)
 
 update_filetree('/home/rapa/nuki', 'nuki_project')
 
 # 파일트리가 잘 생성 되었는지 확인하는 코드
 project = gazu.project.get_project_by_name('movie')
-print(project)
+# print(project)
