@@ -1,13 +1,12 @@
 import os
 import webbrowser
-
 from jiwoon.gazu_api.controller.controller import Controller
 from jiwoon.gazu_api.service.exceptions import *
 from PySide2 import QtCore, QtUiTools, QtWidgets
 from PySide2.QtWidgets import QMainWindow, QWidget
 from jiwoon.gazu_api.service.auth import Auth
 from jiwoon.gazu_api.view.main_view import MainUI
-from jiwoon.gazu_api.view.host_view import HostUI
+
 
 class Nuki(QMainWindow):
     def __init__(self):
@@ -25,40 +24,21 @@ class Nuki(QMainWindow):
         else:
             self.login_widget()
 
-    def run_log_in(self):
-        try_id = self.login_ui.ID_lineedit.text()
-        try_pw = self.login_ui.pw_lineedit.text()
-        try:
-            self.auth.log_in(try_id, try_pw)
-        except InvalidAuthError:
-            print('error')
-            self.error_label.setText("Couldn't find your Kitsu account")
-        if self.auth.valid_user:
-            if self.login_ui.remember_checkbox.isChecked():
-                self.auth.save_setting()
-            self.login_ui.close()
-            self.main_widget()
-
-        else:
-            print('error')
-
     def forgot_pw_cmdlink_btn_clicked(self):
         forgot_password_browser = 'http://192.168.3.117/reset-password'
         webbrowser.open(forgot_password_browser)
-        pass
-
-    def login_btn_clicked(self):
-        self.run_log_in()
         pass
 
     def main_widget(self):
         Controller(MainUI())
 
     def host_widget(self):
+        """
+        host ui 설정
+        """
         self.host_ui = self.init_ui('nuki_host_widget.ui')
         self.host_ui.host_input.returnPressed.connect(self.run_connect_host)
         self.host_ui.connect_btn.clicked.connect(self.run_connect_host)
-
 
     def login_widget(self):
         """
@@ -72,13 +52,6 @@ class Nuki(QMainWindow):
         self.login_ui.signin_btn.clicked.connect(self.run_log_in)
         self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
         self.login_ui.error_label.setText('')
-
-    def main_widget(self):
-        """
-        main ui 설정
-        """
-
-        Controller(MainUI())
 
     def run_log_in(self):
         """
@@ -121,7 +94,6 @@ class Nuki(QMainWindow):
         else:
             self.host_ui.error_msg.setText('Invalid host!')
             self.host_ui.error_msg.setStyleSheet("Color : orange")
-
 
     def init_ui(self, ui_path) -> QWidget:
         """

@@ -1,6 +1,5 @@
 import gazu as gazu
 from PySide2 import QtWidgets
-
 from jiwoon.gazu_api.service.filetree import FileTree
 from jiwoon.gazu_api.service.loader import Loader
 from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
