@@ -73,37 +73,6 @@ class TreeModel(QStandardItemModel):
                     user_id = data['user_id'].split('@')
                     return user_id[0]
 
-<<<<<<< HEAD
-
-    # def select_filetree(self, index): # 로컬 파일에 연결 함수
-        # self.item = self.itemFromIndex(index)
-        # path_list = []
-        # path_list_temp = []
-        # shot_name = self.item.text()  # 샷 단계
-        # if 'SH' in shot_name:  # 영화 제목에 들어가면... ? 조건 수식 더 만들어보기
-        #     project_name = self.item.parent().parent().text()  # 프로젝트 단계
-        #     seq_name = self.item.parent().text()  # 시퀀스 단계
-        #     shot_item = self.item.text()  # 샷 단계
-        #
-        #     path_list.append(project_name)
-        #     path_list.append(seq_name)
-        #     path_list.append(shot_item)
-        #
-        #     self.tree_clicked_info = '/'.join(path_list)
-        #     print(self.tree_clicked_info)
-        #
-        #     path_list_temp.append(project_name)
-        #     path_list_temp.append(seq_name)
-        #     path_list_temp.append(shot_name)
-        #
-        #     text = '/'.join(path_list_temp)
-        #     self.item_clicked.emit(text)
-        #
-        # else:
-        #     pass
-        # depth = self.item_depth(index)
-        # pass
-    
     def select_filetree_ex(self, index):  # 로컬 파일에 연결 함수
         self.item = self.itemFromIndex(index)
         path_list = []
@@ -130,7 +99,7 @@ class TreeModel(QStandardItemModel):
 
         else:
             pass
-=======
+
     def select_filetree(self, index):  # 샷 연결 함수
         depth = self.item_depth(index)
         self.item = self.itemFromIndex(index)
@@ -158,4 +127,3 @@ class TreeModel(QStandardItemModel):
             index = index.parent()
             depth += 1
         return depth
->>>>>>> 082b6be0b41083cdd620c89c7d79cc3dba988c93

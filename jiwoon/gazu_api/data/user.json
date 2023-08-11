@@ -1,5 +1,2 @@
-<<<<<<< HEAD
-{"host": "", "user_id": "", "user_pw": "", "valid_host": false, "valid_user": false}
-=======
-{"host": "http://http://192.168.3.117/api", "user_id": "", "user_pw": "", "valid_host": true, "valid_user": false}
->>>>>>> 082b6be0b41083cdd620c89c7d79cc3dba988c93
+{"host": "http://192.168.3.117/api", "user_id": "admin@netflixacademy.com", "user_pw": "netflixacademy", "valid_host": true, "valid_user": false}
+

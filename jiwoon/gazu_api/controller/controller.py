@@ -63,27 +63,15 @@ class Controller:
 
     def handle_tree_item_clicked(self, text):
         # Find and select matching item in ListWidget
-        # print(text)
-        # print(self.shot_model.todo_shots)
-        # print(self.shot_model.todo_shots[0])
-        # print(text)
         count = 0
-        # while True:
         for count in range(len(self.shot_model.todo_shots)):
             if text in self.shot_model.todo_shots[count][0]:
                 selected_shot = self.shot_model.todo_shots[count]
                 selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
-                # print(selected_shot)
-                # print(selected_shot_info)
 
-                # print(self.view.shot_list.index(count))
                 index = self.shot_model.index(count, 0)
                 self.view.shot_list.setCurrentIndex(index)
 
-                print(self.view.shot_list.currentIndex())
-                # self.shot_model.row(count)
-
-                # self.view.shot_list[count].setSelected(True)
                 self.shot_service.clear_shot_detail_info()
                 self.shot_service.clicked_shot_detail_info(selected_shot_info, self.task_service)
 
