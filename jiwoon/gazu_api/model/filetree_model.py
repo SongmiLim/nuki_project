@@ -74,51 +74,46 @@ class TreeModel(QStandardItemModel):
                     return user_id[0]
 
     def select_filetree_ex(self, index):  # 로컬 파일에 연결 함수
-        self.item = self.itemFromIndex(index)
-        path_list = []
-        path_list_temp = []
-        shot_name = self.item.text()  # 샷 단계
-        if 'SH' in shot_name:  # 영화 제목에 들어가면... ? 조건 수식 더 만들어보기
-            project_name = self.item.parent().parent().text()  # 프로젝트 단계
-            seq_name = self.item.parent().text()  # 시퀀스 단계
-            shot_item = self.item.text()  # 샷 단계
-
-            path_list.append(project_name)
-            path_list.append(seq_name)
-            path_list.append(shot_item)
-
-            self.tree_clicked_info = '/'.join(path_list)
-            print(self.tree_clicked_info)
-
-            path_list_temp.append(project_name)
-            path_list_temp.append(seq_name)
-            path_list_temp.append(shot_name)
-
-            text = '/'.join(path_list_temp)
-            self.item_clicked.emit(text)
-
-        else:
-            pass
-
-    def select_filetree(self, index):  # 샷 연결 함수
         depth = self.item_depth(index)
+
         self.item = self.itemFromIndex(index)
         path_list = []
+        # if 'SH' in shot_name:  # 영화 제목에 들어가면... ? 조건 수식 더 만들어보기
         if depth == 3:  # 3번째 깊이에 있는 아이템만 선택 가능
-            # print(depth)
-            # print('shot select')
             project_name = self.item.parent().parent().text()  # 프로젝트 단계
             seq_name = self.item.parent().text()  # 시퀀스 단계
-            shot_item = self.item.text()  # 샷 단계
+            shot_name = self.item.text()  # 샷 단계
+
             path_list.append(project_name)
             path_list.append(seq_name)
-            path_list.append(shot_item)
+            path_list.append(shot_name)
 
-            self.tree_clicked_info = '/'.join(path_list)
-            print(self.tree_clicked_info)
+            text = '/'.join(path_list)
+            self.item_clicked.emit(text)
 
         elif depth == 1 or depth == 2:  # 프로젝트, 시퀀스 선택 시 아무런 동작 일어나지 않도록 하기
             pass
+
+
+    # def select_filetree(self, index):  # 샷 연결 함수
+    #     depth = self.item_depth(index)
+    #     self.item = self.itemFromIndex(index)
+    #     path_list = []
+    #     if depth == 3:  # 3번째 깊이에 있는 아이템만 선택 가능
+    #         # print(depth)
+    #         # print('shot select')
+    #         project_name = self.item.parent().parent().text()  # 프로젝트 단계
+    #         seq_name = self.item.parent().text()  # 시퀀스 단계
+    #         shot_item = self.item.text()  # 샷 단계
+    #         path_list.append(project_name)
+    #         path_list.append(seq_name)
+    #         path_list.append(shot_item)
+    #
+    #         self.tree_clicked_info = '/'.join(path_list)
+    #         print(self.tree_clicked_info)
+    #
+    #     elif depth == 1 or depth == 2:  # 프로젝트, 시퀀스 선택 시 아무런 동작 일어나지 않도록 하기
+    #         pass
 
 
     def item_depth(self, index):  # 아이템 깊이 알아보는 함수
