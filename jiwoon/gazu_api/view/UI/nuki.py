@@ -1,4 +1,6 @@
 import os
+import webbrowser
+
 from jiwoon.gazu_api.controller.controller import Controller
 from jiwoon.gazu_api.service.exceptions import *
 from PySide2 import QtCore, QtUiTools, QtWidgets
@@ -40,6 +42,10 @@ class Nuki(QMainWindow):
         else:
             print('error')
 
+    def forgot_pw_cmdlink_btn_clicked(self):
+        forgot_password_browser = 'http://192.168.3.117/reset-password'
+        webbrowser.open(forgot_password_browser)
+        pass
 
     def login_btn_clicked(self):
         self.run_log_in()

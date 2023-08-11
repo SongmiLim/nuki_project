@@ -1,4 +1,4 @@
-from PySide2 import QtCore, QtUiTools
+from PySide2 import QtCore
 from jiwoon.gazu_api.model.filetree_model import TreeModel
 from jiwoon.gazu_api.model.task_model import TaskModel
 from jiwoon.gazu_api.model.shot_model import ShotModel
@@ -8,12 +8,10 @@ from jiwoon.gazu_api.service.task_service import TaskService
 from jiwoon.gazu_api.service.filetree_service import FileTreeService
 
 
-# from jiwoon.gazu_api.view.UI.nuki import *
-
-
 class Controller:
 
     def __init__(self, view):
+
         # initializing
         self.view = view
         self.filetree_model = TreeModel()
