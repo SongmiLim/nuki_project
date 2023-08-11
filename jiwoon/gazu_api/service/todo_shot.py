@@ -4,6 +4,7 @@
 import gazu
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage
 import os
+import datetime
 
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/default.jpg'))
@@ -18,11 +19,12 @@ class TodoShot:
         self._project_name = task.get('project_name')
         self._sequence_name = task.get('sequence_name')
         self._shot_name = task.get('entity_name')
-        self.comp_id = gazu.task.get_task_type_by_name('Compositing')['id']
+        # self.comp_id = gazu.task.get_task_type_by_name('Compositing')['id']
         # self.test = None
         self._preview_file_id = task.get('entity_preview_file_id')
         self._preview_file_url = gazu.files.get_preview_file_url(
             self.preview_file_id) if self.preview_file_id != "" else ""
+        self._preview_file_thumbnail = None
         self._due_date = task.get('due_date') if task.get('due_date') else ""
         # self.refresh_comp_tasks()
 
@@ -65,6 +67,9 @@ class TodoShot:
 
     @property
     def due_date(self):
+        if self._due_date is "":
+            # Return a date far in the future as a default value
+            return str(datetime.datetime.max)
         return self._due_date
 
     # @property
