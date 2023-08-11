@@ -49,7 +49,7 @@ class Controller:
             QtCore.Qt.CustomContextMenu)  # shot_list view에 컨텍스트 메뉴(Context Menu) 사용
         self.view.shot_list.customContextMenuRequested.connect(self.shot_service.on_custom_context_menu_requested)
 
-        self.view.filetree.clicked.connect(self.filetree_model.select_filetree)
+        self.view.filetree.clicked.connect(self.filetree_model.select_filetree_ex)
         self.filetree_model.item_clicked.connect(self.handle_tree_item_clicked)
 
         self.view.update_filetree_btn.clicked.connect(self.filetree_model.production_tree)
