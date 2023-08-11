@@ -68,7 +68,7 @@ class TreeModel(QStandardItemModel):
                     user_id = data['user_id'].split('@')
                     return user_id[0]
 
-    def select_filetree_ex(self, index):  # 로컬 파일에 연결 함수
+    def filetree_item_clicked(self, index):  # 로컬 파일에 연결 함수
         depth = self.item_depth(index)
 
         self.item = self.itemFromIndex(index)
