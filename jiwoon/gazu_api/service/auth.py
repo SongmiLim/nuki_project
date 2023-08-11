@@ -8,7 +8,6 @@ from jiwoon.gazu_api.service.exceptions import *
 from jiwoon.gazu_api.service.logger import Logger
 from PySide2.QtWidgets import QMessageBox
 
-
 class Auth:
     def __init__(self):
         self.logger = Logger()
@@ -93,7 +92,6 @@ class Auth:
             log_in = gazu.log_in(try_id, try_pw)
         except AuthFailedException:
             raise InvalidAuthError("Error: Couldn't find your Kitsu account")
-
 
         self._user = log_in['user']
         self._user_id = try_id

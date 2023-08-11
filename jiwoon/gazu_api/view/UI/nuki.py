@@ -26,32 +26,6 @@ class Nuki(QMainWindow):
         else:
             self.login_widget()
 
-    def run_log_in(self):
-        try_id = self.login_ui.ID_lineedit.text()
-        try_pw = self.login_ui.pw_lineedit.text()
-        is_valid_email = self.auth.user_email_valid(try_id)
-
-        if is_valid_email:
-            try:
-                self.auth.log_in(try_id, try_pw)
-                self.login_ui.error_label.setText('')
-            except InvalidAuthError:
-                print('dd, error')
-                self.login_ui.error_label.setText("Couldn't find your Kitsu account")
-        else:
-            if try_id == '' or try_pw == '':
-                self.login_ui.error_label.setText("Please enter your email and password.")
-            else:
-                self.login_ui.error_label.setText("Invalid login credentials. Please try again.")
-        if self.auth.valid_user:
-            if self.login_ui.remember_checkbox.isChecked():
-                self.auth.save_setting()
-            self.login_ui.close()
-            self.main_widget()
-
-        else:
-            print('valid_user, error')
-
     def forgot_pw_cmdlink_btn_clicked(self):
         forgot_password_browser = 'http://192.168.3.117/reset-password'
         webbrowser.open(forgot_password_browser)
