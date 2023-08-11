@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbst
 from PySide2.QtCore import Qt, QStringListModel
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
+class Ui_MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.file_system_model = None
@@ -17,6 +17,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exr_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.comment_plaintextedit.setPlaceholderText('Leave your comment...')
         self.upload_msg_label.setText('')
+
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
@@ -199,9 +200,3 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.convert_to_mp4()
         self.extract_thumbnail_from_exr()
 
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())

@@ -15,7 +15,6 @@ class MainUI(QMainWindow, Ui_Nuki):
         # filetree_view 영역
         self.filetree.setStyleSheet('background-color: transparent; color: white')
 
-
         # shot_list_view 영역
         self.shot_list.setStyleSheet('background-color: transparent; font-size: 14px;')
         self.shot_list.setViewMode(QListView.IconMode)

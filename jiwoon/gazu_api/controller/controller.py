@@ -1,7 +1,4 @@
-import os
-
-from PySide2 import QtCore, QtUiTools
-
+from PySide2 import QtCore
 from jiwoon.gazu_api.model.filetree_model import TreeModel
 from jiwoon.gazu_api.model.task_model import TaskModel
 from jiwoon.gazu_api.model.shot_model import ShotModel
@@ -29,13 +26,13 @@ class Controller:
         self.shot_service.get_all_tasks_todo(self.task_service)
         self.filetree_model.production_tree()
 
-        # set Model
+        # set model
         self.view.filetree.setModel(self.filetree_model)
         self.view.task_table.setModel(self.task_model)
         self.view.shot_list.setModel(self.shot_model)
         self.task_model.selection_model = self.view.task_table.selectionModel()
 
-        # show
+        # show view
         self.view.filetree.expandAll()
         self.view.show()
 

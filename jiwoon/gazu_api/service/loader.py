@@ -31,14 +31,17 @@ class Loader:
         # clear_current_nuke_file()
         comptask = CompTask(comptask[0])
         last_working_file = gazu.files.get_last_working_file_revision(comptask.task_dict)
-        # print('last_working_file',last_working_file)
-        # return self.new_nuke_working_file(comptask)
+        print('last_working_file', last_working_file)
+        return self.new_nuke_working_file(comptask)
         # if last_working_file:
         #     return self.new_nuke_working_file(comptask)
         self.working_file_path = construct_full_path(last_working_file)
-        nuke.scriptOpen('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/sh01.nknc')
-        nuke.scriptReadFile('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/glass_onion_a_knives_out_mystery_sq01_sh01_layout_0018.nk')
+        print('working_file', self.working_file_path)
+
+        # nuke.scriptOpen('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/sh01.nknc')
+        # nuke.scriptReadFile('/home/rapa/jw_test/kitsu/glass_onion_a_knives_out_mystery/shots/sq01/sh01/layout/working/v018/glass_onion_a_knives_out_mystery_sq01_sh01_layout_0018.nk')
         # open_current_nuke_file(self.working_file_path)
+
         return last_working_file
 
     def new_nuke_working_file(self, comptask, name='main', comment='') -> dict:
@@ -60,7 +63,7 @@ class Loader:
         nukenc = gazu.files.get_software_by_name('nuki')
         working_file = gazu.files.new_working_file(comptask.task_dict, name=name, comment=comment,
                                                    software=nukenc, person=self.user)
-        self.working_file_path = construct_full_path(working_file)
+        self.working_file_path = construct_full_path(working_file)  # arg : working_file or output_file
         root_dir = os.path.dirname(self.working_file_path)
         file_name = os.path.basename(self.working_file_path)
 
@@ -71,8 +74,8 @@ class Loader:
             if file == file_name:
                 raise WorkingFileExistsError("Already exists working file")
 
-        print('root_dir',root_dir)
-        print('file_name',file_name)
+        print('root_dir', root_dir)
+        print('file_name', file_name)
 
         project_setting(comptask)
         save_script(self.working_file_path)
@@ -81,10 +84,12 @@ class Loader:
         return working_file
 
     def create_nodes(self, info_dict):
-        create_nodes(info_dict, lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
+        create_nodes(info_dict,
+                     lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
 
     def update_nodes(self, info_dict):
-        update_nodes(info_dict, lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
+        update_nodes(info_dict,
+                     lambda task_path: self.logger.load_output_file_log(self.user.get('full_name'), task_path))
 
     def set_nuke_command(self, version, nuke_command, nc, nukex):
         """

@@ -7,14 +7,10 @@ import os
 basedir = os.path.dirname(__file__)
 user_data = os.path.join(basedir, '../data/user.json')
 
-# gazu.client.set_host("http://192.168.3.117/api")
-# gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-print("host test", gazu.client.get_host)
 
 class TreeModel(QStandardItemModel):
     def __init__(self):
         super().__init__()
-
 
     def production_tree(self):
         self.clear()
@@ -30,9 +26,8 @@ class TreeModel(QStandardItemModel):
                     self.project = i['project_name']
                     self.appendRow(self.projectItem)
                     self.sequence_tree()
-                if len(i['project_name']) > 18: # project name 글자가 길 경우 라벨로 풀 네임 보여주기
+                if len(i['project_name']) > 18:  # project name 글자가 길 경우 라벨로 풀 네임 보여주기
                     self.projectItem.setToolTip(i['project_name'])
-
 
     def sequence_tree(self):
         tasks = gazu.user.all_tasks_to_do()
@@ -48,12 +43,11 @@ class TreeModel(QStandardItemModel):
                     self.projectItem.appendRow(self.seqItem)
                     self.shot_tree()
 
-
     def shot_tree(self):
         tasks = gazu.user.all_tasks_to_do()
         for i in tasks:
             comp_task = i['task_type_name']
-            if comp_task == 'Compositing': # Compositing task 만 view 에 보여주기
+            if comp_task == 'Compositing':  # Compositing task 만 view 에 보여주기
                 self.shot_list = []
                 self.shotItem = QStandardItem(i['entity_name'])
                 if i['project_name'] == self.project and i['sequence_name'] in self.sequence_list and i[
@@ -61,18 +55,16 @@ class TreeModel(QStandardItemModel):
                     self.shot_list.append(i['entity_name'])
                     self.seqItem.appendRow(self.shotItem)
 
-
     def headerData(self, section, orientation, role):
         if (orientation == Qt.Horizontal and role == Qt.DisplayRole):
             # if (section == 0): return ' '  # header 기본값 없애주기
-            if (section == 0): # header에 user id 넣어주기
-                with open (user_data, 'r') as f:
+            if (section == 0):  # header에 user id 넣어주기
+                with open(user_data, 'r') as f:
                     data = json.load(f)
                     user_id = data['user_id'].split('@')
                     return user_id[0]
 
-
-    def select_filetree(self, index): # 로컬 파일에 연결 함수
+    def select_filetree(self, index):  # 로컬 파일에 연결 함수
         self.item = self.itemFromIndex(index)
         path_list = []
         shot_name = self.item.text()  # 샷 단계

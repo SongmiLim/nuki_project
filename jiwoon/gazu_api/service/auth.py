@@ -1,5 +1,7 @@
 import json
 import os
+
+from gazu import AuthFailedException
 from jiwoon.gazu_api.service.exceptions import *
 import gazu
 from jiwoon.gazu_api.service.logger import Logger
@@ -8,16 +10,15 @@ from jiwoon.gazu_api.service.logger import Logger
 class Auth:
     def __init__(self):
         self.logger = Logger()
-
         self._host = ''
         self._user = None
         self._user_id = ''
         self._user_pw = ''
         self._valid_host = False
         self._valid_user = False
-
         self.dir_path = os.path.expanduser('~/nuki/jiwoon/gazu_api/data')
         self.user_path = os.path.join(self.dir_path, 'user.json')
+
         if self.access_setting():
             self.load_setting()
 
@@ -27,45 +28,34 @@ class Auth:
 
     @property
     def valid_user(self):
-        """
-        Returns:
-            bool: 로그인에 성공했다면 True, 아니면 False
-        """
         return self._valid_user
 
     @property
     def user(self):
-        """
-        Returns:
-            dict: 로그인한 계정의 user dict
-        """
         return self._user
+
     @property
     def host(self):
-        """
-        Returns:
-            str: 연결된 host URL
-        """
         return self._host
-    def access_setting(self):
+
+    def access_setting(self) -> bool:
         """
         디렉토리와 각 json 파일이 존재하는지 확인하고 없으면 초기화
 
-        Returns:
-            bool: self.user_path에 해당하는 json 파일이 존재하거나 생성되면 True, 아니면 False
+        Returns: self.user_path에 해당하는 json 파일이 존재하거나 생성되면 True, 아니면 False
         """
         if not os.path.exists(self.dir_path):
             try:
                 os.makedirs(self.dir_path)
             except OSError:
                 raise AuthFileIOError("Error: Failed to create the directory.")
-
-        try:
-            if not os.path.exists(self.user_path):
+        if not os.path.exists(self.user_path):
+            try:
                 self.reset_setting()
-        except OSError:
-            raise AuthFileIOError("Error: Failed to create user.json file.")
+            except OSError:
+                raise AuthFileIOError("Error: Failed to create user.json file.")
         return True
+
     def load_setting(self):
         """
         json file에서 정보를 읽어오기
@@ -82,17 +72,12 @@ class Auth:
             self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
     def log_in(self, try_id, try_pw) -> bool:
-        # print(try_id, try_pw)
         if not self._valid_host:
-            # raise UnconnectedHostError('Error: Host to login is not connected.')
-            # self.error_label.setText("Couldn't find your Host")
-            print('error')
+            raise UnconnectedHostError('Error: Host to login is not connected.')
         try:
             log_in = gazu.log_in(try_id, try_pw)
-            print(f'logged in as {try_id}')
-        except gazu.AuthFailedException:
-            # raise InvalidAuthError("Error: Couldn't find your Kitsu account")
-            print('error')
+        except AuthFailedException:
+            raise InvalidAuthError("Error: Couldn't find your Kitsu account")
 
         self._user = log_in['user']
         self._user_id = try_id
@@ -105,13 +90,11 @@ class Auth:
         """
         try_host를 사용해 host에 접속 시도
 
-        Returns:
-            bool: 접속에 성공하면 True, 아니면 False 반환
+        Returns: 접속에 성공하면 True, 아니면 False 반환
         """
         gazu.set_host(try_host)
         if not gazu.client.host_is_valid():
-            # raise InvalidAuthError('Error: Invalid host URL.')
-            print('error')
+            raise InvalidAuthError('Error: Invalid host URL.')
         self._host = gazu.get_host()
         self._valid_host = True
         self.logger.connect_log(self.host)
