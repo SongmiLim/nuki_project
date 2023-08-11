@@ -1,6 +1,6 @@
 import os
-# import nuke
-# import fileseq
+import nuke
+import fileseq
 from PySide2 import QtCore
 
 def project_setting(comptask):
@@ -61,6 +61,7 @@ create_node(object_type, nuki_id, file_path, xpos, ypos)
     """
     선택한 output file에 해당하는 Camera노드 또는 Read노드를 생성한다.
     """
+
     if task_path.endswith((".fbx", ".abc", ".usd")):
         if not os.path.exists(task_path):
             print("해당하는 파일이 경로에 없습니다.")

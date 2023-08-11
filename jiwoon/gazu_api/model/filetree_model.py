@@ -7,9 +7,6 @@ import os
 basedir = os.path.dirname(__file__)
 user_data = os.path.join(basedir, '../data/user.json')
 
-# gazu.client.set_host("http://192.168.3.117/api")
-# gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-print("host test", gazu.client.get_host)
 
 
 class TreeModel(QStandardItemModel):
@@ -50,7 +47,6 @@ class TreeModel(QStandardItemModel):
                     self.projectItem.appendRow(self.seqItem)
                     self.shot_tree()
 
-
     def shot_tree(self):
         tasks = gazu.user.all_tasks_to_do()
         for i in tasks:
@@ -62,7 +58,6 @@ class TreeModel(QStandardItemModel):
                     'entity_name'] not in self.shot_list:
                     self.shot_list.append(i['entity_name'])
                     self.seqItem.appendRow(self.shotItem)
-
 
     def headerData(self, section, orientation, role):
         if (orientation == Qt.Horizontal and role == Qt.DisplayRole):

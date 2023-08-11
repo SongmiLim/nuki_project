@@ -1,4 +1,4 @@
-from PySide2.QtCore import QAbstractListModel, Signal, Qt
+from PySide2.QtCore import QAbstractListModel, Qt
 from PySide2.QtGui import QColor
 
 
