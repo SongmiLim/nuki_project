@@ -74,7 +74,7 @@ class TreeModel(QStandardItemModel):
                     return user_id[0]
 
 
-    def select_filetree(self, index): # 로컬 파일에 연결 함수
+    # def select_filetree(self, index): # 로컬 파일에 연결 함수
         # self.item = self.itemFromIndex(index)
         # path_list = []
         # path_list_temp = []
@@ -100,8 +100,9 @@ class TreeModel(QStandardItemModel):
         #
         # else:
         #     pass
-        pass
-
+        # depth = self.item_depth(index)
+        # pass
+    
     def select_filetree_ex(self, index):  # 로컬 파일에 연결 함수
         self.item = self.itemFromIndex(index)
         path_list = []
