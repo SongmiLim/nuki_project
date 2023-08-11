@@ -73,6 +73,7 @@ class TreeModel(QStandardItemModel):
                     user_id = data['user_id'].split('@')
                     return user_id[0]
 
+<<<<<<< HEAD
 
     # def select_filetree(self, index): # 로컬 파일에 연결 함수
         # self.item = self.itemFromIndex(index)
@@ -129,3 +130,32 @@ class TreeModel(QStandardItemModel):
 
         else:
             pass
+=======
+    def select_filetree(self, index):  # 샷 연결 함수
+        depth = self.item_depth(index)
+        self.item = self.itemFromIndex(index)
+        path_list = []
+        if depth == 3:  # 3번째 깊이에 있는 아이템만 선택 가능
+            # print(depth)
+            # print('shot select')
+            project_name = self.item.parent().parent().text()  # 프로젝트 단계
+            seq_name = self.item.parent().text()  # 시퀀스 단계
+            shot_item = self.item.text()  # 샷 단계
+            path_list.append(project_name)
+            path_list.append(seq_name)
+            path_list.append(shot_item)
+
+            self.tree_clicked_info = '/'.join(path_list)
+            print(self.tree_clicked_info)
+
+        elif depth == 1 or depth == 2:  # 프로젝트, 시퀀스 선택 시 아무런 동작 일어나지 않도록 하기
+            pass
+
+
+    def item_depth(self, index):  # 아이템 깊이 알아보는 함수
+        depth = 0
+        while index.isValid():
+            index = index.parent()
+            depth += 1
+        return depth
+>>>>>>> 082b6be0b41083cdd620c89c7d79cc3dba988c93
