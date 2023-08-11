@@ -46,7 +46,7 @@ class Controller:
         self.view.shot_list.customContextMenuRequested.connect(self.shot_service.on_custom_context_menu_requested)
 
         self.view.filetree.clicked.connect(self.filetree_model.select_filetree_ex)
-        self.filetree_model.item_clicked.connect(self.handle_tree_item_clicked)
+        self.filetree_model.item_clicked.connect(self.shot_service.handle_tree_item_clicked)
 
         self.view.update_filetree_btn.clicked.connect(self.filetree_model.production_tree)
         self.view.update_filetree_btn.clicked.connect(self.view.filetree.expandAll)
@@ -56,27 +56,6 @@ class Controller:
         self.task_model.selection_model.selectionChanged.connect(lambda: self.nuke_service.update_selected_comptask(
             self.task_model.selected_datas[self.task_model.selection_model.currentIndex().row()]))
         self.view.reload_btn.clicked.connect(self.task_service.reload_tasks)
-
-    def handle_tree_item_clicked(self, text):
-        # Find and select matching item in ListWidget
-        count = 0
-        for count in range(len(self.shot_model.todo_shots)):
-            if text in self.shot_model.todo_shots[count][0]:
-                selected_shot = self.shot_model.todo_shots[count]
-                selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
-
-                index = self.shot_model.index(count, 0)
-                self.view.shot_list.setCurrentIndex(index)
-
-                self.shot_service.clear_shot_detail_info()
-                self.shot_service.clicked_shot_detail_info(selected_shot_info, self.task_service)
-
-        # for row in range(len(self.shot_model.todo_shots)):
-        #     list_item = self.view.shot_list.item(row)
-        #     if list_item.text() == text:
-        #         list_item.setSelected(True)
-        #         break
-        # self.shot_service.clicked_shot_detail_info(text, self.task_service)
 
     #     self.view = view
     #     # a = Nuki()

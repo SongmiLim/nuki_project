@@ -88,6 +88,7 @@ class ShotService:
         self.view.sorted_comboBox.setCurrentIndex(0)
         self.clear_shot_detail_info()
         task_service.reload_tasks()
+        self.task_service = task_service
 
     def filter_todo_shots(self, task_service) -> list:
         filtered_todo_shots = []
@@ -271,3 +272,17 @@ class ShotService:
         if file_name == "":
             return
         print("Selected File:", file_name)
+
+    def handle_tree_item_clicked(self, text):
+        # Find and select matching item in ListWidget
+        count = 0
+        for count in range(len(self.model.todo_shots)):
+            if text in self.model.todo_shots[count][0]:
+                selected_shot = self.model.todo_shots[count]
+                selected_shot_info = selected_shot[0]  # selected_shot[0]은 text info, selected_shot[1]은 thumbnail pixmap
+
+                index = self.model.index(count, 0)
+                self.view.shot_list.setCurrentIndex(index)
+
+                self.clear_shot_detail_info()
+                self.clicked_shot_detail_info(selected_shot_info, self.task_service)
