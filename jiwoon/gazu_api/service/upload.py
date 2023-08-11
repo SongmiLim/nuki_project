@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbst
 from PySide2.QtCore import Qt, QStringListModel
 
 
-class Ui_MainWindow(QMainWindow, Ui_MainWindow):
+class UUpload(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.file_system_model = None
@@ -20,10 +20,13 @@ class Ui_MainWindow(QMainWindow, Ui_MainWindow):
         self.comment_plaintextedit.setFocus()
         self.upload_msg_label.setText('')
 
+        self.select_all_btn.setStyleSheet("")
+        self.upload_btn.setStyleSheet("")
+
 
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
-        root_path = "/home/rapa/nuki/nuki_project"
+        root_path = "/home/rapa/kitsu/nuki"
         self.file_system_model = QFileSystemModel()
         self.file_system_model.setRootPath(root_path)
         self.treeView.setModel(self.file_system_model)
@@ -79,9 +82,17 @@ class Ui_MainWindow(QMainWindow, Ui_MainWindow):
         self.upload_btn.setEnabled(False)
         self.select_all_btn.setEnabled(False)
 
+        # self.upload_btn.setStyleSheet("color: gray")
+        # self.select_all_btn.setStyleSheet('color: gray')
+
+        # self.upload_btn.setFocusPolicy(Qt.NoFocus)
+        # self.select_all_btn.setFocusPolicy(Qt.NoFocus)
+
     def set_enabled_buttons(self):
         self.upload_btn.setEnabled(True)
         self.select_all_btn.setEnabled(True)
+        # self.upload_btn.setStyleSheet('')
+        # self.select_all_btn.setStyleSheet('')
 
     def on_tree_item_clicked(self, index):
         if not index.isValid():
@@ -90,7 +101,7 @@ class Ui_MainWindow(QMainWindow, Ui_MainWindow):
         self.dir_lineedit.setText(self.path)
 
         pattern = r'v\d{3}'
-        folder_name = index.data(Qt.ItemDataRole.DisplayRole)
+        # folder_name = index.data(Qt.ItemDataRole.DisplayRole)
         # print(folder_name)
 
         if not os.path.basename(self.path).endswith('exr'):
@@ -109,7 +120,7 @@ class Ui_MainWindow(QMainWindow, Ui_MainWindow):
         # Get the parent folder of the clicked folder
         parent_folder = index.parent().data(Qt.ItemDataRole.DisplayRole)
 
-        # Check if the parent folder is the "pre-comp" folder
+        # Check if the clicked folder is match with the pattern.
         if re.match(pattern, parent_folder):
             if files:
                 try:
@@ -224,3 +235,17 @@ class Ui_MainWindow(QMainWindow, Ui_MainWindow):
         self.convert_to_mp4()
         self.extract_thumbnail_from_exr()
 
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+# window = UUpload()
+# window.show()
+    # sys.exit(app.exec_())
+
+def show_upload_ui():
+    # app = QApplication(sys.argv)
+    window = UUpload()
+    window.show()
+    # sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    show_upload_ui()
