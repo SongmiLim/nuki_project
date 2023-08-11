@@ -5,7 +5,7 @@ import re
 from jiwoon.gazu_api.service.exceptions import *
 import gazu
 from jiwoon.gazu_api.service.logger import Logger
-
+from PySide2.QtWidgets import QMessageBox
 
 class Auth:
     def __init__(self):
@@ -104,7 +104,13 @@ class Auth:
         """
         gazu.set_host(try_host)
         if not gazu.client.host_is_valid():
-            raise InvalidAuthError('Error: Invalid host URL.')
+            host_message_box = QMessageBox()
+            host_message_box.setIcon(QMessageBox.Information)
+            host_message_box.setText("Host Connection Failed")
+            host_message_box.setWindowTitle("error")
+            host_message_box.setStandardButtons(QMessageBox.Ok)
+            host_message_box.exec_()
+            print('error')
         self._host = gazu.get_host()
         self._valid_host = True
         self.logger.connect_log(self.host)

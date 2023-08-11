@@ -24,7 +24,7 @@ class TaskService:
         self.view = view
 
     @property
-    def project(self):
+    def project(self) -> dict:
         return self.__project
 
     @project.setter
@@ -32,7 +32,7 @@ class TaskService:
         self.__project = gazu.project.get_project_by_name(name)
 
     @property
-    def sequence(self):
+    def sequence(self) -> dict:
         return self.__sequence
 
     @sequence.setter
@@ -40,7 +40,7 @@ class TaskService:
         self.__sequence = gazu.shot.get_sequence_by_name(self.project, name)
 
     @property
-    def shot(self):
+    def shot(self) -> dict:
         return self.__shot
 
     @shot.setter
@@ -49,7 +49,7 @@ class TaskService:
         self.__entity = self.__shot
 
     @property
-    def task(self):
+    def task(self) -> dict:
         return self.__task
 
     @task.setter
@@ -58,7 +58,7 @@ class TaskService:
         self.__task = gazu.task.get_task_by_name(self.__entity, self.__task_type)
 
     @property
-    def task_status(self):
+    def task_status(self) -> bool:
         return self.__task_status
 
     @task_status.setter
@@ -72,7 +72,7 @@ class TaskService:
             header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
             width.append(header.sectionSize(column))
 
-    def get_all_status(self, task):
+    def get_all_status(self, task) -> list:
         self.project = task.get('project_name')
         self.sequence = task.get('sequence_name')
         self.shot = task.get('entity_name')
@@ -82,15 +82,7 @@ class TaskService:
         self.project = project.get('name')
         self.sequence = sequence.get('name')
         self.shot = shot.get('name')
-
         self.update_progress_and_status()
-        # status_list = self.set_task_init()
-        # value = (100 / (len(self.model.todo_datas) - 1)) * (status_list.count(True))
-        # ProgressBar.set_progressbar(self.view, value)
-        #
-        # self.model.task_status = self.task_status
-        # self.model.all_task_status = status_list
-        # self.model.layoutChanged.emit()
 
     def update_progress_and_status(self):
         status_list = self.set_task_init()
@@ -101,7 +93,7 @@ class TaskService:
         self.model.all_task_status = status_list
         self.model.layoutChanged.emit()
 
-    def set_task_init(self):
+    def set_task_init(self) -> list:
         self.task_status = True
         all_task_status = []
         count = 0
@@ -116,7 +108,6 @@ class TaskService:
 
         for task in tasks:
             if task.get('task_type_name') != 'Compositing':
-                # self.new_nuke_working_file(CompTask(task))
                 # task의 output file이 있는지 찾기
                 task_file = None
                 for file in files:
@@ -156,45 +147,8 @@ class TaskService:
 
         return all_task_status
 
-
-
     def reload_tasks(self):
         self.update_progress_and_status()
 
-    def new_nuke_working_file(self, comptask, name='main', comment='') -> dict:
-        """
-        입력받은 CompTask의 task에 대해 Kitsu DB상에 새로운 working file을 생성하는 함수.
-        outputfile 만들 때 쓰일 dictionary 형태 working file을 반환한다.
-        open_new_nuke_working_file()를 실행시켜 실제 nuke script를 저장한다.
 
-        Args:
-            comptask(molo.CompTask): 생성하고자 하는 compositing task의 CompTask 객체
-            name(str, optional): working file dict의 이름, 기본값 "main"
-            comment(str, optional): working file dict의 설명
-
-        Returns:
-            working_file (dict)
-        """
-        # nuke = gazu.files.get_software_by_name('nuke')
-        nukenc = gazu.files.get_software_by_name('nukenc')
-        working_file = gazu.files.new_working_file(comptask.task_dict, name=name, comment=comment,
-                                                   software=nukenc, person=self.user)
-
-        # self.working_file_path = construct_full_path(working_file)
-        #
-        # root_dir = os.path.dirname(self.working_file_path)
-        # file_name = os.path.basename(self.working_file_path)
-        #
-        # if not os.path.isdir(root_dir):
-        #     os.makedirs(root_dir)
-        #
-        # for file in os.listdir(root_dir):
-        #     if file == file_name:
-        #         raise WorkingFileExistsError("Already exists working file")
-        #
-        # molo_nuke.project_setting(comptask)
-        # molo_nuke.save_script(self.working_file_path)
-        # self.logger.create_working_file_log(self.user.get('full_name'), self.working_file_path)
-
-        return working_file
 

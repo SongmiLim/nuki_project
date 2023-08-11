@@ -50,7 +50,7 @@ def create_node(object_type, nuki_id, task_path, xpos, ypos):
 create_node(object_type, nuki_id, file_path, xpos, ypos)
     Args:
         object_type:
-        molo_id:
+        nuki_id:
         task_path:
         xpos:
         ypos:
@@ -67,7 +67,7 @@ create_node(object_type, nuki_id, file_path, xpos, ypos)
             print("해당하는 파일이 경로에 없습니다.")
             return False
         cam = nuke.nodes.Camera3(file=task_path, xpos=xpos + 200, ypos=ypos + 150)
-        cam.addKnob(nuke.Text_Knob('nuke_id', 'DB_id'))
+        cam.addKnob(nuke.Text_Knob('nuki_id', 'DB_id'))
         cam.addKnob(nuke.Text_Knob('task_type', 'Task_Type'))
         cam['nuke_id'].setValue(nuki_id)
         cam['task_type'].setValue(object_type)

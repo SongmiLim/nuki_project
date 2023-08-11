@@ -4,7 +4,6 @@ from jiwoon.gazu_api.service.comp_task import CompTask
 from jiwoon.gazu_api.service.exceptions import WorkingFileExistsError
 from jiwoon.gazu_api.service.nuke_function import *
 from jiwoon.gazu_api.service.logger import Logger
-from jiwoon.gazu_api.service.utils import construct_full_path
 
 
 class Loader:
@@ -58,7 +57,7 @@ class Loader:
         nukenc = gazu.files.get_software_by_name('nuki')
         working_file = gazu.files.new_working_file(comptask.task_dict, name=name, comment=comment,
                                                    software=nukenc, person=self.user)
-        self.working_file_path = construct_full_path(working_file)  # arg : working_file or output_file
+        self.working_file_path = self.construct_full_path(working_file)  # arg : working_file or output_file
         root_dir = os.path.dirname(self.working_file_path)
         file_name = os.path.basename(self.working_file_path)
 
