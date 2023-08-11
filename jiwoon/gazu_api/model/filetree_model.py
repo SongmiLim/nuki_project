@@ -14,9 +14,10 @@ print("host test", gazu.client.get_host)
 
 class TreeModel(QStandardItemModel):
     item_clicked = Signal(str)
-    self.tree_clicked_info = None
+
     def __init__(self):
         super().__init__()
+        self.tree_clicked_info = None
 
     def production_tree(self):
         self.clear()
@@ -80,7 +81,7 @@ class TreeModel(QStandardItemModel):
         if 'SH' in shot_name:  # 영화 제목에 들어가면... ? 조건 수식 더 만들어보기
             project_name = self.item.parent().parent().text()  # 프로젝트 단계
             seq_name = self.item.parent().text()  # 시퀀스 단계
-
+            shot_item = self.item.text()  # 샷 단계
             path_list.append(shot_item)
 
             self.tree_clicked_info = '/'.join(path_list)
