@@ -9,9 +9,6 @@ from jiwoon.gazu_api.service.logger import Logger
 from PySide2.QtWidgets import QMessageBox
 
 
-
-
-
 class Auth:
     def __init__(self):
         self.logger = Logger()
@@ -94,7 +91,6 @@ class Auth:
             raise UnconnectedHostError('Error: Host to login is not connected.')
         try:
             log_in = gazu.log_in(try_id, try_pw)
-
         except AuthFailedException:
             raise InvalidAuthError("Error: Couldn't find your Kitsu account")
 
