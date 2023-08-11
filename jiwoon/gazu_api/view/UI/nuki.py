@@ -30,7 +30,7 @@ class Nuki(QMainWindow):
         try_id = self.login_ui.ID_lineedit.text()
         try_pw = self.login_ui.pw_lineedit.text()
         is_valid_email = self.auth.user_email_valid(try_id)
-        # print(is_valid_email)
+
         if is_valid_email:
             try:
                 self.auth.log_in(try_id, try_pw)
@@ -54,10 +54,6 @@ class Nuki(QMainWindow):
         else:
             print('valid_user, error')
 
-
-    def login_btn_clicked(self):
-        self.run_log_in()
-        pass
 
     def forgot_pw_cmdlink_btn_clicked(self):
         forgot_password_browser = 'http://192.168.3.117/reset-password'
@@ -130,4 +126,3 @@ class Nuki(QMainWindow):
         ui.move(w, h)
         ui.show()
         return ui
-

@@ -2,6 +2,8 @@ import json
 import os
 import re
 import gazu
+from gazu import AuthFailedException
+
 from jiwoon.gazu_api.service.exceptions import *
 from jiwoon.gazu_api.service.logger import Logger
 from PySide2.QtWidgets import QMessageBox
@@ -90,11 +92,10 @@ class Auth:
         # print(try_id, try_pw)
         if not self._valid_host:
             raise UnconnectedHostError('Error: Host to login is not connected.')
-
         try:
             log_in = gazu.log_in(try_id, try_pw)
 
-        except gazu.AuthFailedException:
+        except AuthFailedException:
             raise InvalidAuthError("Error: Couldn't find your Kitsu account")
 
 
