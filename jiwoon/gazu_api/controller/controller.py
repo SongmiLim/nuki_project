@@ -10,7 +10,7 @@ from jiwoon.gazu_api.service.filetree_service import FileTreeService
 
 class Controller:
 
-    def __init__(self, view):
+    def __init__(self, view, auth):
 
         # initializing
         self.view = view

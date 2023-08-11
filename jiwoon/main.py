@@ -19,5 +19,5 @@ if __name__ == "__main__":
     else:
         app = QtWidgets.QApplication.instance()
     # app = QtWidgets.QApplication(sys.argv)
-    apps = Nukwi()
+    apps = Nuki()
     sys.exit(app.exec_())
