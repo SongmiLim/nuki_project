@@ -6,7 +6,7 @@ from PySide2.QtWidgets import QMainWindow
 from jiwoon.gazu_api.controller.controller import Controller
 from jiwoon.gazu_api.service.auth import Auth
 from jiwoon.gazu_api.view.main_view import MainUI
-
+from jiwoon.gazu_api.view.host_view import HostUI
 
 class Nuki(QMainWindow):
     def __init__(self):
@@ -58,9 +58,12 @@ class Nuki(QMainWindow):
         """
         host ui 설정
         """
-        self.host_ui = self.init_ui('nuki_host_widget.ui')
-        self.host_ui.host_input.returnPressed.connect(self.run_connect_host)
-        self.host_ui.connect_btn.clicked.connect(self.run_connect_host)
+        self.host_ui = HostUI()
+        self.host_ui.show()
+        # self.host_ui.setupUi(self)
+
+        # self.host_ui.host_input.returnPressed.connect(self.run_connect_host)
+        # self.host_ui.connect_btn.clicked.connect(self.run_connect_host)
 
     def login_widget(self):
         """
