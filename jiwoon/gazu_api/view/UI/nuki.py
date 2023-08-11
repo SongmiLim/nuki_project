@@ -103,10 +103,6 @@ class Nuki(QMainWindow):
             self.host_ui.close()
             self.login_widget()
 
-        # else: # 이 코드 없어도 작동 잘 됨
-        #     print('aaa')
-        #     self.host_ui.error_label.setText('Invalid address!')
-        #     self.host_ui.error_label.setStyleSheet("Color : orange")
 
     def init_ui(self, ui_path):
         """
@@ -135,7 +131,3 @@ class Nuki(QMainWindow):
         ui.show()
         return ui
 
-
-if __name__ == "__main__":
-    nnuki = Nuki()
-    nnuki.run_log_in()

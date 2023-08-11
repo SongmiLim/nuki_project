@@ -13,8 +13,6 @@ from PySide2.QtWidgets import QMessageBox
 class Auth:
     def __init__(self):
         self.logger = Logger()
-        # self.error_label = # auth 는 누키 받을 수 있음 실행 되는 순서가 누키 먼저니까 근데 받을 수 있는 변수를 만들어야 함
-
         self._host = ''
         self._user = None
         self._user_id = ''
@@ -91,12 +89,11 @@ class Auth:
     def log_in(self, try_id, try_pw) -> bool:
         # print(try_id, try_pw)
         if not self._valid_host:
-            # raise UnconnectedHostError('Error: Host to login is not connected.')
-            # self.error_label.setText("Couldn't find your Host")
-            print('aa, error')
+            raise UnconnectedHostError('Error: Host to login is not connected.')
+
         try:
             log_in = gazu.log_in(try_id, try_pw)
-            print(f'logged in as {try_id}')
+
         except gazu.AuthFailedException:
             raise InvalidAuthError("Error: Couldn't find your Kitsu account")
 
@@ -125,7 +122,6 @@ class Auth:
         """
         gazu.set_host(try_host)
         if not gazu.client.host_is_valid():
-            # raise InvalidAuthError('Error: Invalid host URL.')
             host_message_box = QMessageBox()
             host_message_box.setIcon(QMessageBox.Information)
             host_message_box.setText("Host Connection Failed")
