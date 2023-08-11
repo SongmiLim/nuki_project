@@ -6,6 +6,7 @@ from PySide2.QtWidgets import QMainWindow
 from jiwoon.gazu_api.controller.controller import Controller
 from jiwoon.gazu_api.service.auth import Auth
 from jiwoon.gazu_api.view.main_view import MainUI
+from jiwoon.gazu_api.model.filetree_model import TreeModel
 
 
 class Nuki(QMainWindow):
@@ -28,11 +29,22 @@ class Nuki(QMainWindow):
     def run_log_in(self):
         try_id = self.login_ui.ID_lineedit.text()
         try_pw = self.login_ui.pw_lineedit.text()
-        try:
-            self.auth.log_in(try_id, try_pw)
-        except InvalidAuthError:
-            print('error')
-            self.error_label.setText("Couldn't find your Kitsu account")
+        is_valid_email = self.auth.user_email_valid(try_id)
+        # print(is_valid_email)
+        if is_valid_email:
+            try:
+                self.auth.log_in(try_id, try_pw)
+                self.login_ui.error_label.setText('')
+            except InvalidAuthError:
+                print('dd, error')
+                self.login_ui.error_label.setText("Couldn't find your Kitsu account")
+
+        else:
+            if try_id == '' or try_pw == '':
+                self.login_ui.error_label.setText("Please enter your email and password.")
+            else:
+                self.login_ui.error_label.setText("Invalid login credentials. Please try again.")
+
         if self.auth.valid_user:
             if self.login_ui.remember_checkbox.isChecked():
                 self.auth.save_setting()
@@ -40,7 +52,7 @@ class Nuki(QMainWindow):
             self.main_widget()
 
         else:
-            print('error')
+            print('valid_user, error')
 
 
     def login_btn_clicked(self):
@@ -53,7 +65,7 @@ class Nuki(QMainWindow):
         pass
 
     def main_widget(self):
-        Controller(MainUI())
+        Controller(MainUI(),self.auth)
 
     def host_widget(self):
         """
@@ -90,9 +102,11 @@ class Nuki(QMainWindow):
             self.auth.save_setting()
             self.host_ui.close()
             self.login_widget()
-        else:
-            self.host_ui.error_label.setText('Invalid address!')
-            self.host_ui.error_label.setStyleSheet("Color : orange")
+
+        # else: # 이 코드 없어도 작동 잘 됨
+        #     print('aaa')
+        #     self.host_ui.error_label.setText('Invalid address!')
+        #     self.host_ui.error_label.setStyleSheet("Color : orange")
 
     def init_ui(self, ui_path):
         """
@@ -122,3 +136,6 @@ class Nuki(QMainWindow):
         return ui
 
 
+if __name__ == "__main__":
+    nnuki = Nuki()
+    nnuki.run_log_in()

@@ -1,14 +1,19 @@
 import json
 import os
 import re
-from jiwoon.gazu_api.service.exceptions import *
 import gazu
+from jiwoon.gazu_api.service.exceptions import *
 from jiwoon.gazu_api.service.logger import Logger
+from PySide2.QtWidgets import QMessageBox
+
+
+
 
 
 class Auth:
     def __init__(self):
         self.logger = Logger()
+        # self.error_label = # auth 는 누키 받을 수 있음 실행 되는 순서가 누키 먼저니까 근데 받을 수 있는 변수를 만들어야 함
 
         self._host = ''
         self._user = None
@@ -67,6 +72,7 @@ class Auth:
         except OSError:
             raise AuthFileIOError("Error: Failed to create user.json file.")
         return True
+
     def load_setting(self):
         """
         json file에서 정보를 읽어오기
@@ -83,18 +89,17 @@ class Auth:
             self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
     def log_in(self, try_id, try_pw) -> bool:
-        self.user_email_valid(try_id)
         # print(try_id, try_pw)
         if not self._valid_host:
             # raise UnconnectedHostError('Error: Host to login is not connected.')
             # self.error_label.setText("Couldn't find your Host")
-            print('error')
+            print('aa, error')
         try:
             log_in = gazu.log_in(try_id, try_pw)
             print(f'logged in as {try_id}')
         except gazu.AuthFailedException:
-            # raise InvalidAuthError("Error: Couldn't find your Kitsu account")
-            print('error')
+            raise InvalidAuthError("Error: Couldn't find your Kitsu account")
+
 
         self._user = log_in['user']
         self._user_id = try_id
@@ -103,12 +108,12 @@ class Auth:
         self.logger.enter_log(self.user.get("full_name"))
         return True
 
-    def user_email_valid(self, try_id):
+    def user_email_valid(self, try_id) -> bool:
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         if re.match(email_pattern, try_id):
             return True
         else:
-            print('login failed')
+            # print('login failed')
             return False
 
     def connect_host(self, try_host) -> bool:
@@ -121,11 +126,18 @@ class Auth:
         gazu.set_host(try_host)
         if not gazu.client.host_is_valid():
             # raise InvalidAuthError('Error: Invalid host URL.')
+            host_message_box = QMessageBox()
+            host_message_box.setIcon(QMessageBox.Information)
+            host_message_box.setText("Host Connection Failed")
+            host_message_box.setWindowTitle("error")
+            host_message_box.setStandardButtons(QMessageBox.Ok)
+            host_message_box.exec_()
             print('error')
-        self._host = gazu.get_host()
-        self._valid_host = True
-        self.logger.connect_log(self.host)
-        return True
+        else:
+            self._host = gazu.get_host()
+            self._valid_host = True
+            self.logger.connect_log(self.host)
+            return True
 
     def save_setting(self):
         """
@@ -152,3 +164,7 @@ class Auth:
         self._valid_user = False
 
         self.save_setting()
+
+    @property
+    def user_id(self):
+        return self._user_id
