@@ -2,8 +2,10 @@ import json
 import os
 from gazu import AuthFailedException
 import re
-from jiwoon.gazu_api.service.exceptions import *
 import gazu
+from gazu import AuthFailedException
+
+from jiwoon.gazu_api.service.exceptions import *
 from jiwoon.gazu_api.service.logger import Logger
 from PySide2.QtWidgets import QMessageBox
 
@@ -72,7 +74,6 @@ class Auth:
             self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
     def log_in(self, try_id, try_pw) -> bool:
-        self.user_email_valid(try_id)
         # print(try_id, try_pw)
         if not self._valid_host:
             raise UnconnectedHostError('Error: Host to login is not connected.')
@@ -88,12 +89,12 @@ class Auth:
         self.logger.enter_log(self.user.get("full_name"))
         return True
 
-    def user_email_valid(self, try_id):
+    def user_email_valid(self, try_id) -> bool:
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         if re.match(email_pattern, try_id):
             return True
         else:
-            print('login failed')
+            # print('login failed')
             return False
 
     def connect_host(self, try_host) -> bool:
@@ -111,10 +112,11 @@ class Auth:
             host_message_box.setStandardButtons(QMessageBox.Ok)
             host_message_box.exec_()
             print('error')
-        self._host = gazu.get_host()
-        self._valid_host = True
-        self.logger.connect_log(self.host)
-        return True
+        else:
+            self._host = gazu.get_host()
+            self._valid_host = True
+            self.logger.connect_log(self.host)
+            return True
 
     def save_setting(self):
         """
@@ -141,3 +143,7 @@ class Auth:
         self._valid_user = False
 
         self.save_setting()
+
+    @property
+    def user_id(self):
+        return self._user_id
