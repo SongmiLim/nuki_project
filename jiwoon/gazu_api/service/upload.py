@@ -20,6 +20,11 @@ class UUpload(QMainWindow, Ui_MainWindow):
         self.comment_plaintextedit.setFocus()
         self.upload_msg_label.setText('')
 
+        self.select_all_btn.setStyleSheet("")
+        self.upload_btn.setStyleSheet("")
+        # self.select_all_btn.setStyleSheet("QPushButton:disabled { color: gray; }")
+        # self.upload_btn.setStyleSheet("QPushButton:disabled { color: gray; }")
+
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
         root_path = "/home/rapa/kitsu/nuki"
@@ -78,9 +83,17 @@ class UUpload(QMainWindow, Ui_MainWindow):
         self.upload_btn.setEnabled(False)
         self.select_all_btn.setEnabled(False)
 
+        # self.upload_btn.setStyleSheet("color: gray")
+        # self.select_all_btn.setStyleSheet('color: gray')
+
+        # self.upload_btn.setFocusPolicy(Qt.NoFocus)
+        # self.select_all_btn.setFocusPolicy(Qt.NoFocus)
+
     def set_enabled_buttons(self):
         self.upload_btn.setEnabled(True)
         self.select_all_btn.setEnabled(True)
+        # self.upload_btn.setStyleSheet('')
+        # self.select_all_btn.setStyleSheet('')
 
     def on_tree_item_clicked(self, index):
         if not index.isValid():
@@ -89,7 +102,7 @@ class UUpload(QMainWindow, Ui_MainWindow):
         self.dir_lineedit.setText(self.path)
 
         pattern = r'v\d{3}'
-        folder_name = index.data(Qt.ItemDataRole.DisplayRole)
+        # folder_name = index.data(Qt.ItemDataRole.DisplayRole)
         # print(folder_name)
 
         if not os.path.basename(self.path).endswith('exr'):
@@ -228,15 +241,6 @@ class UUpload(QMainWindow, Ui_MainWindow):
 # window = UUpload()
 # window.show()
     # sys.exit(app.exec_())
-
-# def show_upload_ui():
-#     # app = QApplication(sys.argv)
-#     window = UUpload()
-#     window.show()
-#     # sys.exit(app.exec_())
-#
-# if __name__ == '__main__':
-#     show_upload_ui()
 
 def show_upload_ui():
     # app = QApplication(sys.argv)

@@ -9,10 +9,11 @@ class foo(QMainWindow):
         self.Init()
     def Init(self):
         nuki_app = Nuki()
+        # print(nuki_app)
 
 
 if __name__ == "__main__":
     # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QtWidgets.QApplication(sys.argv)
-    apps = Nuki()
+    apps = foo()
     sys.exit(app.exec_())
