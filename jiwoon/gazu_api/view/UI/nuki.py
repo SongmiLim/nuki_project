@@ -1,5 +1,5 @@
 import os
-import webbrowser
+# import webbrowser
 
 import gazu
 
@@ -28,9 +28,9 @@ class Nuki(QMainWindow):
         else:
             self.login_widget()
 
-    def forgot_pw_cmdlink_btn_clicked(self):
-        forgot_password_browser = 'http://192.168.3.117/reset-password'
-        webbrowser.open(forgot_password_browser)
+    # def forgot_pw_cmdlink_btn_clicked(self):
+    #     forgot_password_browser = 'http://192.168.3.117/reset-password'
+    #     webbrowser.open(forgot_password_browser)
 
     def main_widget(self):
         Controller(MainUI(), self.auth)
@@ -56,7 +56,7 @@ class Nuki(QMainWindow):
         self.login_ui.pw_lineedit.setEchoMode(self.login_ui.pw_lineedit.Password)
         self.login_ui.pw_lineedit.returnPressed.connect(self.run_log_in)
         self.login_ui.signin_btn.clicked.connect(self.run_log_in)
-        self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
+        # self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
         # self.login_ui.error_label.setText('')
 
     def run_log_in(self):
