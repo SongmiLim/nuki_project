@@ -68,15 +68,16 @@ class Auth:
         with open(self.user_path, 'r') as json_file:
             user_dict = json.load(json_file)
 
-        if user_dict.get('valid_host'):
-            self.connect_host(user_dict.get('host'))
+        print(user_dict.get('valid_host'))
+        # if user_dict.get('valid_host'):
+        self.connect_host("http://http://192.168.3.117/api")
         if user_dict.get('valid_user'):
             self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
     def log_in(self, try_id, try_pw) -> bool:
         # print(try_id, try_pw)
-        if not self._valid_host:
-            raise UnconnectedHostError('Error: Host to login is not connected.')
+        # if not self._valid_host:
+        #     raise UnconnectedHostError('Error: Host to login is not connected.')
         try:
             log_in = gazu.log_in(try_id, try_pw)
         except AuthFailedException:
@@ -97,26 +98,33 @@ class Auth:
             # print('login failed')
             return False
 
-    def connect_host(self, try_host) -> bool:
+    def connect_host(self, try_host):
         """
         try_host를 사용해 host에 접속 시도
 
         Returns: 접속에 성공하면 True, 아니면 False 반환
         """
+
         gazu.set_host(try_host)
+
         if not gazu.client.host_is_valid():
+            gazu.set_host("http://192.168.3.117/api")
             host_message_box = QMessageBox()
             host_message_box.setIcon(QMessageBox.Information)
             host_message_box.setText("Host Connection Failed")
             host_message_box.setWindowTitle("error")
             host_message_box.setStandardButtons(QMessageBox.Ok)
             host_message_box.exec_()
+
             print('error')
         else:
             self._host = gazu.get_host()
             self._valid_host = True
             self.logger.connect_log(self.host)
             return True
+            pass
+
+        return
 
     def save_setting(self):
         """
