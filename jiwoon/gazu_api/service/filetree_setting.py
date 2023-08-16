@@ -4,8 +4,8 @@ import os
 class FileTreeSetting:
     def __init__(self):
         gazu.client.set_host("http://192.168.3.117/api")
-        # gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-        gazu.log_in("tumemanque00@netflixacademy.com", "gjehrud1006")
+        gazu.log_in("admin@netflixacademy.com", "netflixacademy")
+        # gazu.log_in("tumemanque00@netflixacademy.com", "gjehrud1006")
 
         # project_name = 'movie'
         # seq_name = 'SQ01'
@@ -24,6 +24,7 @@ class FileTreeSetting:
         for i in tasks:
             if i['task_type_name'] == 'Compositing': # 'Compositing' 으로 할당 된 것만
                 project_name = i['project_name']
+                print('project name : ', project_name)
                 seq_name = i['sequence_name']
                 shot_name = i['entity_name']
                 self.task_name = i['task_type_name']
@@ -43,9 +44,10 @@ class FileTreeSetting:
         for self.task_type in task_types:
             if self.task_type['name'] == self.task_name and self.task_type['for_entity'] == self.shot['type']:
                 self.task_type = self.task_type
-                print(f'task_type : {self.task_type}')
+                # print(f'task_type : {self.task_type}')
                 self.task = gazu.task.get_task_by_name(self.shot, self.task_type)
-                print(f'task : {self.task}')
+                # print(f'task : {self.task}')
+
                 # workingfile path
                 self.working_file = gazu.files.new_working_file(self.task, person=None)
                 print(f'working_file : {self.working_file}')
@@ -64,15 +66,15 @@ class FileTreeSetting:
 
 
     def outputfile_path(self):
-        output_list = ['mp4', 'exr', 'jpg']
-        for out in output_list:
-            if self.task_type['name'] == 'Compositing': # 'Compositing' 만 output 폴더 생성
-                output_type = gazu.files.get_output_type_by_name(out)
-                # print(f'output_type : {output_type}')
-                self.output_file = gazu.files.new_entity_output_file(self.shot, output_type, self.task_type, 'publish', working_file=self.working_file, revision=self.working_file['revision'])
-                # print(f'output_file : {self.output_file}')
-                # output 폴더 생성
-                self.make_folder_tree_output('/home/rapa/nuki/nuki_project')
+        # output_list = ['mp4', 'exr', 'jpg']
+        # for out in output_list:
+        if self.task_type['name'] == 'Compositing': # 'Compositing' 만 output 폴더 생성
+            output_type = gazu.files.get_output_type_by_name('exr')
+            # print(f'output_type : {output_type}')
+            self.output_file = gazu.files.new_entity_output_file(self.shot, output_type, self.task_type, 'publish', working_file=self.working_file, revision=self.working_file['revision'])
+            # print(f'output_file : {self.output_file}')
+            # output 폴더 생성
+            self.make_folder_tree_output('/home/rapa/nuki/nuki_project')
 
 
     def make_folder_tree_working(self, path):
