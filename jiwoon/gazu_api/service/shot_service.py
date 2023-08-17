@@ -91,8 +91,6 @@ class ShotService:
         self.view.sorted_comboBox.setCurrentIndex(0)
         self.clear_shot_detail_info()
 
-        task_service.reload_tasks()
-
     def filter_todo_shots(self, task_service) -> list:
         filtered_todo_shots = []
 
@@ -110,6 +108,7 @@ class ShotService:
 
                 # 정보가 저장된 todo_shot를 전역적으로 사용하기위해 todo_shots_obj 리스트에 추가
                 filtered_todo_shots.append(todo_shot)
+        task_service.clear_data()
         return filtered_todo_shots
 
     def load_shots_to_view(self, todo_shots):

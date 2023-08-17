@@ -1,6 +1,6 @@
 import os
-# import nuke
-# import fileseq
+import nuke
+import fileseq
 from PySide2 import QtCore
 
 def project_setting(comptask):
@@ -45,10 +45,11 @@ def nodes_data():
     return source_dic
 
 
-def create_node(object_type, nuki_id, task_path, xpos, ypos):
+def create_node(shot_name, object_type, nuki_id, task_path, xpos, ypos):
     """
-create_node(object_type, nuki_id, file_path, xpos, ypos)
+    create_node(object_type, nuki_id, file_path, xpos, ypos)
     Args:
+        shot_name:
         object_type:
         nuki_id:
         task_path:
@@ -87,7 +88,7 @@ create_node(object_type, nuki_id, file_path, xpos, ypos)
         node['nuki_id'].setValue(nuki_id)
         node['task_type'].setValue(object_type)
         node.setSelected(True)
-    nuke.nodes.BackdropNode(xpos=xpos, ypos=ypos, bdwidth=500, bdheight=400, label=object_type,
+    nuke.nodes.BackdropNode(xpos=xpos, ypos=ypos, bdwidth=500, bdheight=400, label=object_type+'\n'+'('+shot_name+')',
                             note_font_size=35)
 
 
@@ -104,16 +105,20 @@ def create_nodes(info_dict, log_func=None):
     # R1 = nuke.nodes.Reformat()
     if not info_dict:
         return
-
+    shot_name = ''
     xpos, ypos = get_nodes_bound()
     for object_type, path_list in info_dict.items():
         for nuki_id, file_path in path_list.items():
             print('info : ', object_type, nuki_id, file_path, xpos, ypos)
-            res = create_node(object_type, nuki_id, file_path, xpos, ypos)
-            if log_func and res:
-                # 나중에 수정 필요
-                log_func(file_path + ' create!')
-            xpos += 600
+            if object_type == 'Shot':
+                shot_name = file_path
+            else:
+                # print('info : ', object_type, nuki_id, file_path, xpos, ypos)
+                res = create_node(shot_name, object_type, nuki_id, file_path, xpos, ypos)
+                if log_func and res:
+                    # 나중에 수정 필요
+                    log_func(file_path + ' create!')
+                xpos += 600
 
 
 def update_nodes(info_dict, log_func=None):

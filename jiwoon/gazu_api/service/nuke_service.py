@@ -1,4 +1,6 @@
 import gazu as gazu
+from PySide2.QtWidgets import QMessageBox
+import nuke
 from jiwoon.gazu_api.service.loader import Loader
 
 
@@ -73,7 +75,25 @@ class NukeService:
         """
         btn_run_nuke 클릭하면 현재 파일로 아웃풋 파일들을 로드한다.
         """
-        create_path_dict, update_path_dict = self.get_outputfiles_path()
+
+        ### CREATE WORKING FILE & OUTPUT FILE
+        # task_type = None
+        # task_types = gazu.task.all_task_types_for_project(self.project)
+        # for task_type in task_types:
+        #     if task_type['name'] == 'Layout' and task_type['for_entity'] == self.shot['type']:
+        #         task_type = task_type
+        #         break
+        # task = gazu.task.get_task_by_name(self.shot, task_type)
+        # working_file = gazu.files.new_working_file(task)
+        # print('working_file',working_file)
+        #
+        # # TYPE 생성, 한번만 실행
+        # output_type = gazu.files.get_output_type_by_name('EXR')
+        # nuke_file = nuke.onScriptLoad()
+        # gazu.files.new_entity_output_file(self.shot, output_type, task_type,
+        #                                   'publish', working_file=working_file,
+        #                                   revision=working_file['revision'])
+        create_path_dict = self.get_outputfiles_path()
         self.loader.create_nodes(create_path_dict)
 
     def get_outputfiles_path(self):
@@ -84,13 +104,20 @@ class NukeService:
         selected_list = list(map(lambda x: x.row(), selected))
 
         create_path_dict = {}
-        update_path_dict = {}
 
         for index in selected_list:
             # 선택한 요소들의 노드 반영 상태
+            if self.model.selected_datas[index][0].get('task_status_name') != 'Done':
+                host_message_box = QMessageBox()
+                host_message_box.setIcon(QMessageBox.Information)
+                host_message_box.setText("Done Failed")
+                host_message_box.setWindowTitle("error")
+                host_message_box.setStandardButtons(QMessageBox.Ok)
+                host_message_box.exec_()
+                return False
             task_type_name = self.model.selected_datas[index][0].get('task_type_name')
             output_id = self.model.selected_datas[index][0].get('output_type_id') if self.model.selected_datas[index][0].get('output_type_id') else ''
             output_path = self.model.selected_datas[index][0].get('output_path') if self.model.selected_datas[index][0].get('output_path') else ''
+            create_path_dict['Shot'] = {self.shot.get('id'): self.project.get('name') + '/' + self.sequence.get('name') + '/' + self.shot.get('name')}
             create_path_dict[task_type_name] = {output_id: output_path}
-            # update_path_dict[task_type_name] = {output_id: output_path}
-        return create_path_dict, update_path_dict
+        return create_path_dict

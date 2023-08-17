@@ -22,7 +22,6 @@ class TaskService:
     def __init__(self, model, view):
         self.model = model
         self.view = view
-
     @property
     def project(self) -> dict:
         return self.__project
@@ -80,8 +79,7 @@ class TaskService:
         return self.set_task_init()
 
     def load_tasks(self, project, sequence, shot):
-
-
+        self.model.selection_model.clearSelection()
         self.project = project.get('name')
         self.sequence = sequence.get('name')
         self.shot = shot.get('name')
@@ -147,11 +145,12 @@ class TaskService:
                     self.task_status = True
 
                 all_task_status.append(self.task_status)
-
         return all_task_status
 
     def reload_tasks(self):
         self.update_progress_and_status()
 
+    def clear_data(self):
+        self.model.todo_datas = []
 
 

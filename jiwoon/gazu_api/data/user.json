@@ -1,1 +1,1 @@
-{"host": "", "user_id": "", "user_pw": "", "valid_host": false, "valid_user": false}
+{"host": "http://192.168.3.117/api", "user_id": "compositing_artist@netflixacademy.com", "user_pw": "123456nuki", "valid_host": true, "valid_user": true}
