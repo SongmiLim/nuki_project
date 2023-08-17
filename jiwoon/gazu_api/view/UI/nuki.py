@@ -99,7 +99,7 @@ class Nuki(QMainWindow):
             raise Exception('Error: Invalid host URL.')
 
         if self.auth.valid_host:
-            self.auth.save_setting()
+            # self.auth.save_setting()
             self.host_ui.close()
             self.login_widget()
 

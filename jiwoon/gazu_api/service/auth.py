@@ -69,7 +69,12 @@ class Auth:
 
         print(user_dict.get('valid_host'))
         # if user_dict.get('valid_host'):
-        self.connect_host("http://http://192.168.3.117/api")
+
+        if user_dict.get('valid_host') == False:
+            self.connect_host("http://http://192.168.3.117/api")
+        else:
+            self.connect_host(user_dict.get('host'))
+
         if user_dict.get('valid_user'):
             self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
@@ -117,18 +122,20 @@ class Auth:
             #     host_message_box.exec_()
             # else:
             #     # gazu.set_host("http://192.168.3.117/api")
-            print('error')
-            self._host = gazu.get_host()
-            print("host", self._host)
-            gazu.set_host("http://192.168.3.117/api")
-            self._valid_host = True
-        else:
+            # print('error')
             # self._host = gazu.get_host()
-            self._valid_host = False
+            # print("host", self._host)
+            if self._host == '':
+                self._valid_host = False
+                return
+            else:
+                self.connect_host(self._host)
+
+        else:
+            self._host = gazu.get_host()
+            self._valid_host = True
             # self.logger.connect_log(self.host)
             # return True
-            pass
-
         return
 
     def save_setting(self):
@@ -139,8 +146,8 @@ class Auth:
             'host': self.host,
             'user_id': self._user_id,
             'user_pw': self._user_pw,
-            'valid_host': self.valid_host,
-            'valid_user': self.valid_user,
+            'valid_host': self._valid_host,
+            'valid_user': self._valid_user,
         }
         with open(self.user_path, 'w') as json_file:
             json.dump(user_dict, json_file)
