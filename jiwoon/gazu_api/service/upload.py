@@ -1,6 +1,8 @@
 import sys
 import os
 import re
+import gazu
+
 from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
 from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbstractItemView, QHeaderView
@@ -22,6 +24,11 @@ class UUpload(QMainWindow, Ui_MainWindow):
 
         self.select_all_btn.setStyleSheet("")
         self.upload_btn.setStyleSheet("")
+
+        # signal
+        self.comment_plaintextedit.textChanged.connect(self.update_comment)
+        self.status_combo.currentIndexChanged.connect(self.update_status)
+        self.pushButton.clicked.connect(self.publish)
 
 
     def setup_file_tree(self):
@@ -235,17 +242,101 @@ class UUpload(QMainWindow, Ui_MainWindow):
         self.convert_to_mp4()
         self.extract_thumbnail_from_exr()
 
+
+    def update_comment(self):
+        self.comment = self.comment_plaintextedit.toPlainText()
+        print(self.comment)
+
+    def update_status(self):
+        self.selected_status = self.status_combo.currentText()
+        print(self.selected_status)
+
+    def publish(self):
+        # Gets the path information from the given path.
+        print(self.path)
+        components = self.path.split(os.path.sep)
+        print(components)
+
+        self.path_info = {
+            "project": components[-7],
+            "sequence": components[-6],
+            "shot": components[-5],
+            "task": components[-4],
+            "format": components[-1]
+        }
+        print(self.path_info)
+
+        gazu.client.set_host('http://192.168.3.117/api')
+        gazu.log_in('admin@netflixacademy.com', 'netflixacademy')
+
+        project_name = self.path_info["project"]
+        seq_name = self.path_info["sequence"]
+        shot_name = self.path_info["shot"]
+        task_name = self.path_info["task"]
+        output_type_name = self.path_info["format"]
+        output_type_short_name = self.path_info["format"]
+        status = self.selected_status
+        file_path = (self.path.replace('exr', 'jpg') + f'/{self.name_split}_thumbnail' + '.jpg')
+        print(file_path)
+
+        project = gazu.project.get_project_by_name(project_name)
+        print(f'project :{project}')
+        seq = gazu.shot.get_sequence_by_name(project, seq_name)
+        print(f'seq: {seq}')
+        shot = gazu.shot.get_shot_by_name(seq, shot_name)
+
+
+        task_type = None
+        task_types = gazu.task.all_task_types_for_project(project)
+        print(f'Task types: {task_types}')
+        print('task name:', task_name)
+        for task_type in task_types:
+            # print('task_type!!! :' , task_type)
+            if task_type['name'].lower() == f'{task_name}' and task_type['for_entity'] == shot['type']:
+                task_type = task_type
+                # print('task_type@@@@@@:', task_type)
+                break
+        task = gazu.task.get_task_by_name(shot, task_type)
+        print(f'task: {task}')
+
+        working_file = gazu.files.new_working_file(task)
+        print(f'working_file: {working_file}')
+
+        # output_type = gazu.files.new_output_type(output_type_name, output_type_short_name)
+        output_type = gazu.files.get_output_type_by_name("jpg")
+        gazu.files.new_entity_output_file(shot, output_type, task_type,
+                                          'publish', working_file=working_file, revision=working_file['revision'])
+
+        # get status
+        print('status 1:', status)
+        status = gazu.task.get_task_status_by_name(f'{status}')
+        """
+        Args:
+            short_name (str / dict): The short name of claimed task status.
+
+        Returns:
+            dict: Task status matching given short name.
+        """
+        print('status 2:', status)
+        print(self.comment)
+        comment = gazu.task.add_comment(task, status, comment=self.comment)
+        print(f'comment: {comment}')
+        preview = gazu.task.add_preview(task, comment, preview_file_path=file_path)
+        print(f'preview: {preview}')
+
+
+
 # if __name__ == '__main__':
 #     app = QApplication(sys.argv)
-# window = UUpload()
-# window.show()
+window = UUpload()
+window.show()
     # sys.exit(app.exec_())
 
-def show_upload_ui():
-    # app = QApplication(sys.argv)
-    window = UUpload()
-    window.show()
-    # sys.exit(app.exec_())
-
-if __name__ == '__main__':
-    show_upload_ui()
+# def show_upload_ui():
+#     # app = QApplication(sys.argv)
+#     window = UUpload()
+#     window.show()
+#     # sys.exit(app.exec_())
+#
+# if __name__ == '__main__':
+#     show_upload_ui()

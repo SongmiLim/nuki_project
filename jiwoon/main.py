@@ -3,7 +3,6 @@ from PySide2 import QtWidgets, QtCore
 from jiwoon.gazu_api.view.UI.nuki import Nuki
 from PySide2.QtWidgets import QApplication, QMainWindow, QLineEdit, QWidget, QPushButton, QVBoxLayout
 
-
 class foo(QMainWindow):
     def __init__(self):
         super().__init__()
