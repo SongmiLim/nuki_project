@@ -201,6 +201,21 @@ class UUpload(QMainWindow, Ui_Upload):
             self.upload_msg_label.setText('Error')
             self.upload_msg_label.setStyleSheet('color: red;')
 
+    def mkdir(self):
+        # mp4, jpg 폴더가 없을 경우 dir 제작.
+        jpg_path = self.path.replace('exr', 'jpg')
+        mp4_path = self.path.replace('exr', 'mp4')
+
+        if not os.path.exists(jpg_path):
+            os.mkdir(jpg_path)
+        if not os.path.exists(mp4_path):
+            os.mkdir(mp4_path)
+
+        # 폴더 수가 동적이거나 늘어날 가능성이 있을 때 아래 코드 사용.
+        # folders_to_create = ['jpg', 'mp4']
+        # for folder in folders_to_create:
+        #     folder_path = os.path.join(self.path, folder)
+        #     os.mkdir(folder_path)
     def convert_to_mp4(self):
         input_dir = self.path
         print(self.path)
@@ -245,6 +260,7 @@ class UUpload(QMainWindow, Ui_Upload):
         self.run_ffmpeg(command_input)
 
     def upload_btn_clicked(self):
+        self.mkdir()
         self.convert_to_mp4()
         self.extract_thumbnail_from_exr()
 
@@ -337,15 +353,15 @@ class UUpload(QMainWindow, Ui_Upload):
 
 
 
-# window = UUpload()
-# window.show()
+window = UUpload()
+window.show()
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = UUpload()
-    window.show()
-    sys.exit(app.exec_())
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     window = UUpload()
+#     window.show()
+#     sys.exit(app.exec_())
 #
 #
 # def show_upload_ui():
@@ -363,12 +379,12 @@ if __name__ == '__main__':
 # window.show()
     # sys.exit(app.exec_())
 
-def show_upload_ui():
-    # app = QApplication(sys.argv)
-    window = UUpload()
-    window.show()
-    # sys.exit(app.exec_())
-
-if __name__ == '__main__':
-    show_upload_ui()
+# def show_upload_ui():
+#     # app = QApplication(sys.argv)
+#     window = UUpload()
+#     window.show()
+#     # sys.exit(app.exec_())
+#
+# if __name__ == '__main__':
+#     show_upload_ui()
 
