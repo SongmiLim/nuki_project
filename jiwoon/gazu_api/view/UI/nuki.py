@@ -6,7 +6,6 @@ from PySide2 import QtCore, QtUiTools, QtWidgets
 from PySide2.QtWidgets import QMainWindow, QWidget
 from jiwoon.gazu_api.service.auth import Auth
 from jiwoon.gazu_api.view.main_view import MainUI
-from jiwoon.gazu_api.model.filetree_model import TreeModel
 
 
 class Nuki(QMainWindow):
@@ -30,7 +29,7 @@ class Nuki(QMainWindow):
         webbrowser.open(forgot_password_browser)
 
     def main_widget(self):
-        Controller(MainUI(),self.auth)
+        Controller(MainUI())
 
     def host_widget(self):
         """
