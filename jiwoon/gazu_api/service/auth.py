@@ -106,7 +106,7 @@ class Auth:
 
         gazu.set_host(try_host)
 
-        if gazu.client.host_is_valid():
+        if not gazu.client.host_is_valid():
             # if self._host != "":
             #     gazu.set_host("http://192.168.3.117/api")
             #     host_message_box = QMessageBox()
@@ -120,10 +120,11 @@ class Auth:
             print('error')
             self._host = gazu.get_host()
             print("host", self._host)
+            gazu.set_host("http://192.168.3.117/api")
             self._valid_host = True
         else:
             # self._host = gazu.get_host()
-            # self._valid_host = True
+            self._valid_host = False
             # self.logger.connect_log(self.host)
             # return True
             pass

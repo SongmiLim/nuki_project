@@ -28,7 +28,7 @@ class UUpload(QMainWindow, Ui_MainWindow):
         # signal
         self.comment_plaintextedit.textChanged.connect(self.update_comment)
         self.status_combo.currentIndexChanged.connect(self.update_status)
-        self.pushButton.clicked.connect(self.publish)
+        # self.pushButton.clicked.connect(self.publish)
 
 
     def setup_file_tree(self):
@@ -328,15 +328,15 @@ class UUpload(QMainWindow, Ui_MainWindow):
 
 # if __name__ == '__main__':
 #     app = QApplication(sys.argv)
-window = UUpload()
-window.show()
+# window = UUpload()
+# window.show()
     # sys.exit(app.exec_())
 
-# def show_upload_ui():
-#     # app = QApplication(sys.argv)
-#     window = UUpload()
-#     window.show()
-#     # sys.exit(app.exec_())
-#
-# if __name__ == '__main__':
-#     show_upload_ui()
+def show_upload_ui():
+    # app = QApplication(sys.argv)
+    window = UUpload()
+    window.show()
+    # sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    show_upload_ui()
