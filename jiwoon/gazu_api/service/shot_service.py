@@ -5,7 +5,7 @@ from PySide2.QtCore import Qt, QDir
 from PySide2.QtWidgets import QMenu, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage, QCursor
 import os
-from jiwoon.gazu_api.service.filetree_1 import *
+from jiwoon.gazu_api.service.filetree_update import *
 
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/nuke.png'))

@@ -1,6 +1,5 @@
 import json
 import os
-from gazu import AuthFailedException
 import re
 import gazu
 from gazu import AuthFailedException

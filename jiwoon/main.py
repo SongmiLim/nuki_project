@@ -3,13 +3,11 @@ from PySide2 import QtWidgets, QtCore
 from jiwoon.gazu_api.view.UI.nuki import Nuki
 from PySide2.QtWidgets import QApplication, QMainWindow, QLineEdit, QWidget, QPushButton, QVBoxLayout
 
-# class foo(QMainWindow):
-#     def __init__(self, parent=None):
-#         super().__init__()
-#         self.Init()
-#     def Init(self):
-#         nuki_app = Nuki()
-#
+
+class foo(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        Nuki()
 
 if __name__ == "__main__":
 

@@ -65,6 +65,7 @@ class TaskService:
     def task_status(self, value):
         self.__task_status = value
 
+
     def adjust_header_size(self):
         header = self.view.task_table.horizontalHeader()
         width = []
@@ -79,6 +80,8 @@ class TaskService:
         return self.set_task_init()
 
     def load_tasks(self, project, sequence, shot):
+
+
         self.project = project.get('name')
         self.sequence = sequence.get('name')
         self.shot = shot.get('name')

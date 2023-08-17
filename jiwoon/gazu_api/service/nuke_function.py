@@ -14,7 +14,7 @@ def project_setting(comptask):
     frame_out = int(comptask.frame_out)
     resolution = comptask.resolution
     width, height = resolution.split('x')
-    format_name = f'molo_{width}*{height}'
+    format_name = f'nuki_{width}*{height}'
     fps = int(comptask.fps)
 
     nuke.addFormat(f'{width} {height} {format_name}')
@@ -26,10 +26,10 @@ def project_setting(comptask):
 
 def nodes_data():
     """
-    nuke에 존재하는 node들에서 molo_id와 task_type 값 추출
+    nuke에 존재하는 node들에서 nuki_id와 task_type 값 추출
 
     Returns:
-        source_dic (dict): 존재하는 모든 node들의 task_type을 key, molo_id를 value로 하는 dict
+        source_dic (dict): 존재하는 모든 node들의 task_type을 key, nuki_id를 value로 하는 dict
     """
     # nodes = nuke.allNodes()
     nodes = []
@@ -73,7 +73,7 @@ create_node(object_type, nuki_id, file_path, xpos, ypos)
         cam['task_type'].setValue(object_type)
         cam.setSelected(True)
 
-    elif task_path.endswith(('.exr', '.jpg', '.png', '.dpx', '.mov', '.mp4')):
+    elif task_path.endswith(('.EXR', '.exr', '.jpg', '.png', '.dpx', '.mov', '.mp4')):
         try:
             seq = fileseq.findSequenceOnDisk(task_path)
         except fileseq.FileSeqException:
@@ -106,7 +106,6 @@ def create_nodes(info_dict, log_func=None):
         return
 
     xpos, ypos = get_nodes_bound()
-
     for object_type, path_list in info_dict.items():
         for nuki_id, file_path in path_list.items():
             print('info : ', object_type, nuki_id, file_path, xpos, ypos)
@@ -126,7 +125,6 @@ def update_nodes(info_dict, log_func=None):
         log_func:
 
     Returns:
-
     """
     if not info_dict:
         return
@@ -165,8 +163,7 @@ def update_nodes(info_dict, log_func=None):
 def get_node_rect(node):
     """
     노드 그래프 상 배치되어 있는 노드의 범위를 파악하여 직사각형 형태로 좌표와 그 크기를 반환
-    Args:
-        node: Nuke node
+    Args: Nuke node
 
     Returns: 노드 그래프 상 노드들의 범위의 좌표값과 사이즈 반환
     """

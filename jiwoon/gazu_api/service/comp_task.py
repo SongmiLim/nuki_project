@@ -253,33 +253,7 @@ class CompTask:
             result.append(temp_list)
         return result
 
-    def construct_full_path(self,file: dict):
-        """
-        output file이나 working file의 딕셔너리를 받아서 확장자까지 연결된 full path를 반환
 
-        Args:
-            file(dict):working file 혹은 output file dict
-
-        Returns:
-            str: file의 실제 절대경로
-                    {dir_name}/{file_name}.{extension}
-                확장자가 레스터 이미지 확장자인 경우, padding을 포함
-                    {dir_name}/{file_name}.####.{extension}
-        """
-        path = file.get('path')
-        file_type = file.get('type')
-        padding = '.'
-        if file_type == 'WorkingFile':
-            software_id = file.get('software_id')
-            ext = gazu.files.get_software(software_id).get('file_extension')
-        elif file_type == 'OutputFile':
-            output_type = file.get('output_type_id')
-            ext = gazu.files.get_output_type(output_type).get('short_name')
-            if ext in ['exr', 'dpx', 'jpg', 'jpeg', 'png', 'tga']:
-                padding = '_####.'
-        else:
-            raise Exception('파일 딕셔너리가 아님')
-        return path + padding + ext
     def latest_output_files(self, output_type=None, task_type=None) -> list:
         """
         해당 comp task의 shot을 위한 최신 output file들의 리스트를 반환
