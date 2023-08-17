@@ -1,11 +1,12 @@
 import json
 import os
-from gazu import AuthFailedException
 import re
-from jiwoon.gazu_api.service.exceptions import *
 import gazu
-from jiwoon.gazu_api.service.logger import Logger
+from gazu import AuthFailedException
 
+from jiwoon.gazu_api.service.exceptions import *
+from jiwoon.gazu_api.service.logger import Logger
+from PySide2.QtWidgets import QMessageBox
 
 class Auth:
     def __init__(self):
@@ -66,16 +67,21 @@ class Auth:
         with open(self.user_path, 'r') as json_file:
             user_dict = json.load(json_file)
 
-        if user_dict.get('valid_host'):
+        print(user_dict.get('valid_host'))
+        # if user_dict.get('valid_host'):
+
+        if user_dict.get('valid_host') == False:
+            self.connect_host("http://http://192.168.3.117/api")
+        else:
             self.connect_host(user_dict.get('host'))
+
         if user_dict.get('valid_user'):
             self.log_in(user_dict.get('user_id'), user_dict.get('user_pw'))
 
     def log_in(self, try_id, try_pw) -> bool:
-        self.user_email_valid(try_id)
         # print(try_id, try_pw)
-        if not self._valid_host:
-            raise UnconnectedHostError('Error: Host to login is not connected.')
+        # if not self._valid_host:
+        #     raise UnconnectedHostError('Error: Host to login is not connected.')
         try:
             log_in = gazu.log_in(try_id, try_pw)
         except AuthFailedException:
@@ -88,27 +94,49 @@ class Auth:
         self.logger.enter_log(self.user.get("full_name"))
         return True
 
-    def user_email_valid(self, try_id):
+    def user_email_valid(self, try_id) -> bool:
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         if re.match(email_pattern, try_id):
             return True
         else:
-            print('login failed')
+            # print('login failed')
             return False
 
-    def connect_host(self, try_host) -> bool:
+    def connect_host(self, try_host):
         """
         try_host를 사용해 host에 접속 시도
 
         Returns: 접속에 성공하면 True, 아니면 False 반환
         """
+
         gazu.set_host(try_host)
+
         if not gazu.client.host_is_valid():
-            raise InvalidAuthError('Error: Invalid host URL.')
-        self._host = gazu.get_host()
-        self._valid_host = True
-        self.logger.connect_log(self.host)
-        return True
+            # if self._host != "":
+            #     gazu.set_host("http://192.168.3.117/api")
+            #     host_message_box = QMessageBox()
+            #     host_message_box.setIcon(QMessageBox.Information)
+            #     host_message_box.setText("Host Connection Failed")
+            #     host_message_box.setWindowTitle("error")
+            #     host_message_box.setStandardButtons(QMessageBox.Ok)
+            #     host_message_box.exec_()
+            # else:
+            #     # gazu.set_host("http://192.168.3.117/api")
+            # print('error')
+            # self._host = gazu.get_host()
+            # print("host", self._host)
+            if self._host == '':
+                self._valid_host = False
+                return
+            else:
+                self.connect_host(self._host)
+
+        else:
+            self._host = gazu.get_host()
+            self._valid_host = True
+            # self.logger.connect_log(self.host)
+            # return True
+        return
 
     def save_setting(self):
         """
@@ -118,8 +146,8 @@ class Auth:
             'host': self.host,
             'user_id': self._user_id,
             'user_pw': self._user_pw,
-            'valid_host': self.valid_host,
-            'valid_user': self.valid_user,
+            'valid_host': self._valid_host,
+            'valid_user': self._valid_user,
         }
         with open(self.user_path, 'w') as json_file:
             json.dump(user_dict, json_file)
@@ -135,3 +163,7 @@ class Auth:
         self._valid_user = False
 
         self.save_setting()
+
+    @property
+    def user_id(self):
+        return self._user_id

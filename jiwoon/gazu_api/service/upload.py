@@ -336,6 +336,7 @@ class UUpload(QMainWindow, Ui_Upload):
 
 
 
+
 # window = UUpload()
 # window.show()
 
@@ -355,3 +356,19 @@ if __name__ == '__main__':
 #
 # if __name__ == '__main__':
 #     show_upload_ui()
+
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+# window = UUpload()
+# window.show()
+    # sys.exit(app.exec_())
+
+def show_upload_ui():
+    # app = QApplication(sys.argv)
+    window = UUpload()
+    window.show()
+    # sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    show_upload_ui()
+

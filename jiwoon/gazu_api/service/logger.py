@@ -26,7 +26,7 @@ class Logger:
         Returns:
             (.log) file: {user정보, 시간, path, output file path log} data
         """
-        self.log = logging.getLogger('molo')
+        self.log = logging.getLogger('nuki')
 
         if len(self.log.handlers) == 0:
             # 중복 logging 방지
@@ -39,7 +39,7 @@ class Logger:
             stream_handler.setLevel(logging.INFO)
             self.log.addHandler(stream_handler)
 
-            file_handler = logging.FileHandler(os.path.join(self.dir_path, 'molo_test.log'))
+            file_handler = logging.FileHandler(os.path.join(self.dir_path, 'nuki_test.log'))
             file_handler.setFormatter(formatting)
             file_handler.setLevel(logging.DEBUG)
             self.log.addHandler(file_handler)

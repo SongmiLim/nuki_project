@@ -14,7 +14,7 @@ def project_setting(comptask):
     frame_out = int(comptask.frame_out)
     resolution = comptask.resolution
     width, height = resolution.split('x')
-    format_name = f'molo_{width}*{height}'
+    format_name = f'nuki_{width}*{height}'
     fps = int(comptask.fps)
 
     nuke.addFormat(f'{width} {height} {format_name}')
@@ -26,10 +26,10 @@ def project_setting(comptask):
 
 def nodes_data():
     """
-    nuke에 존재하는 node들에서 molo_id와 task_type 값 추출
+    nuke에 존재하는 node들에서 nuki_id와 task_type 값 추출
 
     Returns:
-        source_dic (dict): 존재하는 모든 node들의 task_type을 key, molo_id를 value로 하는 dict
+        source_dic (dict): 존재하는 모든 node들의 task_type을 key, nuki_id를 value로 하는 dict
     """
     # nodes = nuke.allNodes()
     nodes = []
@@ -45,12 +45,13 @@ def nodes_data():
     return source_dic
 
 
-def create_node(object_type, nuki_id, task_path, xpos, ypos):
+def create_node(shot_name, object_type, nuki_id, task_path, xpos, ypos):
     """
-create_node(object_type, nuki_id, file_path, xpos, ypos)
+    create_node(object_type, nuki_id, file_path, xpos, ypos)
     Args:
+        shot_name:
         object_type:
-        molo_id:
+        nuki_id:
         task_path:
         xpos:
         ypos:
@@ -67,13 +68,13 @@ create_node(object_type, nuki_id, file_path, xpos, ypos)
             print("해당하는 파일이 경로에 없습니다.")
             return False
         cam = nuke.nodes.Camera3(file=task_path, xpos=xpos + 200, ypos=ypos + 150)
-        cam.addKnob(nuke.Text_Knob('nuke_id', 'DB_id'))
+        cam.addKnob(nuke.Text_Knob('nuki_id', 'DB_id'))
         cam.addKnob(nuke.Text_Knob('task_type', 'Task_Type'))
         cam['nuke_id'].setValue(nuki_id)
         cam['task_type'].setValue(object_type)
         cam.setSelected(True)
 
-    elif task_path.endswith(('.exr', '.jpg', '.png', '.dpx', '.mov', '.mp4')):
+    elif task_path.endswith(('.EXR', '.exr', '.jpg', '.png', '.dpx', '.mov', '.mp4')):
         try:
             seq = fileseq.findSequenceOnDisk(task_path)
         except fileseq.FileSeqException:
@@ -87,7 +88,7 @@ create_node(object_type, nuki_id, file_path, xpos, ypos)
         node['nuki_id'].setValue(nuki_id)
         node['task_type'].setValue(object_type)
         node.setSelected(True)
-    nuke.nodes.BackdropNode(xpos=xpos, ypos=ypos, bdwidth=500, bdheight=400, label=object_type,
+    nuke.nodes.BackdropNode(xpos=xpos, ypos=ypos, bdwidth=500, bdheight=400, label=object_type+'\n'+'('+shot_name+')',
                             note_font_size=35)
 
 
@@ -104,17 +105,20 @@ def create_nodes(info_dict, log_func=None):
     # R1 = nuke.nodes.Reformat()
     if not info_dict:
         return
-
+    shot_name = ''
     xpos, ypos = get_nodes_bound()
-
     for object_type, path_list in info_dict.items():
         for nuki_id, file_path in path_list.items():
             print('info : ', object_type, nuki_id, file_path, xpos, ypos)
-            res = create_node(object_type, nuki_id, file_path, xpos, ypos)
-            if log_func and res:
-                # 나중에 수정 필요
-                log_func(file_path + ' create!')
-            xpos += 600
+            if object_type == 'Shot':
+                shot_name = file_path
+            else:
+                # print('info : ', object_type, nuki_id, file_path, xpos, ypos)
+                res = create_node(shot_name, object_type, nuki_id, file_path, xpos, ypos)
+                if log_func and res:
+                    # 나중에 수정 필요
+                    log_func(file_path + ' create!')
+                xpos += 600
 
 
 def update_nodes(info_dict, log_func=None):
@@ -126,7 +130,6 @@ def update_nodes(info_dict, log_func=None):
         log_func:
 
     Returns:
-
     """
     if not info_dict:
         return
@@ -165,8 +168,7 @@ def update_nodes(info_dict, log_func=None):
 def get_node_rect(node):
     """
     노드 그래프 상 배치되어 있는 노드의 범위를 파악하여 직사각형 형태로 좌표와 그 크기를 반환
-    Args:
-        node: Nuke node
+    Args: Nuke node
 
     Returns: 노드 그래프 상 노드들의 범위의 좌표값과 사이즈 반환
     """

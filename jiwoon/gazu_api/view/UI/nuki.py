@@ -1,5 +1,8 @@
 import os
-import webbrowser
+# import webbrowser
+
+import gazu
+
 from jiwoon.gazu_api.controller.controller import Controller
 from jiwoon.gazu_api.service.exceptions import *
 from PySide2 import QtCore, QtUiTools, QtWidgets
@@ -24,10 +27,9 @@ class Nuki(QMainWindow):
         else:
             self.login_widget()
 
-    def forgot_pw_cmdlink_btn_clicked(self):
-        forgot_password_browser = 'http://192.168.3.117/reset-password'
-        webbrowser.open(forgot_password_browser)
-        pass
+    # def forgot_pw_cmdlink_btn_clicked(self):
+    #     forgot_password_browser = 'http://192.168.3.117/reset-password'
+    #     webbrowser.open(forgot_password_browser)
 
     def main_widget(self):
         Controller(MainUI())
@@ -37,6 +39,7 @@ class Nuki(QMainWindow):
         host ui 설정
         """
         self.host_ui = self.init_ui('nuki_host_widget.ui')
+        print(self.host_ui)
         self.host_ui.host_input.returnPressed.connect(self.run_connect_host)
         self.host_ui.connect_btn.clicked.connect(self.run_connect_host)
 
@@ -44,36 +47,44 @@ class Nuki(QMainWindow):
         """
         login ui 설정
         """
-        self.login_ui = self.init_ui('loginwidget.ui')
+        # gazu.set_host("http://192.168.3.117/api")
+        print(gazu.get_host())
+        self.login_ui = self.init_ui('login_widget_test.ui')
         self.login_ui.ID_lineedit.setPlaceholderText('Email@address.com')
         self.login_ui.pw_lineedit.setPlaceholderText('Password')
         self.login_ui.pw_lineedit.setEchoMode(self.login_ui.pw_lineedit.Password)
         self.login_ui.pw_lineedit.returnPressed.connect(self.run_log_in)
         self.login_ui.signin_btn.clicked.connect(self.run_log_in)
-        self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
-        self.login_ui.error_label.setText('')
+        # self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
+        # self.login_ui.error_label.setText('')
 
     def run_log_in(self):
-        """
-        host ui의 login_btn에 연결된 함수
-        user_id_input, user_pw_input에 입력된 계정 정보를 이용해 로그인 시도
-        """
-        try_id = self.login_ui.user_id_input.text()
-        try_pw = self.login_ui.user_pw_input.text()
+        try_id = self.login_ui.ID_lineedit.text()
+        try_pw = self.login_ui.pw_lineedit.text()
+        is_valid_email = self.auth.user_email_valid(try_id)
 
-        try:
-            self.auth.log_in(try_id, try_pw)
+        if is_valid_email:
+            try:
+                self.auth.log_in(try_id, try_pw)
+                self.login_ui.error_label.setText('')
+            except InvalidAuthError:
+                print('dd, error')
+                self.login_ui.error_label.setText("Couldn't find your Kitsu account")
 
-        except InvalidAuthError:
-            raise Exception("Error: Invalid user.")
+        else:
+            if try_id == '' or try_pw == '':
+                self.login_ui.error_label.setText("Please enter your email and password.")
+            else:
+                self.login_ui.error_label.setText("Invalid login credentials. Please try again.")
 
         if self.auth.valid_user:
-            if self.login_ui.remember_check.isChecked():
+            if self.login_ui.remember_checkbox.isChecked():
                 self.auth.save_setting()
             self.login_ui.close()
             self.main_widget()
+
         else:
-            print('Incorrect ID or password!')
+            print('valid_user, error')
 
     def run_connect_host(self):
         """
@@ -88,14 +99,11 @@ class Nuki(QMainWindow):
             raise Exception('Error: Invalid host URL.')
 
         if self.auth.valid_host:
-            self.auth.save_setting()
+            # self.auth.save_setting()
             self.host_ui.close()
             self.login_widget()
-        else:
-            self.host_ui.error_msg.setText('Invalid host!')
-            self.host_ui.error_msg.setStyleSheet("Color : orange")
 
-    def init_ui(self, ui_path) -> QWidget:
+    def init_ui(self, ui_path):
         """
         입력된 경로의 .ui 파일을 load한 후 화면에 표시
 
@@ -118,3 +126,18 @@ class Nuki(QMainWindow):
         ui.move(w, h)
         ui.show()
         return ui
+
+        # script_path = os.path.realpath(__file__)
+        # print(script_path)
+        # # ui_path = '/home/rapa/nuki/jiwoon/gazu_api/view/UI/final_login.ui'
+        # ui_path = os.path.join(os.path.dirname(script_path), ui_path)
+        # print(ui_path)
+        # ui_file = QtCore.QFile(ui_path)
+        # ui_file.open(QtCore.QFile.ReadOnly)
+        # loader = QtUiTools.QUiLoader()
+        # window = loader.load(ui_file)
+        #
+        # ui_file.close()
+        # window.show()
+        #
+        # return window

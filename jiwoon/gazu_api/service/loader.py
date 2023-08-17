@@ -6,7 +6,6 @@ from jiwoon.gazu_api.service.nuke_function import *
 from jiwoon.gazu_api.service.logger import Logger
 from jiwoon.gazu_api.service.utils import construct_full_path
 
-
 class Loader:
 
     def __init__(self):
@@ -46,7 +45,7 @@ class Loader:
         open_new_nuke_working_file()를 실행시켜 실제 nuke script를 저장한다.
 
         Args:
-            comptask(molo.CompTask): 생성하고자 하는 compositing task의 CompTask 객체
+            comptask(nuki.CompTask): 생성하고자 하는 compositing task의 CompTask 객체
             name(str, optional): working file dict의 이름, 기본값 "main"
             comment(str, optional): working file dict의 설명
 
@@ -125,31 +124,3 @@ class Loader:
         self.nuke_command = ' '.join(nuke_path)
 
         return self.nuke_command
-
-    def construct_full_path(file: dict):
-        """
-        output file이나 working file의 딕셔너리를 받아서 확장자까지 연결된 full path를 반환
-
-        Args:
-            file(dict):working file 혹은 output file dict
-
-        Returns:
-            str: file의 실제 절대경로
-                    {dir_name}/{file_name}.{extension}
-                확장자가 레스터 이미지 확장자인 경우, padding을 포함
-                    {dir_name}/{file_name}.####.{extension}
-        """
-        path = file.get('path')
-        file_type = file.get('type')
-        padding = '.'
-        if file_type == 'WorkingFile':
-            software_id = file.get('software_id')
-            ext = gazu.files.get_software(software_id).get('file_extension')
-        elif file_type == 'OutputFile':
-            output_type = file.get('output_type_id')
-            ext = gazu.files.get_output_type(output_type).get('short_name')
-            if ext in ['exr', 'dpx', 'jpg', 'jpeg', 'png', 'tga']:
-                padding = '_####.'
-        else:
-            raise Exception('파일 딕셔너리가 아님')
-        return path + padding + ext
