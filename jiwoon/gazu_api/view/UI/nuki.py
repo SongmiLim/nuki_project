@@ -1,5 +1,8 @@
 import os
-import webbrowser
+# import webbrowser
+
+import gazu
+
 from jiwoon.gazu_api.controller.controller import Controller
 from jiwoon.gazu_api.service.exceptions import *
 from PySide2 import QtCore, QtUiTools, QtWidgets
@@ -25,18 +28,19 @@ class Nuki(QMainWindow):
         else:
             self.login_widget()
 
-    def forgot_pw_cmdlink_btn_clicked(self):
-        forgot_password_browser = 'http://192.168.3.117/reset-password'
-        webbrowser.open(forgot_password_browser)
+    # def forgot_pw_cmdlink_btn_clicked(self):
+    #     forgot_password_browser = 'http://192.168.3.117/reset-password'
+    #     webbrowser.open(forgot_password_browser)
 
     def main_widget(self):
-        Controller(MainUI(),self.auth)
+        Controller(MainUI(), self.auth)
 
     def host_widget(self):
         """
         host ui 설정
         """
         self.host_ui = self.init_ui('nuki_host_widget.ui')
+        print(self.host_ui)
         self.host_ui.host_input.returnPressed.connect(self.run_connect_host)
         self.host_ui.connect_btn.clicked.connect(self.run_connect_host)
 
@@ -44,14 +48,16 @@ class Nuki(QMainWindow):
         """
         login ui 설정
         """
-        self.login_ui = self.init_ui('loginwidget.ui')
+        # gazu.set_host("http://192.168.3.117/api")
+        print(gazu.get_host())
+        self.login_ui = self.init_ui('login_widget_test.ui')
         self.login_ui.ID_lineedit.setPlaceholderText('Email@address.com')
         self.login_ui.pw_lineedit.setPlaceholderText('Password')
         self.login_ui.pw_lineedit.setEchoMode(self.login_ui.pw_lineedit.Password)
         self.login_ui.pw_lineedit.returnPressed.connect(self.run_log_in)
         self.login_ui.signin_btn.clicked.connect(self.run_log_in)
-        self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
-        self.login_ui.error_label.setText('')
+        # self.login_ui.forgotpw_cmdlinkbtn.clicked.connect(self.forgot_pw_cmdlink_btn_clicked)
+        # self.login_ui.error_label.setText('')
 
     def run_log_in(self):
         try_id = self.login_ui.ID_lineedit.text()
@@ -98,7 +104,7 @@ class Nuki(QMainWindow):
             self.host_ui.close()
             self.login_widget()
 
-    def init_ui(self, ui_path) -> QWidget:
+    def init_ui(self, ui_path):
         """
         입력된 경로의 .ui 파일을 load한 후 화면에 표시
 
@@ -121,3 +127,18 @@ class Nuki(QMainWindow):
         ui.move(w, h)
         ui.show()
         return ui
+
+        # script_path = os.path.realpath(__file__)
+        # print(script_path)
+        # # ui_path = '/home/rapa/nuki/jiwoon/gazu_api/view/UI/final_login.ui'
+        # ui_path = os.path.join(os.path.dirname(script_path), ui_path)
+        # print(ui_path)
+        # ui_file = QtCore.QFile(ui_path)
+        # ui_file.open(QtCore.QFile.ReadOnly)
+        # loader = QtUiTools.QUiLoader()
+        # window = loader.load(ui_file)
+        #
+        # ui_file.close()
+        # window.show()
+        #
+        # return window
