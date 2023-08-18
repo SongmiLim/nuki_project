@@ -16,8 +16,6 @@ class CompShot:
             shot(dict{dict}):  객체로 만들고자 하는 shot task의 dict
             반드시 asset이 아닌, shot을 entity로 하는 task여야 함
         """
-        # if shot_info.get('entity_type_name') != 'Shot':
-        #     raise Exception('shot을 위한 task가 아님')
         self.shot = shot
         self._project_name = shot.get('project_name')
         self._sequence_name = shot.get('sequence_name')

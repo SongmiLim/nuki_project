@@ -1,6 +1,6 @@
 import sys
 from PySide2 import QtWidgets, QtCore
-from jiwoon.gazu_api.view.UI.nuki import Nuki
+from jiwoon.gazu_api.service.nuki import Nuki
 from PySide2.QtWidgets import QApplication, QMainWindow, QLineEdit, QWidget, QPushButton, QVBoxLayout
 
 class foo(QMainWindow):

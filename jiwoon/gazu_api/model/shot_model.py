@@ -23,5 +23,3 @@ class ShotModel(QAbstractListModel):
 
     def rowCount(self, index):
         return len(self.todo_shots)
-
-

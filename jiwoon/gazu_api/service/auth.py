@@ -112,8 +112,6 @@ class Auth:
         gazu.set_host(try_host)
 
         if not gazu.client.host_is_valid():
-            # if self._host != "":
-            #     gazu.set_host("http://192.168.3.117/api")
             #     host_message_box = QMessageBox()
             #     host_message_box.setIcon(QMessageBox.Information)
             #     host_message_box.setText("Host Connection Failed")

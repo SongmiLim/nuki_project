@@ -1,6 +1,6 @@
 import gazu as gazu
 from PySide2.QtWidgets import QMessageBox
-import nuke
+# import nuke
 from jiwoon.gazu_api.service.loader import Loader
 
 

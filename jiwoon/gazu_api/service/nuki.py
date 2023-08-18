@@ -47,8 +47,6 @@ class Nuki(QMainWindow):
         """
         login ui 설정
         """
-        # gazu.set_host("http://192.168.3.117/api")
-        print(gazu.get_host())
         self.login_ui = self.init_ui('login_widget_test.ui')
         self.login_ui.ID_lineedit.setPlaceholderText('Email@address.com')
         self.login_ui.pw_lineedit.setPlaceholderText('Password')
@@ -127,17 +125,3 @@ class Nuki(QMainWindow):
         ui.show()
         return ui
 
-        # script_path = os.path.realpath(__file__)
-        # print(script_path)
-        # # ui_path = '/home/rapa/nuki/jiwoon/gazu_api/view/UI/final_login.ui'
-        # ui_path = os.path.join(os.path.dirname(script_path), ui_path)
-        # print(ui_path)
-        # ui_file = QtCore.QFile(ui_path)
-        # ui_file.open(QtCore.QFile.ReadOnly)
-        # loader = QtUiTools.QUiLoader()
-        # window = loader.load(ui_file)
-        #
-        # ui_file.close()
-        # window.show()
-        #
-        # return window
