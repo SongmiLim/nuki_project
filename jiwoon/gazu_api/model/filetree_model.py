@@ -25,6 +25,7 @@ class TreeModel(QStandardItemModel):
             if comp_task == 'Compositing':  # Compositing task 만 view 에 보여주기
                 self.project = None
                 self.projectItem = QStandardItem(i['project_name'])
+                self.projectItem.setEditable(False)
                 if i['project_name'] not in project_list:
                     project_list.append(i['project_name'])
                     self.project = i['project_name']
@@ -41,6 +42,7 @@ class TreeModel(QStandardItemModel):
             if comp_task == 'Compositing':  # Compositing task 만 view 에 보여주기
                 self.sequence_list = []
                 self.seqItem = QStandardItem(i['sequence_name'])
+                self.seqItem.setEditable(False)
                 if i['project_name'] == self.project and i['sequence_name'] not in self.seq_list:
                     self.seq_list.append(i['sequence_name'])
                     self.sequence_list.append(i['sequence_name'])
@@ -54,6 +56,7 @@ class TreeModel(QStandardItemModel):
             if comp_task == 'Compositing':  # Compositing task 만 view 에 보여주기
                 self.shot_list = []
                 self.shotItem = QStandardItem(i['entity_name'])
+                self.shotItem.setEditable(False)
                 if i['project_name'] == self.project and i['sequence_name'] in self.sequence_list and i[
                     'entity_name'] not in self.shot_list:
                     self.shot_list.append(i['entity_name'])
