@@ -3,13 +3,19 @@ import os
 import re
 import gazu
 
-from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
+# from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
+from jiwoon.gazu_api.view.UI.upload_widget import Ui_Upload
 from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbstractItemView, QHeaderView
 from PySide2.QtCore import Qt, QStringListModel
 
+# from jiwoon.gazu_api.service.auth import Auth
 
-class UUpload(QMainWindow, Ui_MainWindow):
+basedir = os.path.dirname(__file__)
+user_data = os.path.join(basedir, '../data/user.json')
+
+
+class UUpload(QMainWindow, Ui_Upload):
     def __init__(self):
         super().__init__()
         self.file_system_model = None
@@ -30,9 +36,9 @@ class UUpload(QMainWindow, Ui_MainWindow):
         self.status_combo.currentIndexChanged.connect(self.update_status)
         # self.pushButton.clicked.connect(self.publish)
 
-
     def setup_file_tree(self):
         # Create the QFileSystemModel and set it up with the QTreeView
+        print('test')
         root_path = "/home/rapa/kitsu/nuki"
         self.file_system_model = QFileSystemModel()
         self.file_system_model.setRootPath(root_path)
@@ -195,6 +201,21 @@ class UUpload(QMainWindow, Ui_MainWindow):
             self.upload_msg_label.setText('Error')
             self.upload_msg_label.setStyleSheet('color: red;')
 
+    def mkdir(self):
+        # mp4, jpg 폴더가 없을 경우 dir 제작.
+        jpg_path = self.path.replace('exr', 'jpg')
+        mp4_path = self.path.replace('exr', 'mp4')
+
+        if not os.path.exists(jpg_path):
+            os.mkdir(jpg_path)
+        if not os.path.exists(mp4_path):
+            os.mkdir(mp4_path)
+
+        # 폴더 수가 동적이거나 늘어날 가능성이 있을 때 아래 코드 사용.
+        # folders_to_create = ['jpg', 'mp4']
+        # for folder in folders_to_create:
+        #     folder_path = os.path.join(self.path, folder)
+        #     os.mkdir(folder_path)
     def convert_to_mp4(self):
         input_dir = self.path
         print(self.path)
@@ -239,23 +260,23 @@ class UUpload(QMainWindow, Ui_MainWindow):
         self.run_ffmpeg(command_input)
 
     def upload_btn_clicked(self):
+        self.mkdir()
         self.convert_to_mp4()
         self.extract_thumbnail_from_exr()
 
-
     def update_comment(self):
         self.comment = self.comment_plaintextedit.toPlainText()
-        print(self.comment)
+        # print(self.comment)
 
     def update_status(self):
         self.selected_status = self.status_combo.currentText()
-        print(self.selected_status)
+        # print(self.selected_status)
 
     def publish(self):
         # Gets the path information from the given path.
-        print(self.path)
+        # print(self.path)
         components = self.path.split(os.path.sep)
-        print(components)
+        # print(components)
 
         self.path_info = {
             "project": components[-7],
@@ -264,32 +285,37 @@ class UUpload(QMainWindow, Ui_MainWindow):
             "task": components[-4],
             "format": components[-1]
         }
-        print(self.path_info)
+        # print(self.path_info)
 
-        gazu.client.set_host('http://192.168.3.117/api')
-        gazu.log_in('admin@netflixacademy.com', 'netflixacademy')
+        with open(user_data, 'r') as f:
+            data = json.load(f)
+            host = data['host']
+            user_id = data['user_id']
+            user_pw = data['user_pw']
+        gazu.client.set_host(host)
+        gazu.log_in(user_id, user_pw)
 
         project_name = self.path_info["project"]
         seq_name = self.path_info["sequence"]
         shot_name = self.path_info["shot"]
         task_name = self.path_info["task"]
-        output_type_name = self.path_info["format"]
-        output_type_short_name = self.path_info["format"]
+        # output_type_name = self.path_info["format"]
+        # output_type_short_name = self.path_info["format"]
         status = self.selected_status
         file_path = (self.path.replace('exr', 'jpg') + f'/{self.name_split}_thumbnail' + '.jpg')
-        print(file_path)
+        # print(file_path)
 
         project = gazu.project.get_project_by_name(project_name)
-        print(f'project :{project}')
+        # print(f'project :{project}')
         seq = gazu.shot.get_sequence_by_name(project, seq_name)
-        print(f'seq: {seq}')
+        # print(f'seq: {seq}')
         shot = gazu.shot.get_shot_by_name(seq, shot_name)
 
 
         task_type = None
         task_types = gazu.task.all_task_types_for_project(project)
-        print(f'Task types: {task_types}')
-        print('task name:', task_name)
+        # print(f'Task types: {task_types}')
+        # print('task name:', task_name)
         for task_type in task_types:
             # print('task_type!!! :' , task_type)
             if task_type['name'].lower() == f'{task_name}' and task_type['for_entity'] == shot['type']:
@@ -297,10 +323,10 @@ class UUpload(QMainWindow, Ui_MainWindow):
                 # print('task_type@@@@@@:', task_type)
                 break
         task = gazu.task.get_task_by_name(shot, task_type)
-        print(f'task: {task}')
+        # print(f'task: {task}')
 
         working_file = gazu.files.new_working_file(task)
-        print(f'working_file: {working_file}')
+        # print(f'working_file: {working_file}')
 
         # output_type = gazu.files.new_output_type(output_type_name, output_type_short_name)
         output_type = gazu.files.get_output_type_by_name("jpg")
@@ -308,7 +334,7 @@ class UUpload(QMainWindow, Ui_MainWindow):
                                           'publish', working_file=working_file, revision=working_file['revision'])
 
         # get status
-        print('status 1:', status)
+        # print('status 1:', status)
         status = gazu.task.get_task_status_by_name(f'{status}')
         """
         Args:
@@ -317,14 +343,35 @@ class UUpload(QMainWindow, Ui_MainWindow):
         Returns:
             dict: Task status matching given short name.
         """
-        print('status 2:', status)
-        print(self.comment)
+        # print('status 2:', status)
+        # print(self.comment)
         comment = gazu.task.add_comment(task, status, comment=self.comment)
-        print(f'comment: {comment}')
+        # print(f'comment: {comment}')
         preview = gazu.task.add_preview(task, comment, preview_file_path=file_path)
-        print(f'preview: {preview}')
+        # print(f'preview: {preview}')
 
 
+
+
+window = UUpload()
+window.show()
+
+
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     window = UUpload()
+#     window.show()
+#     sys.exit(app.exec_())
+#
+#
+# def show_upload_ui():
+#     # app = QApplication(sys.argv)
+#     window = UUpload()
+#     window.show()
+#     # sys.exit(app.exec_())
+#
+# if __name__ == '__main__':
+#     show_upload_ui()
 
 # if __name__ == '__main__':
 #     app = QApplication(sys.argv)
@@ -332,11 +379,12 @@ class UUpload(QMainWindow, Ui_MainWindow):
 # window.show()
     # sys.exit(app.exec_())
 
-def show_upload_ui():
-    # app = QApplication(sys.argv)
-    window = UUpload()
-    window.show()
-    # sys.exit(app.exec_())
+# def show_upload_ui():
+#     # app = QApplication(sys.argv)
+#     window = UUpload()
+#     window.show()
+#     # sys.exit(app.exec_())
+#
+# if __name__ == '__main__':
+#     show_upload_ui()
 
-if __name__ == '__main__':
-    show_upload_ui()
