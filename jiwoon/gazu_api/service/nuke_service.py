@@ -76,24 +76,8 @@ class NukeService:
         btn_run_nuke 클릭하면 현재 파일로 아웃풋 파일들을 로드한다.
         """
 
-        ### CREATE WORKING FILE & OUTPUT FILE
-        # task_type = None
-        # task_types = gazu.task.all_task_types_for_project(self.project)
-        # for task_type in task_types:
-        #     if task_type['name'] == 'Layout' and task_type['for_entity'] == self.shot['type']:
-        #         task_type = task_type
-        #         break
-        # task = gazu.task.get_task_by_name(self.shot, task_type)
-        # working_file = gazu.files.new_working_file(task)
-        # print('working_file',working_file)
-        #
-        # # TYPE 생성, 한번만 실행
-        # output_type = gazu.files.get_output_type_by_name('EXR')
-        # nuke_file = nuke.onScriptLoad()
-        # gazu.files.new_entity_output_file(self.shot, output_type, task_type,
-        #                                   'publish', working_file=working_file,
-        #                                   revision=working_file['revision'])
         create_path_dict = self.get_outputfiles_path()
+        print('create_path_dict',create_path_dict)
         self.loader.create_nodes(create_path_dict)
 
     def get_outputfiles_path(self):

@@ -1,6 +1,9 @@
 import gazu.task
 import os
 import json
+
+from PySide2 import QtWidgets, QtGui, QtCore
+
 from .exceptions import *
 
 
@@ -103,5 +106,61 @@ def construct_initials(full_name: str):
     initials += split_name[-1][0].upper() + split_name[-1][1:]
     return initials
 
+class OutlineDelegate(QtWidgets.QItemDelegate):
+    """
+    해당 delegate는 QTableView 또는 QTreeView 에서 선택된 item 의 테두리를 그리는 역할을 한다.
 
+    Attributes:
+        margin (int): 셀 상단과 테두리 사이의 거리
+        radius (int): 둥근 모서리의 반
+        border_color (QColor): 테두리 색상
+        border_width (int): 테두리 너비
+
+    Args:
+        parent (QObject): delegate의 parent 객체
+    """
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.margin = 2
+        self.radius = 10
+        self.border_color = QtGui.QColor(238, 173, 83)
+        self.border_width = 2
+
+        parent.setItemDelegate(self)
+
+    def sizeHint(self, option: QtWidgets.QStyleOptionViewItem, index: QtCore.QModelIndex):
+        """
+        테두리를 포함한 item의 size hint를 반환한다.
+        """
+        size = super().sizeHint(option, index)
+        size = size.grownBy(QtCore.QMargins(0, self.margin, 0, self.margin))
+        return size
+
+    def paint(self, painter: QtGui.QPainter, option: QtWidgets.QStyleOptionViewItem, index: QtCore.QModelIndex):
+        """
+        item이 선택되었을 때 item에 테두리를 그린다.
+        """
+        painter.save()
+        painter.setRenderHint(painter.Antialiasing)
+
+        # Painter에 clipping rect 을 설정하여 테두리 밖에 그리는 것을 방지
+        painter.setClipping(True)
+        painter.setClipRect(option.rect)
+
+        # 테두리를 고려하여 option.rect 을 조정한 뒤, 원래의 paint 메서드 호출
+        option.rect.adjust(0, self.margin, 0, -self.margin)
+        super().paint(painter, option, index)
+
+        if option.state & QtWidgets.QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setColor(self.border_color)
+            pen.setWidth(self.border_width)
+            painter.setPen(pen)
+
+            rect = option.rect.adjusted(-self.border_width, 0, self.border_width, 0)
+            painter.drawRect(rect)
+
+
+        painter.restore()
 

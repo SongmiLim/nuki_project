@@ -1,7 +1,7 @@
 from datetime import datetime
 import gazu as gazu
 from PySide2 import QtWidgets
-from jiwoon.gazu_api.service.utils import construct_full_path
+from jiwoon.gazu_api.service.utils import construct_full_path, OutlineDelegate
 from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
 
 
@@ -22,6 +22,7 @@ class TaskService:
     def __init__(self, model, view):
         self.model = model
         self.view = view
+        OutlineDelegate(self.view.task_table)
     @property
     def project(self) -> dict:
         return self.__project
