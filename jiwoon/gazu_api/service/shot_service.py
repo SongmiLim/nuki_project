@@ -20,17 +20,11 @@ class ShotService:
     __project = None
     __shot = None
     __sequence = None
-    # __task = None
-    # __task_type = None
-    __task_status = None
 
     def __init__(self, model, view):
         self.model = model
         self.view = view
         self.task_service = None
-        # self.host = gazu.client.set_host("http://192.168.3.117/api")
-        # gazu.log_in("admin@netflixacademy.com", "netflixacademy")
-        # print("host test", gazu.client.get_host)
         self.raw_todo_shots_list = []
         self.filtered_todo_shots = []
 
@@ -68,7 +62,6 @@ class ShotService:
 
     @shot.setter
     def shot(self, name):
-        # self.__shot = gazu.shot.get_shot(id)
         self.__shot = gazu.shot.get_shot_by_name(self.sequence, name)
         # self.__entity = self.__shot
 
@@ -148,12 +141,12 @@ class ShotService:
         self.view.label_proj.setText("")
         self.view.label_seq.setText("")
         self.view.label_shot.setText("")
-        # self.view.label_proj.setText(comp_shot.nb_frames)
         self.view.label_frame_in.setText("")
         self.view.label_frame_out.setText("")
         self.view.label_resolution.setText("")
         self.view.label_fps.setText("")
         self.view.label_revision.setText("")
+        self.view.thumbnail_label.setText("thumbnail")
 
     def clicked_shot_detail_info(self, selected_item):
 
@@ -170,7 +163,6 @@ class ShotService:
         self.view.label_proj.setText(comp_shot.project_name)
         self.view.label_seq.setText(comp_shot.sequence_name)
         self.view.label_shot.setText(comp_shot.shot_name)
-        # self.view.label_proj.setText(comp_shot.nb_frames)
         self.view.label_frame_in.setText(comp_shot.frame_in)
         self.view.label_frame_out.setText(comp_shot.frame_out)
         self.view.label_resolution.setText(comp_shot.resolution)
@@ -198,7 +190,6 @@ class ShotService:
         return default_thumbnail
 
     def sort_by_combobox(self):
-        # self.update_compositing_todo_shots(task_service)
         temp_list = list(self.filtered_todo_shots)
         sorted_shot_list = []
 
