@@ -1,6 +1,5 @@
 import os
 # import webbrowser
-
 import gazu
 
 from jiwoon.gazu_api.controller.controller import Controller
@@ -38,7 +37,7 @@ class Nuki(QMainWindow):
         """
         host ui 설정
         """
-        self.host_ui = self.init_ui('nuki_host_widget.ui')
+        self.host_ui = self.init_ui('../view/UI/nuki_host_widget.ui')
         print(self.host_ui)
         self.host_ui.host_input.returnPressed.connect(self.run_connect_host)
         self.host_ui.connect_btn.clicked.connect(self.run_connect_host)
@@ -47,7 +46,7 @@ class Nuki(QMainWindow):
         """
         login ui 설정
         """
-        self.login_ui = self.init_ui('login_widget_test.ui')
+        self.login_ui = self.init_ui('../view/UI/login_widget_test.ui')
         self.login_ui.ID_lineedit.setPlaceholderText('Email@address.com')
         self.login_ui.pw_lineedit.setPlaceholderText('Password')
         self.login_ui.pw_lineedit.setEchoMode(self.login_ui.pw_lineedit.Password)
