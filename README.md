@@ -48,7 +48,7 @@ python 3.6
 `pip install nuke`
 
 
-`git clone https://github.com/SongmiLim/Nuki.git`
+`git clone https://github.com/SongmiLim/nuki_project.git`
 
 
 
