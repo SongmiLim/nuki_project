@@ -1,12 +1,17 @@
 import sys
 from PySide2 import QtWidgets, QtCore
-from jiwoon.gazu_api.service.nuki import Nuki
-from PySide2.QtWidgets import QApplication, QMainWindow, QLineEdit, QWidget, QPushButton, QVBoxLayout
+from nukitsu.gazu_api.service.upload import UUpload
+from PySide2.QtWidgets import QApplication, QMainWindow, QWidget
 
 class foo(QMainWindow):
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
-        Nuki()
+        self.Init()
+    # def Init(self):
+    #     nuki_app = UUpload()
+    #     nuki_app.show()
+    #     print('test')
+    #     print(nuki_app)
 
 if __name__ == "__main__":
 
@@ -16,5 +21,6 @@ if __name__ == "__main__":
     else:
         app = QtWidgets.QApplication.instance()
     # app = QtWidgets.QApplication(sys.argv)
-    apps = Nuki()
+    apps = UUpload()
     sys.exit(app.exec_())
+# nuke mainwidget에 override하는 형태.

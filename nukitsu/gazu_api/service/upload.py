@@ -4,7 +4,7 @@ import re
 import gazu
 
 # from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
-from jiwoon.gazu_api.view.UI.upload_widget import Ui_Upload
+from nukitsu.gazu_api.view.UI.upload_widget import Ui_Upload
 from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbstractItemView, QHeaderView
 from PySide2.QtCore import Qt, QStringListModel

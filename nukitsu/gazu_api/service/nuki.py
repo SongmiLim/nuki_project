@@ -2,12 +2,12 @@ import os
 # import webbrowser
 import gazu
 
-from jiwoon.gazu_api.controller.controller import Controller
-from jiwoon.gazu_api.service.exceptions import *
+from nukitsu.gazu_api.controller.controller import Controller
+from nukitsu.gazu_api.service.exceptions import *
 from PySide2 import QtCore, QtUiTools, QtWidgets
 from PySide2.QtWidgets import QMainWindow, QWidget
-from jiwoon.gazu_api.service.auth import Auth
-from jiwoon.gazu_api.view.main_view import MainUI
+from nukitsu.gazu_api.service.auth import Auth
+from nukitsu.gazu_api.view.main_view import MainUI
 
 
 class Nuki(QMainWindow):

@@ -1,10 +1,10 @@
 import gazu
 import glob
-from jiwoon.gazu_api.service.comp_task import CompTask
-from jiwoon.gazu_api.service.exceptions import WorkingFileExistsError
-from jiwoon.gazu_api.service.nuke_function import *
-from jiwoon.gazu_api.service.logger import Logger
-from jiwoon.gazu_api.service.utils import construct_full_path
+from nukitsu.gazu_api.service.comp_task import CompTask
+from nukitsu.gazu_api.service.exceptions import WorkingFileExistsError
+from nukitsu.gazu_api.service.nuke_function import *
+from nukitsu.gazu_api.service.logger import Logger
+from nukitsu.gazu_api.service.utils import construct_full_path
 
 class Loader:
 

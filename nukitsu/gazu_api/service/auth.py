@@ -4,8 +4,8 @@ import re
 import gazu
 from gazu import AuthFailedException
 
-from jiwoon.gazu_api.service.exceptions import *
-from jiwoon.gazu_api.service.logger import Logger
+from nukitsu.gazu_api.service.exceptions import *
+from nukitsu.gazu_api.service.logger import Logger
 from PySide2.QtWidgets import QMessageBox
 
 class Auth:
@@ -17,7 +17,7 @@ class Auth:
         self._user_pw = ''
         self._valid_host = False
         self._valid_user = False
-        self.dir_path = os.path.expanduser('~/nuki/jiwoon/gazu_api/data')
+        self.dir_path = os.path.expanduser('~/nuki/nukitsu/gazu_api/data')
         self.user_path = os.path.join(self.dir_path, 'user.json')
 
         if self.access_setting():

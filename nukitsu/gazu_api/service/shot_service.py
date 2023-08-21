@@ -1,11 +1,11 @@
 import gazu
-from jiwoon.gazu_api.service.comp_shot import CompShot
-from jiwoon.gazu_api.service.todo_shot import TodoShot
+from nukitsu.gazu_api.service.comp_shot import CompShot
+from nukitsu.gazu_api.service.todo_shot import TodoShot
 from PySide2.QtCore import Qt, QDir
 from PySide2.QtWidgets import QMenu, QMessageBox, QFileDialog
 from PySide2.QtGui import QPixmap, QPixmapCache, QImage, QCursor
 import os
-from jiwoon.gazu_api.service.filetree_update import *
+from nukitsu.gazu_api.service.filetree_update import *
 
 basedir = os.path.dirname(__file__)
 default_img = QImage(os.path.join(basedir, '../image/nuke.png'))

@@ -1,11 +1,11 @@
 from PySide2 import QtCore
-from jiwoon.gazu_api.model.filetree_model import TreeModel
-from jiwoon.gazu_api.model.task_model import TaskModel
-from jiwoon.gazu_api.model.shot_model import ShotModel
-from jiwoon.gazu_api.service.nuke_service import NukeService
-from jiwoon.gazu_api.service.shot_service import ShotService
-from jiwoon.gazu_api.service.task_service import TaskService
-from jiwoon.gazu_api.service.filetree_service import FileTreeService
+from nukitsu.gazu_api.model.filetree_model import TreeModel
+from nukitsu.gazu_api.model.task_model import TaskModel
+from nukitsu.gazu_api.model.shot_model import ShotModel
+from nukitsu.gazu_api.service.nuke_service import NukeService
+from nukitsu.gazu_api.service.shot_service import ShotService
+from nukitsu.gazu_api.service.task_service import TaskService
+from nukitsu.gazu_api.service.filetree_service import FileTreeService
 
 
 class Controller:

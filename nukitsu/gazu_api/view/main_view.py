@@ -1,6 +1,6 @@
 from PySide2 import QtCore, QtUiTools
 from PySide2.QtWidgets import QMainWindow, QListView
-from jiwoon.gazu_api.view.UI.nuki_main_widget import Ui_Nuki
+from nukitsu.gazu_api.view.UI.nuki_main_widget import Ui_Nuki
 
 
 class MainUI(QMainWindow, Ui_Nuki):

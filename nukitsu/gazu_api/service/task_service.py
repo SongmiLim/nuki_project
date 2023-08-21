@@ -1,8 +1,8 @@
 from datetime import datetime
 import gazu as gazu
 from PySide2 import QtWidgets
-from jiwoon.gazu_api.service.utils import construct_full_path, OutlineDelegate
-from jiwoon.gazu_api.view.progressbar_widget import ProgressBar
+from nukitsu.gazu_api.service.utils import construct_full_path, OutlineDelegate
+from nukitsu.gazu_api.view.progressbar_widget import ProgressBar
 
 
 class TaskService:
