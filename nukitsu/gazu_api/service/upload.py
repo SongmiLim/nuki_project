@@ -315,10 +315,10 @@ class UUpload(QMainWindow, Ui_Upload):
         preview = gazu.task.add_preview(task, comment, preview_file_path=file_path)
 
 
- def show_upload_ui():
-     window = UUpload()
-     window.show()
+# def show_upload_ui():
+#     window = UUpload()
+#     window.show()
 
- if __name__ == '__main__':
-     show_upload_ui()
+# if __name__ == '__main__':
+#     show_upload_ui()
 
