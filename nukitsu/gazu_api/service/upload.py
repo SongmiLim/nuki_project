@@ -3,13 +3,13 @@ import os
 import re
 import gazu
 
-# from jiwoon.gazu_api.view.UI.upload_ui import Ui_MainWindow
+# from nukitsu.gazu_api.view.UI.upload_ui import Ui_MainWindow
 from nukitsu.gazu_api.view.UI.upload_widget import Ui_Upload
 from PySide2.QtGui import QColor, QPalette, QFont
 from PySide2.QtWidgets import QApplication, QMainWindow, QFileSystemModel, QAbstractItemView, QHeaderView
 from PySide2.QtCore import Qt, QStringListModel
 
-# from jiwoon.gazu_api.service.auth import Auth
+# from nukitsu.gazu_api.service.auth import Auth
 
 basedir = os.path.dirname(__file__)
 user_data = os.path.join(basedir, '../data/user.json')
@@ -95,27 +95,18 @@ class UUpload(QMainWindow, Ui_Upload):
         self.upload_btn.setEnabled(False)
         self.select_all_btn.setEnabled(False)
 
-        # self.upload_btn.setStyleSheet("color: gray")
-        # self.select_all_btn.setStyleSheet('color: gray')
-
-        # self.upload_btn.setFocusPolicy(Qt.NoFocus)
-        # self.select_all_btn.setFocusPolicy(Qt.NoFocus)
-
     def set_enabled_buttons(self):
         self.upload_btn.setEnabled(True)
         self.select_all_btn.setEnabled(True)
-        # self.upload_btn.setStyleSheet('')
-        # self.select_all_btn.setStyleSheet('')
 
     def on_tree_item_clicked(self, index):
         if not index.isValid():
             return
-        self.path = self.file_system_model.filePath(index) # 클릭 된 아이템 파일 경로
+        self.path = self.file_system_model.filePath(index) # File path of the clicked item
         self.dir_lineedit.setText(self.path)
 
         pattern = r'v\d{3}'
         # folder_name = index.data(Qt.ItemDataRole.DisplayRole)
-        # print(folder_name)
 
         if not os.path.basename(self.path).endswith('exr'):
             self.upload_msg_label.setText('')
@@ -125,7 +116,6 @@ class UUpload(QMainWindow, Ui_Upload):
         else:
             self.set_enabled_buttons()
 
-        # print(self.path)
         files = os.listdir(self.path)
         files.sort()
         self.list_len = len(files)
@@ -162,7 +152,6 @@ class UUpload(QMainWindow, Ui_Upload):
 
         self.string_list_model = QStringListModel(files)
         self.exr_list.setModel(self.string_list_model)
-        # signal
         self.exr_list.selectionModel().selectionChanged.connect(self.on_listview_selection_changed)
 
     def list_enabled_setting(self):
@@ -202,7 +191,7 @@ class UUpload(QMainWindow, Ui_Upload):
             self.upload_msg_label.setStyleSheet('color: red;')
 
     def mkdir(self):
-        # mp4, jpg 폴더가 없을 경우 dir 제작.
+        # If mp4, jpg folder does not exist
         jpg_path = self.path.replace('exr', 'jpg')
         mp4_path = self.path.replace('exr', 'mp4')
 
@@ -211,11 +200,12 @@ class UUpload(QMainWindow, Ui_Upload):
         if not os.path.exists(mp4_path):
             os.mkdir(mp4_path)
 
-        # 폴더 수가 동적이거나 늘어날 가능성이 있을 때 아래 코드 사용.
+        # # Use the code below when the number of folders is dynamic or likely to increase.
         # folders_to_create = ['jpg', 'mp4']
         # for folder in folders_to_create:
         #     folder_path = os.path.join(self.path, folder)
         #     os.mkdir(folder_path)
+    
     def convert_to_mp4(self):
         input_dir = self.path
         print(self.path)
@@ -266,17 +256,13 @@ class UUpload(QMainWindow, Ui_Upload):
 
     def update_comment(self):
         self.comment = self.comment_plaintextedit.toPlainText()
-        # print(self.comment)
 
     def update_status(self):
         self.selected_status = self.status_combo.currentText()
-        # print(self.selected_status)
 
     def publish(self):
         # Gets the path information from the given path.
-        # print(self.path)
         components = self.path.split(os.path.sep)
-        # print(components)
 
         self.path_info = {
             "project": components[-7],
@@ -285,7 +271,6 @@ class UUpload(QMainWindow, Ui_Upload):
             "task": components[-4],
             "format": components[-1]
         }
-        # print(self.path_info)
 
         with open(user_data, 'r') as f:
             data = json.load(f)
@@ -303,88 +288,37 @@ class UUpload(QMainWindow, Ui_Upload):
         # output_type_short_name = self.path_info["format"]
         status = self.selected_status
         file_path = (self.path.replace('exr', 'jpg') + f'/{self.name_split}_thumbnail' + '.jpg')
-        # print(file_path)
+
 
         project = gazu.project.get_project_by_name(project_name)
-        # print(f'project :{project}')
         seq = gazu.shot.get_sequence_by_name(project, seq_name)
-        # print(f'seq: {seq}')
         shot = gazu.shot.get_shot_by_name(seq, shot_name)
 
 
         task_type = None
         task_types = gazu.task.all_task_types_for_project(project)
-        # print(f'Task types: {task_types}')
-        # print('task name:', task_name)
+
         for task_type in task_types:
-            # print('task_type!!! :' , task_type)
             if task_type['name'].lower() == f'{task_name}' and task_type['for_entity'] == shot['type']:
                 task_type = task_type
-                # print('task_type@@@@@@:', task_type)
                 break
         task = gazu.task.get_task_by_name(shot, task_type)
-        # print(f'task: {task}')
-
         working_file = gazu.files.new_working_file(task)
-        # print(f'working_file: {working_file}')
 
         # output_type = gazu.files.new_output_type(output_type_name, output_type_short_name)
         output_type = gazu.files.get_output_type_by_name("jpg")
         gazu.files.new_entity_output_file(shot, output_type, task_type,
                                           'publish', working_file=working_file, revision=working_file['revision'])
 
-        # get status
-        # print('status 1:', status)
         status = gazu.task.get_task_status_by_name(f'{status}')
-        """
-        Args:
-            short_name (str / dict): The short name of claimed task status.
-
-        Returns:
-            dict: Task status matching given short name.
-        """
-        # print('status 2:', status)
-        # print(self.comment)
         comment = gazu.task.add_comment(task, status, comment=self.comment)
-        # print(f'comment: {comment}')
         preview = gazu.task.add_preview(task, comment, preview_file_path=file_path)
-        # print(f'preview: {preview}')
 
 
+ def show_upload_ui():
+     window = UUpload()
+     window.show()
 
-
-window = UUpload()
-window.show()
-
-
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     window = UUpload()
-#     window.show()
-#     sys.exit(app.exec_())
-#
-#
-# def show_upload_ui():
-#     # app = QApplication(sys.argv)
-#     window = UUpload()
-#     window.show()
-#     # sys.exit(app.exec_())
-#
-# if __name__ == '__main__':
-#     show_upload_ui()
-
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-# window = UUpload()
-# window.show()
-    # sys.exit(app.exec_())
-
-# def show_upload_ui():
-#     # app = QApplication(sys.argv)
-#     window = UUpload()
-#     window.show()
-#     # sys.exit(app.exec_())
-#
-# if __name__ == '__main__':
-#     show_upload_ui()
+ if __name__ == '__main__':
+     show_upload_ui()
 
