@@ -1,20 +1,19 @@
-# Kitsu-Nuke Integration Tool
-개발 기간: 2023/07/06 ~ 2023/08/17
+# NUKI
+Nuki is a **Nuke-Kitsu** integration tool.
+
+It is used to enhance the workflow of compositing artists by smoothly connecting **Nuke** tools with the **Kitsu** project management platform.
+
+It supports compositing artists to automate work environment settings before starting, and export and publish after compositing.
+
+
+
+NUKI allows compositers log in to Kitsu within Nuke, connect to Kitsu DB, access shot details, monitor job progress, import job via file path received from Kitsu, publish completed work to kitsu, and automatically convert to JPG and MOV.
 
 
 ![스크린샷, 2023-08-17 16-46-55](https://github.com/SongmiLim/Nuki/assets/99317323/561f2460-aa33-4db3-ae7b-4855a9add461)
 
 
-# 프로젝트 소개
-
-Kitsu-Nuke 통합 도구는 누크(Nuke)와 키츄(Kitsu) 프로젝트 관리 플랫폼을 원활하게 연결하여 컴포지팅 아티스트의 작업 흐름을 강화하는 데 사용됩니다.
-
-
-이 도구를 통해 작업자는 작업을 효율적으로 관리하고, 샷의 세부 정보에 접근하며, 작업 진행 상황을 모니터링하며, 작업물을 누크로 가져오고 완료된 작업물을 쉽게 내보내고 Kitsu에 게시할 수 있습니다.
-
-
-
-## Features
+## What's inside?
 User Login: Kitsu ID를 사용하여 도구에 로그인합니다.
 
 
@@ -34,11 +33,11 @@ Publishing: 완료된 파일을 Kitsu에 바로 publish 합니다.
 
 
 
-# Requirements
-python 3.6
+## Requirements
+python 3.6, Pyside 2, Nuke API, Gazu API, ffmpeg
 
 
-# Installation
+## Installation
 `pip install pyside2`
 
 
@@ -56,7 +55,11 @@ python 3.6
 `python main.py`
 
 
-## 기술 스택
+## Development duration
+06/07/2023 ~ 17/08/2023
+
+
+## Technologies
 <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
 <img src="https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black">
 <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
