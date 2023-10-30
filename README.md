@@ -1,36 +1,42 @@
 # NUKI
-Nuki is a **Nuke-Kitsu** integration tool.
+> Nuki is a **Nuke-Kitsu** integration tool.
 
-It is used to enhance the workflow of compositing artists by smoothly connecting **Nuke** tools with the **Kitsu** project management platform.
-
-It supports compositing artists to automate work environment settings before starting, and export and publish after compositing.
+> It streamlines compositing workflows by seamlessly connecting **Nuke** with **Kitsu** project management platform.
 
 
-
-NUKI allows compositers log in to Kitsu within Nuke, connect to Kitsu DB, access shot details, monitor job progress, import job via file path received from Kitsu, publish completed work to kitsu, and automatically convert to JPG and MOV.
+***
 
 
 ![스크린샷, 2023-08-17 16-46-55](https://github.com/SongmiLim/Nuki/assets/99317323/561f2460-aa33-4db3-ae7b-4855a9add461)
+![1](https://github.com/SongmiLim/nuki_project/assets/64101533/7bdc2f5a-f292-4830-bae7-16750827ab18)
+
+
+NUKI helps compositing artists automate work environment setup and manage the export and publishing of their compositions.
+
+
+NUKI enables compositors to log in to Kitsu within Nuke, access shot details, monitor job progress, import jobs from Kitsu, publish completed work, and automatically convert it to JPG and MOV.
+
+
+
 
 
 ## What's inside?
-User Login: Kitsu ID를 사용하여 도구에 로그인합니다.
-
-
-View Assigned Shots: 할당된 샷을 찾아보고 정렬할 수 있습니다.
-
-
-Shot Details: 샷을 클릭하여 상세 정보를 조회합니다.
-
-
-Import to Nuke: 작업물을 Nuke 노드로 변환하여 Nuke에 띄워줍니다.
-
-
-Task Completion: 작업물을 mov, exr 또는 jpg 형식으로 내보내고 로컬에 저장합니다.
-
-
-Publishing: 완료된 파일을 Kitsu에 바로 publish 합니다.
-
+1. User Login
+  - Users can log in using their Kitsu ID within Nuke.
+2. Viewing Shots Assigned to Compositing Artists
+  - Artists can view all shots assigned to them.
+3. Shot Sorting Function
+  - Artists can sort their assigned shots by Name, Due Date, and Priority.
+4. Providing Detailed Shot Information.
+  - When artists click on a specific shot, they can view detailed information about the shot, such as Frame Range, Resolution, FPS, and Revision.
+5. Checking Task Status for a Shot
+  - Clicking on a shot allows users to check the progress of tasks related to that shot.
+6. Importing Work for Each Task
+  - Users can convert the work for each task into Nuke nodes and open them in Nuke files.
+7. Exporting After Completing Work
+  - After completing their work, artists can export it as JPG or MP4 files and save them in the local file tree.
+8. Publishing Completed Work to Kitsu
+  - Users can publish the exported files to Kitsu after completing the work.
 
 
 ## Requirements
